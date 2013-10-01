@@ -1,0 +1,23 @@
+#m_health_label
+{
+	background-color: #33cccc; 
+	border-radius: 7px
+}
+
+#m_inf_label
+{
+	background-color: #d7eb2e; 
+	border-radius: 7px
+}
+
+#m_quar_label
+{
+	background-color: #da6a6a; 
+	border-radius: 7px
+}
+
+#m_other_label
+{
+	background-color: #464c5f; 
+	border-radius: 7px
+}
