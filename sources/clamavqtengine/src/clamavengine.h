@@ -61,7 +61,7 @@ protected:
 	virtual qint32 loadSignature(const QString &_type, const QString &_name) const;
 
 private:
-	static int sigload_cb(const char *_type, const char *_name, void *_context);
+	static int sigload_cb(const char *_type, const char *_name, quint32 _custom, void *_context);
 	bool scanFileThread(const QString &_file, bool _is_proc);
 	bool scanDirThread(const QString &_dir, const QStringList &_excl_dirs);
 	bool scanMemoryThread();

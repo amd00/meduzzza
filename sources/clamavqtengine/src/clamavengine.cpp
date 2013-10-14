@@ -32,7 +32,7 @@
 
 bool Scanner::m_exit = false;
 
-int ClamavEngine::sigload_cb(const char *_type, const char *_name, void *_context)
+int ClamavEngine::sigload_cb(const char *_type, const char *_name, quint32 _custom, void *_context)
 {
 		return ((ClamavEngine*)_context) -> loadSignature(_type, _name);
 }
