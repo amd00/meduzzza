@@ -44,6 +44,10 @@ Manager::Manager() : QObject(), m_app_dir(QDir::home().absoluteFilePath(".meduzz
 	m_updater = new DbUpdater(m_settings.dbUpdateMirror(), m_db_dir.absolutePath(), 
 		m_settings.hasProxy(), m_settings.proxyHost(), m_settings.proxyPort(), m_settings.proxyUser(), m_settings.proxyPassword());
 	
+	connect(m_updater, SIGNAL(downloadStartedSignal(const QString&)), this, SIGNAL(downloadStartedSignal(const QString&)));
+	connect(m_updater, SIGNAL(downloadFinishedSignal(const QString&)), this, SIGNAL(downloadFinishedSignal(const QString&)));
+	connect(m_updater, SIGNAL(downloadProgressSignal(const QString&, qint64, qint64)), 
+			this, SIGNAL(downloadProgressSignal(const QString&, qint64, qint64)));
 	connect(m_updater, SIGNAL(updateCompletedSignal()), this, SLOT(updateCompletedSlot()));
 	connect(m_updater, SIGNAL(errorSignal(const QString&, const QString&)), this, SLOT(updateErrorSlot(const QString&, const QString&)));
 	connect(this, SIGNAL(fileScanCompletedSignal(const QString&)), m_statist, SLOT(fileScanCompletedSlot(const QString&)));

@@ -2,19 +2,22 @@
 #include <QDebug>
 #include <manager.h>
 
-#include "scanwidget.h"
+#include <ui_scanwidget.h>
 
-ScanWidget::ScanWidget(Manager *_man, QWidget *_par) : QWidget(_par), m_ui(), m_started(false), m_paused(false)
+#include "scanwidget.h"
+#include "scanreswidget.h"
+#include "meduzzza.h"
+
+ScanWidget::ScanWidget(Manager *_man, Meduzzza *_med, QWidget *_parent) : QWidget(_parent), 
+	m_ui(new Ui::ScanWidget), m_started(false), m_paused(false), m_man(_man), m_med(_med)
 {
-	m_ui.setupUi(this);
-// 	connect(m_ui.m_start_button, SIGNAL(clicked()), this, SIGNAL(startFullScanSignal()));
-	connect(m_ui.m_start_button, SIGNAL(clicked()), this, SLOT(startClickedSlot()));
-	connect(m_ui.m_stop_button, SIGNAL(clicked()), this, SLOT(stopClickedSlot()));
+	m_ui -> setupUi(this);
+	connect(m_ui -> m_start_button, SIGNAL(clicked()), this, SLOT(startClickedSlot()));
+	connect(m_ui -> m_stop_button, SIGNAL(clicked()), this, SLOT(stopClickedSlot()));
 	connect(_man, SIGNAL(memScanStartedSignal()), this, SLOT(memScanStartedSlot()));
 	connect(_man, SIGNAL(memScanCompletedSignal()), this, SLOT(memScanCompletedSlot()));
 	connect(_man, SIGNAL(dirScanStartedSignal()), this, SLOT(dirScanStartedSlot()));
 	connect(_man, SIGNAL(dirScanCompletedSignal()), this, SLOT(dirScanCompletedSlot()));
-// 	connect(_man, SIGNAL(scanStoppedSignal()), this, SLOT(scanStoppedSlot()));
 	
 	connect(this, SIGNAL(startFullScanSignal()), _man, SLOT(fullScan()));
 	connect(this, SIGNAL(stopFullScanSignal()), _man, SLOT(stop()));
@@ -22,42 +25,47 @@ ScanWidget::ScanWidget(Manager *_man, QWidget *_par) : QWidget(_par), m_ui(), m_
 	connect(this, SIGNAL(resumeSignal()), _man, SLOT(resumeSlot()));
 }
 
+ScanWidget::~ScanWidget() { delete m_ui; }
+
 void ScanWidget::memScanStartedSlot()
 {
-	m_ui.m_scanobj_label -> setText(tr("Memory scan started"));
+	m_ui -> m_scanobj_label -> setText(tr("Memory scan started"));
 // 	scanStartedSlot();
 }
 
 void ScanWidget::memScanCompletedSlot()
 {
-	m_ui.m_scanobj_label -> setText(tr("Memory scan completed"));
+	m_ui -> m_scanobj_label -> setText(tr("Memory scan completed"));
 }
 
 void ScanWidget::dirScanStartedSlot()
 {
-	m_ui.m_scanobj_label -> setText(tr("Directory scan started"));
+	m_ui -> m_scanobj_label -> setText(tr("Directory scan started"));
 // 	scanStartedSlot();
 }
 
 void ScanWidget::dirScanCompletedSlot()
 {
-	m_ui.m_scanobj_label -> setText(tr("Directory scan completed"));
+	m_ui -> m_scanobj_label -> setText(tr("Directory scan completed"));
 }
 
 void ScanWidget::scanStartedSlot()
 {
 	m_started = true;
-	m_ui.m_start_button -> setText("Stop");
-	m_ui.m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
+	m_ui -> m_start_button -> setText("Stop");
+	m_ui -> m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
 }
 
 void ScanWidget::scanStoppedSlot()
 {
 	m_started = false;
-	m_ui.m_start_button -> setText("Start");
-	m_ui.m_start_button -> setIcon(QIcon(":/images/images/play.png"));
-	m_ui.m_scanobj_label -> setText(tr("Scan was stopped by user"));
-	Q_EMIT showStatisticSignal();
+	m_ui -> m_start_button -> setText("Start");
+	m_ui -> m_start_button -> setIcon(QIcon(":/images/images/play.png"));
+	m_ui -> m_scanobj_label -> setText(tr("Scan was stopped by user"));
+// 	Q_EMIT showStatisticSignal();
+	QSharedPointer<ScanResWidget> srw(new ScanResWidget(m_man -> filesCount(), 
+			m_man -> fileVirusesCount(), m_man -> quarantined(), NULL));
+	m_med -> showWidget(srw);
 }
 
 void ScanWidget::startClickedSlot()
@@ -74,13 +82,13 @@ void ScanWidget::startClickedSlot()
 	}
 	if(m_paused)
 	{
-		m_ui.m_start_button -> setText("Resume");
-		m_ui.m_start_button -> setIcon(QIcon(":/images/images/play.png"));
+		m_ui -> m_start_button -> setText("Resume");
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/play.png"));
 	}
 	else
 	{
-		m_ui.m_start_button -> setText("Pause");
-		m_ui.m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
+		m_ui -> m_start_button -> setText("Pause");
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
 	}
 }
 
@@ -90,7 +98,7 @@ void ScanWidget::stopClickedSlot()
 		return;
 	Q_EMIT stopFullScanSignal();
 	m_started = false;
-	m_ui.m_start_button -> setText("Start");
-	m_ui.m_start_button -> setIcon(QIcon(":/images/images/play.png"));
-	m_ui.m_scanobj_label -> setText(tr("Scan was stopped by user"));
+	m_ui -> m_start_button -> setText("Start");
+	m_ui -> m_start_button -> setIcon(QIcon(":/images/images/play.png"));
+	m_ui -> m_scanobj_label -> setText(tr("Scan was stopped by user"));
 }

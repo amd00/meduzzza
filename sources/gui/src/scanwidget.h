@@ -2,22 +2,30 @@
 #ifndef _SCANWIDGET_H_
 #define _SCANWIDGET_H_
 
-#include <ui_scanwidget.h>
+#include <QWidget>
 
 class Manager;
+class Meduzzza;
+
+namespace Ui
+{
+	class ScanWidget;
+}
 
 class ScanWidget : public QWidget
 {
 	Q_OBJECT
 	
 private:
-	Ui::ScanWidget m_ui;
+	Ui::ScanWidget *m_ui;
+	Manager *m_man;
+	Meduzzza *m_med;
 	bool m_started;
 	bool m_paused;
 	
 public:
-	ScanWidget(Manager *_man, QWidget *_par);
-	~ScanWidget() {}
+	ScanWidget(Manager *_man, Meduzzza *_med, QWidget *_parent = NULL);
+	~ScanWidget();
 	QString text() const { return tr("Full scan"); }
 	
 private Q_SLOTS:

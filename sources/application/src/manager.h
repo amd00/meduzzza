@@ -98,6 +98,9 @@ Q_SIGNALS:
 	void memScanCompletedSignal();
 	void dirScanCompletedSignal();
 	void scanStoppedSignal();
+	void downloadStartedSignal(const QString &_file);
+	void downloadFinishedSignal(const QString &_file);
+	void downloadProgressSignal(const QString &_file, qint64 _read, qint64 _total);
 };
 
 #endif

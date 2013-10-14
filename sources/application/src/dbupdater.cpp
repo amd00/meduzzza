@@ -62,6 +62,7 @@ void DbUpdater::downloadFiles(const QStringList &_files)
 		connect(reply, SIGNAL(readyRead()), this, SLOT(readyReadSlot()));
 		connect(reply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(updateProgressSlot(qint64,qint64)));
 		connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(errorSlot(QNetworkReply::NetworkError)));
+		Q_EMIT downloadStartedSignal(file);
 	}
 }
 

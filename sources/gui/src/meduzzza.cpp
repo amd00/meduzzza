@@ -1,22 +1,20 @@
 
 #include "meduzzza.h"
 #include "scanwidget.h"
-#include "scanreswidget.h"
+#include "updatewidget.h"
 
 Meduzzza::Meduzzza() : QWidget(), m_ui(), m_menu(), m_man()
 {
 	m_ui.setupUi(this);
 	m_ui.m_menu_view -> setModel(&m_menu);
 	
-	QSharedPointer<ScanWidget> sw(new ScanWidget(&m_man, NULL));
-// 	QSharedPointer<ScanResWidget> srw(new ScanResWidget(NULL));
+	QSharedPointer<ScanWidget> sw(new ScanWidget(&m_man, this, NULL));
+	QSharedPointer<UpdateWidget> uw(new UpdateWidget(&m_man, this, NULL));
 	m_menu.addMenuItem(sw -> text(), ":/images/images/item.png", sw.objectCast<QObject>());
-// 	m_menu.addMenuItem("Scan results", ":/images/images/item.png", srw.objectCast<QObject>());
+	m_menu.addMenuItem(uw -> text(), ":/images/images/item.png", uw.objectCast<QObject>());
 	
 	connect(m_ui.m_menu_view -> selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
 		this, SLOT(menuSelectedSlot(const QModelIndex&, const QModelIndex&)));
-	
-	connect(sw.data(), SIGNAL(showStatisticSignal()), this, SLOT(showStatisticSlot()));
 	
 	m_man.init();
 }
@@ -40,8 +38,8 @@ void Meduzzza::menuSelectedSlot(const QModelIndex &_current, const QModelIndex &
 	showWidget(w);
 }
 
-void Meduzzza::showStatisticSlot()
-{
-	QSharedPointer<ScanResWidget> srw(new ScanResWidget(m_man.filesCount(), m_man.fileVirusesCount(), m_man.quarantined(), NULL));
-	showWidget(srw);
-}
+// void Meduzzza::showStatisticSlot()
+// {
+// 	QSharedPointer<ScanResWidget> srw(new ScanResWidget(m_man.filesCount(), m_man.fileVirusesCount(), m_man.quarantined(), NULL));
+// 	showWidget(srw);
+// }

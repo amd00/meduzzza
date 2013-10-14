@@ -22,10 +22,10 @@ public:
 	Meduzzza();
 	~Meduzzza() {}
 	
-private Q_SLOTS:
 	void showWidget(QSharedPointer<QWidget> _w);
+	
+private Q_SLOTS:
 	void menuSelectedSlot(const QModelIndex &_current, const QModelIndex &_previous);
-	void showStatisticSlot();
 };
 
 #endif
