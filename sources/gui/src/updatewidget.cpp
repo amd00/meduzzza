@@ -14,6 +14,8 @@ UpdateWidget:: UpdateWidget(Manager *_man, Meduzzza *_med, QWidget *_parent) : Q
 	connect(m_man, SIGNAL(downloadFinishedSignal(const QString&)), this, SLOT(downloadFinishedSlot(const QString&)));
 	connect(m_man, SIGNAL(downloadProgressSignal(const QString&, qint64, qint64)), 
 			this, SLOT(downloadProgressSlot(const QString&, qint64, qint64)));
+	connect(m_man, SIGNAL(updateCompletedSignal()), this, SLOT(updateCompletedSlot()));
+	m_ui -> m_age_label -> setText(QString::number(m_man -> virusDbAge()));
 }
 
 UpdateWidget::~UpdateWidget() { delete m_ui; }
@@ -44,4 +46,9 @@ void UpdateWidget::startUpdateSlot()
 {
 	m_items.clear();
 	m_man -> downloadDb();
+}
+
+void UpdateWidget::updateCompletedSlot()
+{
+	m_ui -> m_age_label -> setText(QString::number(m_man -> virusDbAge()));
 }

@@ -36,6 +36,7 @@ private Q_SLOTS:
 	void downloadFinishedSlot(const QString &_file);
 	void downloadProgressSlot(const QString &_file, qint64 _read, qint64 _total);
 	void startUpdateSlot();
+	void updateCompletedSlot();
 };
 
 #endif

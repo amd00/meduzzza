@@ -61,6 +61,7 @@ public:
 	quint64 fileVirusesCount() const { return m_statist -> fileVirusesCount(); }
 	quint64 procVirusesCount() const { return m_statist -> procVirusesCount(); }
 	quint64 quarantined() const { return m_statist -> quarantined(); }
+	quint32 virusDbAge() const { return m_engine -> dbAge(); }
 	
 public Q_SLOTS:
 	void scanFile(const QString &_file, bool _non_block = true);
@@ -101,6 +102,7 @@ Q_SIGNALS:
 	void downloadStartedSignal(const QString &_file);
 	void downloadFinishedSignal(const QString &_file);
 	void downloadProgressSignal(const QString &_file, qint64 _read, qint64 _total);
+	void updateCompletedSignal();
 };
 
 #endif

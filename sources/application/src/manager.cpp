@@ -49,6 +49,7 @@ Manager::Manager() : QObject(), m_app_dir(QDir::home().absoluteFilePath(".meduzz
 	connect(m_updater, SIGNAL(downloadProgressSignal(const QString&, qint64, qint64)), 
 			this, SIGNAL(downloadProgressSignal(const QString&, qint64, qint64)));
 	connect(m_updater, SIGNAL(updateCompletedSignal()), this, SLOT(updateCompletedSlot()));
+	connect(m_updater, SIGNAL(updateCompletedSignal()), this, SIGNAL(updateCompletedSignal()));
 	connect(m_updater, SIGNAL(errorSignal(const QString&, const QString&)), this, SLOT(updateErrorSlot(const QString&, const QString&)));
 	connect(this, SIGNAL(fileScanCompletedSignal(const QString&)), m_statist, SLOT(fileScanCompletedSlot(const QString&)));
 	connect(this, SIGNAL(fileVirusDetectedSignal(const QString&, const QString&)), m_statist, SLOT(fileVirusDetectedSlot(const QString&, const QString&)));
