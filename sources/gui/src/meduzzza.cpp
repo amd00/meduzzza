@@ -1,6 +1,7 @@
 
 #include "meduzzza.h"
 #include "scanwidget.h"
+#include "dirscanwidget.h"
 #include "updatewidget.h"
 
 Meduzzza::Meduzzza() : QWidget(), m_ui(), m_menu(), m_man()
@@ -9,8 +10,10 @@ Meduzzza::Meduzzza() : QWidget(), m_ui(), m_menu(), m_man()
 	m_ui.m_menu_view -> setModel(&m_menu);
 	
 	QSharedPointer<ScanWidget> sw(new ScanWidget(&m_man, this, NULL));
+	QSharedPointer<DirScanWidget> dsw(new DirScanWidget(&m_man, this, NULL));
 	QSharedPointer<UpdateWidget> uw(new UpdateWidget(&m_man, this, NULL));
 	m_menu.addMenuItem(sw -> text(), ":/images/images/item.png", sw.objectCast<QObject>());
+	m_menu.addMenuItem(dsw -> text(), ":/images/images/item.png", dsw.objectCast<QObject>());
 	m_menu.addMenuItem(uw -> text(), ":/images/images/item.png", uw.objectCast<QObject>());
 	
 	connect(m_ui.m_menu_view -> selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),

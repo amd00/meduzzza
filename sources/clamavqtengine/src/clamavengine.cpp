@@ -136,8 +136,8 @@ bool ClamavEngine::scanFileThread(const QString &_file, bool _is_proc)
 	connect(scanner, SIGNAL(fileScanStartedSignal(const QString&)), this, SLOT(fileScanStartedSlot(const QString&)));
 	connect(scanner, SIGNAL(fileScanCompletedSignal(const QString&, qint32, const QString&, bool)), this, SLOT(fileScanCompletedSlot(const QString&, qint32, const QString&, bool)));
 	connect(scanner, SIGNAL(errorSignal(const QString&, const QString&)), this, SIGNAL(errorSignal(const QString&, const QString&)));
-	connect(this, SIGNAL(pauseSignal()), scanner, SLOT(pauseSlot()));
-	connect(this, SIGNAL(resumeSignal()), scanner, SLOT(resumeSlot()));
+// 	connect(this, SIGNAL(pauseSignal()), scanner, SLOT(pauseSlot()));
+// 	connect(this, SIGNAL(resumeSignal()), scanner, SLOT(resumeSlot()));
 	m_pool -> start(scanner);
 	return true;
 }
