@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MemScanWidget</class>
+ <widget class="QWidget" name="MemScanWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>633</width>
+    <height>394</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="font">
+      <font>
+       <pointsize>16</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Memory scan</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,0,0">
+     <item>
+      <widget class="QToolButton" name="m_start_button">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="text">
+        <string>Start</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../qrc/meduzzza.qrc">
+         <normaloff>:/images/images/play.png</normaloff>:/images/images/play.png</iconset>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="m_stop_button">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../qrc/meduzzza.qrc">
+         <normaloff>:/images/images/stop.png</normaloff>:/images/images/stop.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Scanning: </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="m_proc_label">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>573</width>
+       <height>282</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../qrc/meduzzza.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>m_start_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MemScanWidget</receiver>
+   <slot>startClickedSlot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>22</x>
+     <y>52</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>316</x>
+     <y>196</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_stop_button</sender>
+   <signal>clicked()</signal>
+   <receiver>MemScanWidget</receiver>
+   <slot>stopClickedSlot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>54</x>
+     <y>52</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>316</x>
+     <y>196</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>startClickedSlot()</slot>
+  <slot>stopClickedSlot()</slot>
+ </slots>
+</ui>
