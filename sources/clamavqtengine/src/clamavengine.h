@@ -23,79 +23,63 @@
 #ifndef _CLAMAVENGINE_H_
 #define _CLAMAVENGINE_H_
 
-#include <clamav.h>
-
-#include <QObject>
-#include <QThreadPool>
 #include <QStringList>
-#include <QDateTime>
 
-class FileScanner;
+class QThreadPool;
 
-class ClamavEngine : public QObject
+namespace Meduzzza
 {
-	Q_OBJECT
-
-private:
-	QString m_db_path;
-	cl_engine *m_engine;
-	QStringList m_processes;
-	QThreadPool *m_pool;
-	bool m_dir_scan;
-	bool m_mem_scan;
-	qint32 m_count;
-
-public:
-	ClamavEngine(qint32 _thread_count = -1, const QString &_db_path = QString::null);
-	virtual ~ClamavEngine();
-	bool init();
-	qint32 dbAge() const;
-	qint32 loadDb();
-	bool compile();
-	bool scanFile(const QString &_file);
-	bool scanDir(const QString &_dir, const QStringList &_excl_dirs = QStringList());
-	bool scanMemory();
-	void stop();
-
-protected:
-	virtual qint32 loadSignature(const QString &_type, const QString &_name) const;
-
-private:
-	static int sigload_cb(const char *_type, const char *_name, quint32 _custom, void *_context);
-	bool scanFileThread(const QString &_file, bool _is_proc);
-	bool scanDirThread(const QString &_dir, const QStringList &_excl_dirs);
-	bool scanMemoryThread();
-
-public Q_SLOTS:
-	void pauseSlot() { Q_EMIT pauseSignal(); }
-	void resumeSlot() { Q_EMIT resumeSignal(); }
+	class ClamavEnginePrivate;
 	
-private Q_SLOTS:
-	
-	void fileScanStartedSlot(const QString &_file) { m_count++; }
-	void fileScanCompletedSlot(const QString &_fd, qint32 _result, const QString &_virname, bool _is_proc);
-	
-	void fileFindedSlot(const QString &_file);
-	void procFindedSlot(const QString &_file);
-	
-	void memScanCompletedSlot();
-	void dirScanCompletedSlot();
+	class ClamavEngine : public QObject
+	{
+		Q_OBJECT
 
-Q_SIGNALS:
-	void fileScanStartedSignal(const QString &_file);
-	void procScanStartedSignal(const QString &_proc, qint32 _pid);
-	void fileScanCompletedSignal(const QString &_file);
-	void procScanCompletedSignal(const QString &_proc, qint32 _pid);
-	void fileVirusDetectedSignal(const QString &_file, const QString &_virus);
-	void procVirusDetectedSignal(const QString &_proc, qint32 _pid, const QString &_virus);
-	void errorSignal(const QString &_file, const QString &_err);
-	void memScanStartedSignal();
-	void dirScanStartedSignal();
-	void memScanCompletedSignal();
-	void dirScanCompletedSignal();
-	void scanStoppedSignal();
-	void pauseSignal();
-	void resumeSignal();
-};
+	private:
+		ClamavEnginePrivate *m_p;
 
+	public:
+		ClamavEngine(qint32 _thread_count = -1, const QString &_db_path = QString::null);
+		virtual ~ClamavEngine();
+		
+		bool init();
+		
+		qint32 dbAge() const;
+		qint32 loadDb();
+		bool compile();
+		
+		bool scanFile(const QString &_file);
+		bool scanDir(const QString &_dir, const QStringList &_excl_dirs = QStringList());
+		void stop();
+		void pause();
+		void resume();
+
+	protected:
+		virtual qint32 loadSignature(const QString &_type, const QString &_name) const;
+
+	private:
+		static int sigload_cb(const char *_type, const char *_name, quint32 _custom, void *_context);
+		bool scanFileThread(const QString &_file, bool _is_proc);
+		bool scanDirThread(const QString &_dir, const QStringList &_excl_dirs);
+
+	private Q_SLOTS:
+		void filesFindedSlot(const QStringList &_file_list);
+		void procsFindedSlot(const QStringList &_file_list);
+		
+		void fileScanCompletedSlot(const QString &_file, qint32 _result, const QString &_virname);
+		void dirScanCompletedSlot(const QString &_dir);
+		
+	Q_SIGNALS:
+		void fileScanStartedSignal(const QString &_file);
+		void fileScanCompletedSignal(const QString &_file);
+		void fileVirusDetectedSignal(const QString &_file, const QString &_virname);
+		
+		void dirScanStartedSignal(const QString &_dir);
+		void dirScanCompletedSignal(const QString &_dir);
+		
+		void stoppedSignal();
+		void pausedSignal();
+		void resumedSignal();
+	};
+}
 #endif

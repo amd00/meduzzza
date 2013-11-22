@@ -1,13 +1,13 @@
 
 #include <QApplication>
 
-#include "meduzzza.h"
+#include "mainwindow.h"
 
 int main(qint32 argc, char *argv[])
 {
 	QApplication app(argc, argv);
 	
-	Meduzzza m;
+	Meduzzza::MainWindow m;
 	m.show();
 	
 	return app.exec();

@@ -27,32 +27,32 @@
 
 #include "scanner.h"
 
-class DirScanner : public Scanner
+namespace Meduzzza
 {
-	Q_OBJECT
+	class DirScanner : public Scanner
+	{
+		Q_OBJECT
 
-private:
-	QString m_dir;
-	QStringList m_excl_dirs;
+	private:
+		QString m_dir;
+		QStringList m_excl_dirs;
 
-public:
-	DirScanner(const QString &_dir, const QStringList &_excl_dirs)  : Scanner(), 
-			m_dir(_dir), m_excl_dirs(_excl_dirs) {}
-	~DirScanner() {}
+	public:
+		DirScanner(const QString &_dir, const QStringList &_excl_dirs)  : Scanner(), 
+				m_dir(_dir), m_excl_dirs(_excl_dirs) {}
+		~DirScanner() {}
 
-protected:
-	void run();
+	protected:
+		void run();
 
-private:
-	void scanDir(const QString &_dir, bool _top = true);
+	private:
+		void scanDir(const QString &_dir, bool _top);
 
-Q_SIGNALS:
-	void fileFindedSignal(const QString &_file);
-	void fileScanStartedSignal(const QString &_file);
-	void fileScanCompletedSignal(const QString &_fd, qint32 _result, const QString &_virname, bool _is_proc);
-	void errorSignal(const QString &_file, const QString &_err);
-	void dirScanStartedSignal();
-	void dirScanCompletedSignal();
-};
-
+	Q_SIGNALS:
+		void filesFindedSignal(const QStringList &_file_list);
+		void errorSignal(const QString &_file, const QString &_err);
+		void dirScanStartedSignal(const QString &_dir);
+		void dirScanCompletedSignal(const QString &_dir);
+	};
+}
 #endif

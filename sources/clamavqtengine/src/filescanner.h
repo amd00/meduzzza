@@ -29,35 +29,39 @@
 
 class cl_engine;
 
-class FileScanner : public Scanner
+namespace Meduzzza
 {
-	Q_OBJECT
-
-private:
-	cl_engine *m_engine;
-	QString m_file;
-	bool m_is_proc;
-	class FileRemover
+	class FileScanner : public Scanner
 	{
+		Q_OBJECT
+
 	private:
+		class FileRemover
+		{
+		private:
+			QString m_file;
+
+		public:
+			FileRemover(const QString &_file) : m_file(_file) {}
+			~FileRemover() { if(!m_file.isNull()) QFile::remove(m_file); }
+		};
+		
+	private:
+		cl_engine *m_engine;
 		QString m_file;
+		bool m_is_proc;
 
 	public:
-		FileRemover(const QString &_file) : m_file(_file) {}
-		~FileRemover() { if(!m_file.isNull()) QFile::remove(m_file); }
+		FileScanner(cl_engine *_engine, const QString &_file, bool _is_proc) : Scanner(), m_engine(_engine), m_file(_file), m_is_proc(_is_proc) {}
+		~FileScanner() {}
+
+	protected:
+		void run();
+
+	Q_SIGNALS:
+		void fileScanStartedSignal(const QString &_file);
+		void fileScanCompletedSignal(const QString &_fd, qint32 _result, const QString &_virname);
+		void errorSignal(const QString &_file, const QString &_err);
 	};
-	
-public:
-	FileScanner(cl_engine *_engine, const QString &_file, bool _is_proc) : Scanner(), m_engine(_engine), m_file(_file), m_is_proc(_is_proc) {}
-	~FileScanner() {}
-
-protected:
-	void run();
-
-Q_SIGNALS:
-	void fileScanStartedSignal(const QString &_file);
-	void fileScanCompletedSignal(const QString &_fd, qint32 _result, const QString &_virname, bool _is_proc);
-	void errorSignal(const QString &_file, const QString &_err);
-};
-
+}
 #endif

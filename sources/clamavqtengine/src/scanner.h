@@ -23,22 +23,13 @@
 #ifndef _SCANNER_H_
 #define _SCANNER_H_
 
-#include <QObject>
-#include <QRunnable>
-#include <QMutex>
-#include <QWaitCondition>
 #include <QThread>
+#include <QRunnable>
 
-class Scanner : public QObject, public QRunnable
+namespace Meduzzza
 {
-private:
-	static bool m_exit;
-	QMutex m_mutex;
-	QWaitCondition m_pause_manager;
-	bool m_is_paused;
+	class ScannerPrivate;
 	
-protected:
-	void checkPause() { if(m_is_paused) m_pause_manager.wait(&m_mutex); }
 	class Sleeper : public QThread
 	{
 	public:
@@ -47,18 +38,25 @@ protected:
 		static void sleep(unsigned long secs) { QThread::sleep(secs); }
 	};
 	
-public:
-	Scanner() : m_mutex(), m_pause_manager(), m_is_paused(false) {}
-	virtual ~Scanner() {}
- 	static void setExit(bool _exit = true) { Scanner::m_exit = _exit; }
-	static bool exit() { return Scanner::m_exit; }
+	class Scanner : public QObject, public QRunnable
+	{
+	private:
+		ScannerPrivate *m_p;
 
-public Q_SLOTS:
-	void pauseSlot() { m_is_paused = true; }
-	void resumeSlot() { m_pause_manager.wakeAll(); m_is_paused = false; }
-	
-Q_SIGNALS:
-	void resumeSignal();
-};
+	public:
+		Scanner();
+		virtual ~Scanner();
+		
+		static void stop();
+		static void pause();
+		static void resume();
+		
+		static bool stopped();
+		static void setStopped(bool _is_stopped);
+
+	protected:
+		void checkPause();
+	};
+}
 
 #endif

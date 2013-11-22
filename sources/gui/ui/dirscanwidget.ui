@@ -48,7 +48,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,0">
+    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,0,0">
      <item>
       <widget class="QToolButton" name="m_start_button">
        <property name="focusPolicy">
@@ -63,6 +63,17 @@
        </property>
        <property name="checkable">
         <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="m_stop_button">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../qrc/meduzzza.qrc">
+         <normaloff>:/images/images/stop.png</normaloff>:/images/images/stop.png</iconset>
        </property>
       </widget>
      </item>
@@ -163,9 +174,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>m_stop_button</sender>
+   <signal>clicked()</signal>
+   <receiver>DirScanWidget</receiver>
+   <slot>stopClickedSlot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>54</x>
+     <y>84</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>296</x>
+     <y>186</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>dirClickedSlot()</slot>
   <slot>startClickedSlot()</slot>
+  <slot>stopClickedSlot()</slot>
  </slots>
 </ui>

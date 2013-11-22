@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 		memory = false;
 	}
 	
-	Manager m;
+	Meduzzza::Manager m;
 	if(full_update)
 	  m.downloadDb(false);
 	else if(update)

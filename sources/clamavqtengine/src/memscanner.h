@@ -25,27 +25,27 @@
 
 #include "scanner.h"
 
-class MemScanner : public Scanner
+namespace Meduzzza
 {
-	Q_OBJECT
+	class MemScanner : public Scanner
+	{
+		Q_OBJECT
 
-public:
-	MemScanner()  : Scanner() {}
-	~MemScanner() {}
+	public:
+		MemScanner()  : Scanner() {}
+		~MemScanner() {}
 
-protected:
-	void run();
+	protected:
+		void run();
 
-private:
-	void scanMemory();
+	private:
+		void scanMemory();
 
-Q_SIGNALS:
-	void procFindedSignal(const QString &_file);
-	void fileScanStartedSignal(const QString &_file);
-	void fileScanCompletedSignal(const QString &_fd, qint32 _result, const QString &_virname, bool _is_proc);
-	void errorSignal(const QString &_file, const QString &_err);
-	void memScanStartedSignal();
-	void memScanCompletedSignal();
-};
-
+	Q_SIGNALS:
+		void procsFindedSignal(const QStringList &_file_list);
+		void errorSignal(const QString &_file, const QString &_err);
+		void memScanStartedSignal();
+		void memScanCompletedSignal();
+	};
+}
 #endif

@@ -23,36 +23,41 @@
 #include <QDir>
 
 #include "dirscanner.h"
-#include "filescanner.h"
 
-void DirScanner::run()
+namespace Meduzzza
 {
-	Q_EMIT dirScanStartedSignal();
-	scanDir(m_dir);
-}
 
-void DirScanner::scanDir(const QString &_dir, bool _top)
-{
-	QDir dir(_dir);
-	if(m_excl_dirs.contains(dir.absolutePath()))
-		return;
-	QStringList dirs = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden | QDir::NoSymLinks);
-	foreach(QString d, dirs)
+	void DirScanner::run()
 	{
-		checkPause();
-		if(Scanner::exit())
-			break;
-		scanDir(dir.absoluteFilePath(d), false);
+		Q_EMIT dirScanStartedSignal(m_dir);
+		scanDir(m_dir, true);
 	}
-	QStringList files = dir.entryList(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
-	foreach(QString f, files)
+
+	void DirScanner::scanDir(const QString &_dir, bool _top)
 	{
-		checkPause();
-		if(Scanner::exit())
-			break;
-		Q_EMIT fileFindedSignal(dir.absoluteFilePath(f));
-		Sleeper::usleep(50);
+		QDir dir(_dir);
+		if(m_excl_dirs.contains(dir.absolutePath()))
+			return;
+		QStringList dirs = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden | QDir::NoSymLinks);
+		foreach(QString d, dirs)
+		{
+			checkPause();
+			if(Scanner::stopped())
+				return;
+			scanDir(dir.absoluteFilePath(d), false);
+		}
+		QStringList files = dir.entryList(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+		QStringList file_list;
+		foreach(QString f, files)
+		{
+			checkPause();
+			if(Scanner::stopped())
+				return;
+			file_list << dir.absoluteFilePath(f);
+			Sleeper::usleep(100);
+		}
+		Q_EMIT filesFindedSignal(file_list);
+		if(_top)
+			Q_EMIT dirScanCompletedSignal(m_dir);
 	}
-	if(_top)
-		Q_EMIT dirScanCompletedSignal();
 }
