@@ -134,21 +134,11 @@ namespace Meduzzza
 		return true;
 	}
 
-	bool ClamavEngine::scanFileThread(const QString &_file, bool _is_proc)
+	bool ClamavEngine::scanFileThread(const QString &_file)
 	{
-		if(_is_proc)
-		{
-			QString proc_name = QFileInfo(QFile::symLinkTarget(QFileInfo(_file).absoluteDir().absoluteFilePath("exe"))).baseName();
-			QRegExp proc_reg("\\d+");
-			proc_reg.indexIn(_file);
-// 			qint32 pid = proc_reg.cap(0).toInt();
-		}
-		else
-			Q_EMIT fileScanStartedSignal(QFileInfo(_file).absoluteFilePath());
-		FileScanner *scanner = new FileScanner(m_p -> engine(), _file, _is_proc);
+		FileScanner *scanner = new FileScanner(m_p -> engine(), _file);
 		connect(scanner, SIGNAL(fileScanStartedSignal(const QString&)), this, SIGNAL(fileScanStartedSignal(const QString&)));
 		connect(scanner, SIGNAL(fileScanCompletedSignal(const QString&, qint32, const QString&)), this, SLOT(fileScanCompletedSlot(const QString&, qint32, const QString&)));
-// 		connect(scanner, SIGNAL(errorSignal(const QString&, const QString&)), this, SIGNAL(errorSignal(const QString&, const QString&)));
 		m_p -> pool() -> start(scanner);
 		return true;
 	}
@@ -159,28 +149,26 @@ namespace Meduzzza
 		connect(scanner, SIGNAL(dirScanStartedSignal(const QString&)), this, SIGNAL(dirScanStartedSignal(const QString&)));
 		connect(scanner, SIGNAL(dirScanCompletedSignal(const QString&)), this, SLOT(dirScanCompletedSlot(const QString&)));
 		connect(scanner, SIGNAL(filesFindedSignal(const QStringList&)), this, SLOT(filesFindedSlot(const QStringList&)));
-// 		connect(this, SIGNAL(pauseSignal()), scanner, SLOT(pauseSlot()));
-// 		connect(this, SIGNAL(resumeSignal()), scanner, SLOT(resumeSlot()));
 		m_p -> pool() -> start(scanner);
 		return true;
 	}
 
-// 	bool ClamavEngine::scanMemoryThread()
-// 	{
-// 		MemScanner *scanner = new MemScanner();
-// 		connect(scanner, SIGNAL(memScanStartedSignal()), this, SIGNAL(memScanStartedSignal()));
-// 		connect(scanner, SIGNAL(memScanCompletedSignal()), this, SLOT(memScanCompletedSlot()));
-// 		connect(scanner, SIGNAL(procFindedSignal(const QString&)), this, SLOT(procFindedSlot(const QString&)));
-// 		connect(this, SIGNAL(pauseSignal()), scanner, SLOT(pauseSlot()));
-// 		connect(this, SIGNAL(resumeSignal()), scanner, SLOT(resumeSlot()));
-// 		m_mem_scan = true;
-// 		m_p -> pool() -> start(scanner);
-// 		return true;
-// 	}
+	bool ClamavEngine::scanMemoryThread()
+	{
+		MemScanner *scanner = new MemScanner(m_p -> engine());
+		connect(scanner, SIGNAL(memScanStartedSignal()), this, SIGNAL(memScanStartedSignal()));
+		connect(scanner, SIGNAL(memScanCompletedSignal()), this, SLOT(memScanCompletedSlot()));
+		
+		connect(scanner, SIGNAL(procScanStartedSignal(const QString&, qint32)), this, SIGNAL(procScanStartedSignal(const QString&, qint32)));
+		connect(scanner, SIGNAL(procScanCompletedSignal(const QString&, qint32, qint32, const QString&)), 
+				this, SLOT(procScanCompletedSlot(const QString&, qint32, qint32, const QString&)));
+		m_p -> pool() -> start(scanner);
+		return true;
+	}
 
 	bool ClamavEngine::scanFile(const QString &_file)
 	{
-		return scanFileThread(_file, false);
+		return scanFileThread(_file);
 	}
 
 	bool ClamavEngine::scanDir(const QString &_dir, const QStringList &_excl_dirs)
@@ -188,10 +176,10 @@ namespace Meduzzza
 		return scanDirThread(_dir, _excl_dirs);
 	}
 
-// 	bool ClamavEngine::scanMemory()
-// 	{
-// 		return scanMemoryThread();
-// 	}
+	bool ClamavEngine::scanMemory()
+	{
+		return scanMemoryThread();
+	}
 
 	void ClamavEngine::stop()
 	{
@@ -237,22 +225,45 @@ namespace Meduzzza
 		}
 	}
 	
+	void ClamavEngine::procScanCompletedSlot(const QString &_name, qint32 _pid, qint32 _result, const QString &_virname)
+	{
+		switch(_result)
+		{
+			case CL_VIRUS:
+				Q_EMIT procVirusDetectedSignal(_name, _pid, _virname);
+				qDebug("INFO: End process scanning: %s(%i): INFECTED - %s", _name.toLocal8Bit().data(), _pid, _virname.toLocal8Bit().data());
+				break;
+			case CL_CLEAN:
+				Q_EMIT procScanCompletedSignal(_name, _pid);
+				qDebug("INFO: End process scanning: %s(%i): CLEAN", _name.toLocal8Bit().data(), _pid);
+				break;
+			default:
+				qDebug("INFO: Error - %s", cl_strerror(_result));
+		}
+	}
+	
 	void ClamavEngine::dirScanCompletedSlot(const QString &_dir)
 	{
 		m_p -> pool() -> waitForDone();
 		Q_EMIT dirScanCompletedSignal(_dir);
 	}
+	
+	void ClamavEngine::memScanCompletedSlot()
+	{
+		m_p -> pool() -> waitForDone();
+		Q_EMIT memScanCompletedSignal();
+	}
 
 	void ClamavEngine::filesFindedSlot(const QStringList &_file_list)
 	{
 		foreach(QString file, _file_list)
-			scanFileThread(file, false);
+			scanFileThread(file);
 	}
 
 	void ClamavEngine::procsFindedSlot(const QStringList &_file_list)
 	{
 		foreach(QString file, _file_list)
-			scanFileThread(file, true);
+			scanFileThread(file);
 	}
 
 // 	void ClamavEngine::memScanCompletedSlot()

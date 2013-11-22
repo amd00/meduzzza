@@ -6,6 +6,7 @@
 #include "mainwindow.h"
 #include "scanwidget.h"
 #include "dirscanwidget.h"
+#include "memscanwidget.h"
 #include "updatewidget.h"
 #include "mainmenumodel.h"
 
@@ -19,9 +20,11 @@ namespace Meduzzza
 		
 		ScanWidget *sw = new ScanWidget(m_man, this, NULL);
 		DirScanWidget *dsw = new DirScanWidget(m_man, this);
+		MemScanWidget *msw = new MemScanWidget(m_man, this);
 		UpdateWidget *uw = new UpdateWidget(m_man, this, NULL);
 		m_menu -> addMenuItem(sw -> text(), ":/images/images/item.png", sw);
 		m_menu -> addMenuItem(dsw -> text(), ":/images/images/item.png", dsw);
+		m_menu -> addMenuItem(msw -> text(), ":/images/images/item.png", msw);
 		m_menu -> addMenuItem(uw -> text(), ":/images/images/item.png", uw);
 		
 		connect(m_ui -> m_menu_view -> selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),

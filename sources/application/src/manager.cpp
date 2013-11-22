@@ -138,14 +138,14 @@ namespace Meduzzza
 
 	void Manager::scanMemory(bool _non_block)
 	{
-	// 	QEventLoop loop;
-	// 	loop.connect(m_engine, SIGNAL(memScanCompletedSignal()), SLOT(quit()));
-	// 	loop.connect(m_engine, SIGNAL(scanStoppedSignal()), SLOT(quit()));
-	// 
-	// 	m_engine -> scanMemory();
-	// 
-	// 	if(!_non_block)
-	// 		loop.exec();
+		QEventLoop loop;
+		loop.connect(m_engine, SIGNAL(memScanCompletedSignal()), SLOT(quit()));
+		loop.connect(m_engine, SIGNAL(stoppedSignal()), SLOT(quit()));
+	
+		m_engine -> scanMemory();
+	
+		if(!_non_block)
+			loop.exec();
 	}
 
 	void Manager::fullScan()

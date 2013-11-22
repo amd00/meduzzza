@@ -22,16 +22,23 @@ namespace Meduzzza
 		virtual ~MeduzzzaCommonWidget() {}
 		
 	protected Q_SLOTS:
-		virtual void fileScanStartedSlot(const QString &_file) = 0;
-		virtual void fileScanCompletedSlot(const QString &_file) = 0;
-		virtual void fileVirusDetectedSlot(const QString &_file, const QString &_virname) = 0;
+		virtual void fileScanStartedSlot(const QString &_file) {}
+		virtual void fileScanCompletedSlot(const QString &_file) {}
+		virtual void fileVirusDetectedSlot(const QString &_file, const QString &_virname) {}
 		
-		virtual void dirScanStartedSlot(const QString &_dir) = 0;
-		virtual void dirScanCompletedSlot(const QString &_dir) = 0;
+		virtual void procScanStartedSlot(const QString &_name, qint32 _pid) {}
+		virtual void procScanCompletedSlot(const QString &_name, qint32 _pid) {}
+		virtual void procVirusDetectedSlot(const QString &_name, qint32 _pid, const QString &_virname) {}
 		
-		virtual void stoppedSlot() = 0;
-		virtual void pausedSlot() = 0;
-		virtual void resumedSlot() = 0;
+		virtual void dirScanStartedSlot(const QString &_dir) {}
+		virtual void dirScanCompletedSlot(const QString &_dir) {}
+		
+		virtual void memScanStartedSlot() {}
+		virtual void memScanCompletedSlot() {}
+		
+		virtual void stoppedSlot() {}
+		virtual void pausedSlot() {}
+		virtual void resumedSlot() {}
 		
 	};
 }

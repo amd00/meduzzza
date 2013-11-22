@@ -25,6 +25,8 @@
 #include <QTemporaryFile>
 #include <QThreadPool>
 
+#include <clamav.h>
+
 #include "memscanner.h"
 
 namespace Meduzzza
@@ -41,47 +43,44 @@ namespace Meduzzza
 		QDir proc_dir("/proc");
 		QStringList procs = proc_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot).filter(QRegExp("\\d+"));
 		QRegExp mem_addr_regex("^([0-9a-fA-F]+)-([0-9a-fA-F]+)\\sr");
-		QStringList proc_list;
 		foreach(QString proc, procs)
 		{
 			checkPause();
 			if(Scanner::stopped())
-				break;
-			QString maps_file_str(QDir(proc_dir.absoluteFilePath(proc)).absoluteFilePath("maps"));
-			QString mem_file_str(QDir(proc_dir.absoluteFilePath(proc)).absoluteFilePath("mem"));
+				return;
+			QDir pr_dir(proc_dir.absoluteFilePath(proc));
+			QString maps_file_str(pr_dir.absoluteFilePath("maps"));
 			QFile maps_file(maps_file_str);
-			QFile mem_file(mem_file_str);
-			
+			qint32 proc_pid = proc.toInt();
+			QString proc_name = QFileInfo(QFile::symLinkTarget(pr_dir.absoluteFilePath("exe"))).fileName();
 			if(!maps_file.open(QIODevice::ReadOnly))
 			{
 				qCritical("ERROR: Open file error: %s", maps_file.errorString().toLocal8Bit().data());
 				continue;
 			}
-			if(!mem_file.open(QIODevice::ReadOnly))
-			{
-				qCritical("ERROR: Open file error: %s", mem_file.errorString().toLocal8Bit().data());
-				continue;
-			}
-			QTextStream f_str(&maps_file);
-			QTemporaryFile f(QDir::temp().absoluteFilePath("proc_" + proc + "_XXXXXXX"));
-			f.setAutoRemove(false);
-			f.open();
-			for(QString line = f_str.readLine(); !line.isNull(); line = f_str.readLine())
+			QTextStream maps_str(&maps_file);
+			Q_EMIT procScanStartedSignal(proc_name, proc_pid);
+			const char *virname = NULL;
+			long unsigned int scanned = 0;
+			qint32 result = 0;
+			qDebug("INFO: Scanning process: %s(%i)", proc_name.toLocal8Bit().data(), proc_pid);
+			for(QString line = maps_str.readLine(); !line.isNull(); line = maps_str.readLine())
 			{
 				qint32 pos = mem_addr_regex.indexIn(line);
 				if(!pos)
 				{
-					quint32 start = mem_addr_regex.capturedTexts()[1].toUInt(NULL, 16);
-					quint32 end = mem_addr_regex.capturedTexts()[2].toUInt(NULL, 16);
-					mem_file.seek(start);
-					QByteArray mem = mem_file.read(end - start);
-					f.write(mem);
+					quintptr start = mem_addr_regex.capturedTexts()[1].toUInt(NULL, 16);
+					quintptr end = mem_addr_regex.capturedTexts()[2].toUInt(NULL, 16);
+					cl_fmap_t *fmap = cl_fmap_open_memory((const void*)start, end - start);
+					Q_ASSERT(fmap);
+					result = cl_scanmap_callback(fmap, &virname, &scanned, m_engine, CL_SCAN_STDOPT, NULL);
+					if(result == CL_VIRUS)
+						break;
+					cl_fmap_close(fmap);
 				}
 			}
-			f.close();
-			proc_list << f.fileName();
+			Q_EMIT procScanCompletedSignal(proc_name, proc_pid, result, virname);
 		}
-		Q_EMIT procsFindedSignal(proc_list);
 		Q_EMIT memScanCompletedSignal();
 	}
 }

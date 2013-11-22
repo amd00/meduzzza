@@ -36,23 +36,11 @@ namespace Meduzzza
 		Q_OBJECT
 
 	private:
-		class FileRemover
-		{
-		private:
-			QString m_file;
-
-		public:
-			FileRemover(const QString &_file) : m_file(_file) {}
-			~FileRemover() { if(!m_file.isNull()) QFile::remove(m_file); }
-		};
-		
-	private:
 		cl_engine *m_engine;
 		QString m_file;
-		bool m_is_proc;
 
 	public:
-		FileScanner(cl_engine *_engine, const QString &_file, bool _is_proc) : Scanner(), m_engine(_engine), m_file(_file), m_is_proc(_is_proc) {}
+		FileScanner(cl_engine *_engine, const QString &_file) : Scanner(), m_engine(_engine), m_file(_file) {}
 		~FileScanner() {}
 
 	protected:

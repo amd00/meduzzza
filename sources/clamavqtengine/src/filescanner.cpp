@@ -34,8 +34,6 @@ namespace Meduzzza
 
 	void FileScanner::run()
 	{
-		FileRemover frm(m_is_proc ? m_file : QString::null);
-		
 		checkPause();
 		if(Scanner::stopped())
 			return;
@@ -47,14 +45,7 @@ namespace Meduzzza
 			Q_EMIT errorSignal(m_file, f.errorString());
 			return;
 		}
-		if(m_is_proc)
-		{
-			qint32 pid = m_file.split("_")[1].toInt();
-			QString proc_name = QFileInfo(QFile::symLinkTarget(QDir("/proc/" + QString::number(pid)).absoluteFilePath("exe"))).baseName();
-			qDebug("INFO: Scanning process: %s", proc_name.toLocal8Bit().data());
-		}
-		else
-			qDebug("INFO: Scanning file: %s", m_file.toLocal8Bit().data());
+		qDebug("INFO: Scanning file: %s", m_file.toLocal8Bit().data());
 		Q_EMIT fileScanStartedSignal(m_file);
 		
 		const char *virname = NULL;
