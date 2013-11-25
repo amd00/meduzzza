@@ -23,6 +23,8 @@
 #ifndef _MEMSCANNER_H_
 #define _MEMSCANNER_H_
 
+#include <QProcess>
+
 #include "scanner.h"
 
 class cl_engine;
@@ -45,6 +47,7 @@ namespace Meduzzza
 
 	private:
 		void scanMemory();
+		qint32 scanProcess(Q_PID _pid, const char **_virname);
 
 	Q_SIGNALS:
 		void procScanStartedSignal(const QString &_name, qint32 _pid);

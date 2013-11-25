@@ -168,7 +168,7 @@
  </widget>
  <resources>
   <include location="../qrc/meduzzza.qrc"/>
-  <include location="../meduzzza.qrc"/>
+  <include location="../qrc/meduzzza.qrc"/>
  </resources>
  <connections/>
 </ui>
