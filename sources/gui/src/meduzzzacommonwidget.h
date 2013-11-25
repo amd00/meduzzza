@@ -3,6 +3,7 @@
 #define _MEDUZZZACOMMONWIDGET_H_
 
 #include <QWidget>
+#include <QProcess>
 
 namespace Meduzzza
 {
@@ -26,9 +27,9 @@ namespace Meduzzza
 		virtual void fileScanCompletedSlot(const QString &_file) {}
 		virtual void fileVirusDetectedSlot(const QString &_file, const QString &_virname) {}
 		
-		virtual void procScanStartedSlot(const QString &_name, qint32 _pid) {}
-		virtual void procScanCompletedSlot(const QString &_name, qint32 _pid) {}
-		virtual void procVirusDetectedSlot(const QString &_name, qint32 _pid, const QString &_virname) {}
+		virtual void procScanStartedSlot(const QString &_name, Q_PID _pid) {}
+		virtual void procScanCompletedSlot(const QString &_name, Q_PID _pid) {}
+		virtual void procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QString &_virname) {}
 		
 		virtual void dirScanStartedSlot(const QString &_dir) {}
 		virtual void dirScanCompletedSlot(const QString &_dir) {}

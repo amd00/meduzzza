@@ -28,6 +28,7 @@
 
 #include "clamavengine.h"
 #include "filescanner.h"
+#include "procscanner.h"
 #include "dirscanner.h"
 #include "memscanner.h"
 
@@ -72,6 +73,8 @@ namespace Meduzzza
 		qint32 thread_count = _thread_count <= 0 ? QThread::idealThreadCount() : _thread_count;
 		thread_count = (thread_count == -1 ? 1 : thread_count);
 		m_p -> pool() -> setMaxThreadCount(thread_count);
+		qRegisterMetaType<QList<Q_PID> >("QList<Q_PID>");
+		qRegisterMetaType<Q_PID>("Q_PID");
 	}
 
 	ClamavEngine::~ClamavEngine() 
@@ -142,6 +145,16 @@ namespace Meduzzza
 		m_p -> pool() -> start(scanner);
 		return true;
 	}
+	
+	bool ClamavEngine::scanProcThread(Q_PID _pid)
+	{
+		ProcScanner *scanner = new ProcScanner(m_p -> engine(), _pid);
+		connect(scanner, SIGNAL(procScanStartedSignal(const QString&, Q_PID)), this, SIGNAL(procScanStartedSignal(const QString&, Q_PID)));
+		connect(scanner, SIGNAL(procScanCompletedSignal(const QString&, Q_PID, qint32, const QString&)), 
+				this, SLOT(procScanCompletedSlot(const QString&, Q_PID, qint32, const QString&)));
+		m_p -> pool() -> start(scanner);
+		return true;
+	}
 
 	bool ClamavEngine::scanDirThread(const QString &_dir, const QStringList &_excl_dirs)
 	{
@@ -153,15 +166,12 @@ namespace Meduzzza
 		return true;
 	}
 
-	bool ClamavEngine::scanMemoryThread()
+	bool ClamavEngine::scanMemThread()
 	{
-		MemScanner *scanner = new MemScanner(m_p -> engine());
+		MemScanner *scanner = new MemScanner();
 		connect(scanner, SIGNAL(memScanStartedSignal()), this, SIGNAL(memScanStartedSignal()));
 		connect(scanner, SIGNAL(memScanCompletedSignal()), this, SLOT(memScanCompletedSlot()));
-		
-		connect(scanner, SIGNAL(procScanStartedSignal(const QString&, qint32)), this, SIGNAL(procScanStartedSignal(const QString&, qint32)));
-		connect(scanner, SIGNAL(procScanCompletedSignal(const QString&, qint32, qint32, const QString&)), 
-				this, SLOT(procScanCompletedSlot(const QString&, qint32, qint32, const QString&)));
+		connect(scanner, SIGNAL(procsFindedSignal(const QList<Q_PID>&)), this, SLOT(procsFindedSlot(const QList<Q_PID>&)));
 		m_p -> pool() -> start(scanner);
 		return true;
 	}
@@ -178,7 +188,7 @@ namespace Meduzzza
 
 	bool ClamavEngine::scanMemory()
 	{
-		return scanMemoryThread();
+		return scanMemThread();
 	}
 
 	void ClamavEngine::stop()
@@ -225,17 +235,17 @@ namespace Meduzzza
 		}
 	}
 	
-	void ClamavEngine::procScanCompletedSlot(const QString &_name, qint32 _pid, qint32 _result, const QString &_virname)
+	void ClamavEngine::procScanCompletedSlot(const QString &_name, Q_PID _pid, qint32 _result, const QString &_virname)
 	{
 		switch(_result)
 		{
 			case CL_VIRUS:
 				Q_EMIT procVirusDetectedSignal(_name, _pid, _virname);
-				qDebug("INFO: End process scanning: %s(%i): INFECTED - %s", _name.toLocal8Bit().data(), _pid, _virname.toLocal8Bit().data());
+				qDebug("INFO: End process scanning: %s(%lli): INFECTED - %s", _name.toLocal8Bit().data(), _pid, _virname.toLocal8Bit().data());
 				break;
 			case CL_CLEAN:
 				Q_EMIT procScanCompletedSignal(_name, _pid);
-				qDebug("INFO: End process scanning: %s(%i): CLEAN", _name.toLocal8Bit().data(), _pid);
+				qDebug("INFO: End process scanning: %s(%lli): CLEAN", _name.toLocal8Bit().data(), _pid);
 				break;
 			default:
 				qDebug("INFO: Error - %s", cl_strerror(_result));
@@ -260,10 +270,10 @@ namespace Meduzzza
 			scanFileThread(file);
 	}
 
-	void ClamavEngine::procsFindedSlot(const QStringList &_file_list)
+	void ClamavEngine::procsFindedSlot(const QList<Q_PID> &_proc_list)
 	{
-		foreach(QString file, _file_list)
-			scanFileThread(file);
+		foreach(Q_PID pid, _proc_list)
+			scanProcThread(pid);
 	}
 
 // 	void ClamavEngine::memScanCompletedSlot()

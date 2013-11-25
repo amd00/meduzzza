@@ -49,6 +49,19 @@ namespace Meduzzza
 			m_settings.hasProxy(), m_settings.proxyHost(), m_settings.proxyPort(), m_settings.proxyUser(), m_settings.proxyPassword());
 		
 		connect(m_engine, SIGNAL(dirScanStartedSignal(const QString&)), this, SIGNAL(dirScanStartedSignal(const QString&)));
+		connect(m_engine, SIGNAL(dirScanCompletedSignal(const QString&)), this, SIGNAL(dirScanCompletedSignal(const QString&)));
+		connect(m_engine, SIGNAL(memScanStartedSignal()), this, SIGNAL(memScanStartedSignal()));
+		connect(m_engine, SIGNAL(memScanCompletedSignal()), this, SIGNAL(memScanCompletedSignal()));
+		
+		connect(m_engine, SIGNAL(fileScanStartedSignal(const QString&)), this, SIGNAL(fileScanStartedSignal(const QString&)));
+		connect(m_engine, SIGNAL(fileScanCompletedSignal(const QString&)), this, SIGNAL(fileScanCompletedSignal(const QString&)));
+		connect(m_engine, SIGNAL(fileVirusDetectedSignal(const QString&, const QString&)), this, SIGNAL(fileVirusDetectedSignal(const QString&, const QString&)));
+		
+		connect(m_engine, SIGNAL(procScanStartedSignal(const QString&, Q_PID)), this, SIGNAL(procScanStartedSignal(const QString&, Q_PID)));
+		connect(m_engine, SIGNAL(procScanCompletedSignal(const QString&, Q_PID)), this, SIGNAL(procScanCompletedSignal(const QString&, Q_PID)));
+		connect(m_engine, SIGNAL(procVirusDetectedSignal(const QString&, Q_PID, const QString&)), 
+				this, SIGNAL(procVirusDetectedSignal(const QString&, Q_PID, const QString&)));
+		
 		connect(m_engine, SIGNAL(stoppedSignal()), this, SIGNAL(stoppedSignal()));
 		connect(m_engine, SIGNAL(pausedSignal()), this, SIGNAL(pausedSignal()));
 		connect(m_engine, SIGNAL(resumedSignal()), this, SIGNAL(resumedSignal()));
@@ -60,11 +73,18 @@ namespace Meduzzza
 		connect(m_updater, SIGNAL(updateCompletedSignal()), this, SLOT(updateCompletedSlot()));
 		connect(m_updater, SIGNAL(updateCompletedSignal()), this, SIGNAL(updateCompletedSignal()));
 		connect(m_updater, SIGNAL(errorSignal(const QString&, const QString&)), this, SLOT(updateErrorSlot(const QString&, const QString&)));
+		
 		connect(this, SIGNAL(fileScanCompletedSignal(const QString&)), m_statist, SLOT(fileScanCompletedSlot(const QString&)));
 		connect(this, SIGNAL(fileVirusDetectedSignal(const QString&, const QString&)), m_statist, SLOT(fileVirusDetectedSlot(const QString&, const QString&)));
-		connect(this, SIGNAL(procScanCompletedSignal(const QString&, qint32)), m_statist, SLOT(procScanCompletedSlot(const QString&, qint32)));
-		connect(this, SIGNAL(procVirusDetectedSignal(const QString&, qint32, const QString&)), 
-				m_statist, SLOT(procVirusDetectedSlot(const QString&, qint32, const QString&)));
+		
+// 		connect(this, SIGNAL(procScanCompletedSignal(const QString&, Q_PID)), m_statist, SLOT(procScanCompletedSlot(const QString&, Q_PID)));
+// 		connect(this, SIGNAL(procVirusDetectedSignal(const QString&, Q_PID, const QString&)), 
+// 				m_statist, SLOT(procVirusDetectedSlot(const QString&, Q_PID, const QString&)));
+		
+		connect(this, SIGNAL(fileVirusDetectedSignal(const QString&, const QString&)), this, SLOT(fileVirusDetectedSlot(const QString&, const QString&)));
+		connect(this, SIGNAL(fileMovedToQuarantineSignal(const QString&, const QString&, const QString&)), m_db, SLOT(fileMovedToQuarantineSlot(const QString&, const QString&, const QString&)));
+		connect(this, SIGNAL(fullScanCompletedSignal(const QDateTime&)), m_db, SLOT(fullScanCompletedSlot(const QDateTime&)));
+		
 		connect(this, SIGNAL(fileMovedToQuarantineSignal(const QString&, const QString&, const QString&)), 
 				m_statist, SLOT(fileMovedToQuarantineSlot(const QString&, const QString&, const QString&)));
 		
@@ -98,14 +118,6 @@ namespace Meduzzza
 		Q_EMIT sigsLoadedSignal(signo);
 		qDebug("INFO: Signatures loaded: %i", signo);
 
-		connect(m_engine, SIGNAL(fileScanStartedSignal(const QString&)), this, SIGNAL(fileScanStartedSignal(const QString&)));
-		connect(m_engine, SIGNAL(fileScanCompletedSignal(const QString&)), this, SIGNAL(fileScanCompletedSignal(const QString&)));
-		connect(m_engine, SIGNAL(fileVirusDetectedSignal(const QString&, const QString&)), this, SIGNAL(fileVirusDetectedSignal(const QString&, const QString&)));
-		
-		connect(this, SIGNAL(fileVirusDetectedSignal(const QString&, const QString&)), this, SLOT(fileVirusDetectedSlot(const QString&, const QString&)));
-		connect(this, SIGNAL(fileVirusDetectedSignal(const QString&, const QString&)), m_db, SLOT(fileVirusDetectedSlot(const QString&, const QString&)));
-		connect(this, SIGNAL(fileMovedToQuarantineSignal(const QString&, const QString&, const QString&)), m_db, SLOT(fileMovedToQuarantineSlot(const QString&, const QString&, const QString&)));
-		connect(this, SIGNAL(fullScanCompletedSignal(const QDateTime&)), m_db, SLOT(fullScanCompletedSlot(const QDateTime&)));
 		return true;
 	}
 
@@ -198,6 +210,11 @@ namespace Meduzzza
 		if(m_settings.autoQuarantine())
 			moveToQuarantine(_file, _virus);
 	}
+	
+// 	void Manager::procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QString &_virus)
+// 	{
+// 		
+// 	}
 
 	void Manager::memScanCompletedSlot()
 	{

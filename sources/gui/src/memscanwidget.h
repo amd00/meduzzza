@@ -30,9 +30,9 @@ namespace Meduzzza
 		void startClickedSlot();
 		void stopClickedSlot();
 		
-		void procScanStartedSlot(const QString &_name, qint32 _pid);
-		void procScanCompletedSlot(const QString &_name, qint32 _pid);
-		void procVirusDetectedSlot(const QString &_name, qint32 _pid, const QString &_virname);
+		void procScanStartedSlot(const QString &_name, Q_PID _pid);
+		void procScanCompletedSlot(const QString &_name, Q_PID _pid);
+		void procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QString &_virname);
 		
 		void memScanStartedSlot();
 		void memScanCompletedSlot();

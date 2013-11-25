@@ -14,10 +14,10 @@ namespace Meduzzza
 			connect(m_man, SIGNAL(fileVirusDetectedSignal(const QString&, const QString&)), 
 					this, SLOT(fileVirusDetectedSlot(const QString&, const QString&)));
 			
-			connect(m_man, SIGNAL(procScanStartedSignal(const QString&, qint32)), this, SLOT(procScanStartedSlot(const QString&, qint32)));
-			connect(m_man, SIGNAL(procScanCompletedSignal(const QString&, qint32)), this, SLOT(procScanCompletedSlot(const QString&, qint32)));
-			connect(m_man, SIGNAL(procVirusDetectedSignal(const QString&, qint32, const QString&)), 
-					this, SLOT(procVirusDetectedSlot(const QString&, qint32, const QString&)));
+			connect(m_man, SIGNAL(procScanStartedSignal(const QString&, Q_PID)), this, SLOT(procScanStartedSlot(const QString&, Q_PID)));
+			connect(m_man, SIGNAL(procScanCompletedSignal(const QString&, Q_PID)), this, SLOT(procScanCompletedSlot(const QString&, Q_PID)));
+			connect(m_man, SIGNAL(procVirusDetectedSignal(const QString&, Q_PID, const QString&)), 
+					this, SLOT(procVirusDetectedSlot(const QString&, Q_PID, const QString&)));
 			
 			connect(m_man, SIGNAL(dirScanStartedSignal(const QString&)), this, SLOT(dirScanStartedSlot(const QString&)));
 			connect(m_man, SIGNAL(dirScanCompletedSignal(const QString&)), this, SLOT(dirScanCompletedSlot(const QString&)));

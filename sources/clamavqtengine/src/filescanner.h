@@ -52,4 +52,5 @@ namespace Meduzzza
 		void errorSignal(const QString &_file, const QString &_err);
 	};
 }
+
 #endif

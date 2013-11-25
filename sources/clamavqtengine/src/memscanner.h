@@ -27,19 +27,14 @@
 
 #include "scanner.h"
 
-class cl_engine;
-
 namespace Meduzzza
 {
 	class MemScanner : public Scanner
 	{
 		Q_OBJECT
 
-	private:
-		cl_engine *m_engine;
-		
 	public:
-		MemScanner(cl_engine *_engine)  : Scanner(), m_engine(_engine) {}
+		MemScanner()  : Scanner() {}
 		~MemScanner() {}
 
 	protected:
@@ -50,6 +45,8 @@ namespace Meduzzza
 		qint32 scanProcess(Q_PID _pid, const char **_virname);
 
 	Q_SIGNALS:
+		void procsFindedSignal(const QList<Q_PID> &_proc_list);
+		
 		void procScanStartedSignal(const QString &_name, qint32 _pid);
 		void procScanCompletedSignal(const QString &_name, qint32 _pid, qint32 _result, const QString &_virname);
 		

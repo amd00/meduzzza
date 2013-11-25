@@ -24,6 +24,7 @@
 #define _CLAMAVENGINE_H_
 
 #include <QStringList>
+#include <QProcess>
 
 class QThreadPool;
 
@@ -61,15 +62,16 @@ namespace Meduzzza
 	private:
 		static int sigload_cb(const char *_type, const char *_name, quint32 _custom, void *_context);
 		bool scanFileThread(const QString &_file);
+		bool scanProcThread(Q_PID _pid);
 		bool scanDirThread(const QString &_dir, const QStringList &_excl_dirs);
-		bool scanMemoryThread();
+		bool scanMemThread();
 
 	private Q_SLOTS:
 		void filesFindedSlot(const QStringList &_file_list);
-		void procsFindedSlot(const QStringList &_file_list);
+		void procsFindedSlot(const QList<Q_PID> &_proc_list);
 		
 		void fileScanCompletedSlot(const QString &_file, qint32 _result, const QString &_virname);
-		void procScanCompletedSlot(const QString &_file, qint32 _pid, qint32 _result, const QString &_virname);
+		void procScanCompletedSlot(const QString &_name, Q_PID _pid, qint32 _result, const QString &_virname);
 		void dirScanCompletedSlot(const QString &_dir);
 		void memScanCompletedSlot();
 		
@@ -78,9 +80,9 @@ namespace Meduzzza
 		void fileScanCompletedSignal(const QString &_file);
 		void fileVirusDetectedSignal(const QString &_file, const QString &_virname);
 		
-		void procScanStartedSignal(const QString &_name, qint32 _pid);
-		void procScanCompletedSignal(const QString &_name, qint32 _pid);
-		void procVirusDetectedSignal(const QString &_name, qint32 _pid, const QString &_virname);
+		void procScanStartedSignal(const QString &_name, Q_PID _pid);
+		void procScanCompletedSignal(const QString &_name, Q_PID _pid);
+		void procVirusDetectedSignal(const QString &_name, Q_PID _pid, const QString &_virname);
 		
 		void dirScanStartedSignal(const QString &_dir);
 		void dirScanCompletedSignal(const QString &_dir);

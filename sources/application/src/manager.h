@@ -80,8 +80,9 @@ namespace Meduzzza
 
 	private Q_SLOTS:
 		void fileVirusDetectedSlot(const QString &_file, const QString &_virus);
-		void memScanCompletedSlot();
+// 		void procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QString &_virus);
 		void dirScanCompletedSlot();
+		void memScanCompletedSlot();
 		void updateCompletedSlot();
 		void updateErrorSlot(const QString &_file_name, const QString &_error_string);
 		
@@ -90,24 +91,25 @@ namespace Meduzzza
 		void fileScanCompletedSignal(const QString &_file);
 		void fileVirusDetectedSignal(const QString &_file, const QString &_virus);
 		
+		void procScanStartedSignal(const QString &_name, Q_PID _pid);
+		void procScanCompletedSignal(const QString &_name, Q_PID _pid);
+		void procVirusDetectedSignal(const QString &_name, Q_PID _pid, const QString &_virus);
+		
 		void dirScanStartedSignal(const QString &_dir);
 		void dirScanCompletedSignal(const QString &_dir);
+		
+		void memScanStartedSignal();
+		void memScanCompletedSignal();
 		
 		void stoppedSignal();
 		void pausedSignal();
 		void resumedSignal();
 		
-		void procScanStartedSignal(const QString &_proc, qint32 _pid);
-		void procScanCompletedSignal(const QString &_proc, qint32 _pid);
-		void procVirusDetectedSignal(const QString &_proc, qint32 _pid, const QString &_virus);
-
 		void errorSignal(const QString &_file, const QString &_err);
 		void fileMovedToQuarantineSignal(const QString &_source, const QString &_quarantined, const QString &_virus);
 		void dbOutdatedSignal();
 		void sigsLoadedSignal(quint32 _count);
 		void fullScanCompletedSignal(const QDateTime &_time);
-		void memScanStartedSignal();
-		void memScanCompletedSignal();
 		void scanStoppedSignal();
 		void downloadStartedSignal(const QString &_file);
 		void downloadFinishedSignal(const QString &_file);

@@ -34,16 +34,16 @@ namespace Meduzzza
 		m_man -> stop();
 	}
 	
-	void MemScanWidget::procScanStartedSlot(const QString &_name, qint32 _pid)
+	void MemScanWidget::procScanStartedSlot(const QString &_name, Q_PID _pid)
 	{
 		m_ui -> m_proc_label -> setText(QString("%1(%2)").arg(_name).arg(_pid));
 	}
 
-	void MemScanWidget::procScanCompletedSlot(const QString &_name, qint32 _pid)
+	void MemScanWidget::procScanCompletedSlot(const QString &_name, Q_PID _pid)
 	{
 	}
 
-	void MemScanWidget::procVirusDetectedSlot(const QString &_name, qint32 _pid, const QString &_virus)
+	void MemScanWidget::procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QString &_virus)
 	{
 	}
 
