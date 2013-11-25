@@ -27,6 +27,8 @@
 
 #include "scanner.h"
 
+typedef QList<Q_PID> PidList;
+
 namespace Meduzzza
 {
 	class MemScanner : public Scanner
@@ -45,10 +47,8 @@ namespace Meduzzza
 		qint32 scanProcess(Q_PID _pid, const char **_virname);
 
 	Q_SIGNALS:
-		void procsFindedSignal(const QList<Q_PID> &_proc_list);
-		
-		void procScanStartedSignal(const QString &_name, qint32 _pid);
-		void procScanCompletedSignal(const QString &_name, qint32 _pid, qint32 _result, const QString &_virname);
+		void procsFindedSignal(const PidList &_proc_list);
+		void procFindedSignal(Q_PID);
 		
 		void memScanStartedSignal();
 		void memScanCompletedSignal();

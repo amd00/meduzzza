@@ -38,7 +38,7 @@ namespace Meduzzza
 		Q_EMIT memScanStartedSignal();
 		QDir proc_dir("/proc");
 		QStringList procs = proc_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot).filter(QRegExp("\\d+"));
-		QList<Q_PID> proc_list;
+		PidList proc_list;
 		foreach(QString proc, procs)
 		{
 			checkPause();
@@ -47,6 +47,7 @@ namespace Meduzzza
 			Q_PID proc_pid = proc.toInt();
 			if(proc_pid == QCoreApplication::applicationPid())
 				continue;
+			Q_EMIT procFindedSignal(proc_pid);
 			proc_list << proc_pid;
 		}
 		Q_EMIT procsFindedSignal(proc_list);

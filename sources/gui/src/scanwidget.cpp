@@ -1,5 +1,4 @@
 
-#include <QDebug>
 #include <manager.h>
 
 #include <ui_scanwidget.h>

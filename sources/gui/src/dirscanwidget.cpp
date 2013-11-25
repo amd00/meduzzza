@@ -7,7 +7,7 @@
 
 #include "mainwindow.h"
 #include "dirscanwidget.h"
-#include <QDebug>
+
 namespace Meduzzza
 {
 

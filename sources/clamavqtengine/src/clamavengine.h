@@ -27,6 +27,7 @@
 #include <QProcess>
 
 class QThreadPool;
+typedef QList<Q_PID> PidList;
 
 namespace Meduzzza
 {
@@ -68,7 +69,8 @@ namespace Meduzzza
 
 	private Q_SLOTS:
 		void filesFindedSlot(const QStringList &_file_list);
-		void procsFindedSlot(const QList<Q_PID> &_proc_list);
+		void procsFindedSlot(const PidList &_proc_list);
+		void procFindedSlot(Q_PID _pid);
 		
 		void fileScanCompletedSlot(const QString &_file, qint32 _result, const QString &_virname);
 		void procScanCompletedSlot(const QString &_name, Q_PID _pid, qint32 _result, const QString &_virname);

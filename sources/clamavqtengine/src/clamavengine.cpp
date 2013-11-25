@@ -23,6 +23,7 @@
 #include <QThreadPool>
 #include <QDir>
 #include <QDateTime>
+#include <QCoreApplication>
 
 #include <clamav.h>
 
@@ -73,7 +74,7 @@ namespace Meduzzza
 		qint32 thread_count = _thread_count <= 0 ? QThread::idealThreadCount() : _thread_count;
 		thread_count = (thread_count == -1 ? 1 : thread_count);
 		m_p -> pool() -> setMaxThreadCount(thread_count);
-		qRegisterMetaType<QList<Q_PID> >("QList<Q_PID>");
+		qRegisterMetaType<PidList>("PidList");
 		qRegisterMetaType<Q_PID>("Q_PID");
 	}
 
@@ -171,7 +172,8 @@ namespace Meduzzza
 		MemScanner *scanner = new MemScanner();
 		connect(scanner, SIGNAL(memScanStartedSignal()), this, SIGNAL(memScanStartedSignal()));
 		connect(scanner, SIGNAL(memScanCompletedSignal()), this, SLOT(memScanCompletedSlot()));
-		connect(scanner, SIGNAL(procsFindedSignal(const QList<Q_PID>&)), this, SLOT(procsFindedSlot(const QList<Q_PID>&)));
+// 		connect(scanner, SIGNAL(procsFindedSignal(const PidList&)), this, SLOT(procsFindedSlot(const PidList&)));
+		connect(scanner, SIGNAL(procFindedSignal(Q_PID)), this, SLOT(procFindedSlot(Q_PID)));
 		m_p -> pool() -> start(scanner);
 		return true;
 	}
@@ -254,13 +256,15 @@ namespace Meduzzza
 	
 	void ClamavEngine::dirScanCompletedSlot(const QString &_dir)
 	{
-		m_p -> pool() -> waitForDone();
+		while(!m_p -> pool() -> waitForDone(10))
+			QCoreApplication::processEvents();
 		Q_EMIT dirScanCompletedSignal(_dir);
 	}
 	
 	void ClamavEngine::memScanCompletedSlot()
 	{
-		m_p -> pool() -> waitForDone();
+		while(!m_p -> pool() -> waitForDone(10))
+			QCoreApplication::processEvents();
 		Q_EMIT memScanCompletedSignal();
 	}
 
@@ -270,10 +274,15 @@ namespace Meduzzza
 			scanFileThread(file);
 	}
 
-	void ClamavEngine::procsFindedSlot(const QList<Q_PID> &_proc_list)
+	void ClamavEngine::procsFindedSlot(const PidList &_proc_list)
 	{
 		foreach(Q_PID pid, _proc_list)
 			scanProcThread(pid);
+	}
+	
+	void ClamavEngine::procFindedSlot(Q_PID _pid)
+	{
+		scanProcThread(_pid);
 	}
 
 // 	void ClamavEngine::memScanCompletedSlot()

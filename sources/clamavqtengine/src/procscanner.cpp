@@ -105,7 +105,8 @@ namespace Meduzzza
 					break;
 			}
 		}
+		maps_file.close();
+		mem_file.close();
 		Q_EMIT procScanCompletedSignal(proc_name, m_pid, result, virname);
 	}
-
 }

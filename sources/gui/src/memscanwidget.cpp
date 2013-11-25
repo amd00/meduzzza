@@ -5,7 +5,7 @@
 
 #include "mainwindow.h"
 #include "memscanwidget.h"
-#include <QDebug>
+
 namespace Meduzzza
 {
 
@@ -20,7 +20,6 @@ namespace Meduzzza
 
 	void MemScanWidget::startClickedSlot()
 	{
-		qDebug() << "START";
 		if(!m_started)
 			m_man -> scanMemory();
 		else if(!m_paused)
