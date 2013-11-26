@@ -2,7 +2,7 @@
 #ifndef _SCANWIDGET_H_
 #define _SCANWIDGET_H_
 
-#include <QWidget>
+#include "meduzzzacommonwidget.h"
 
 namespace Ui
 {
@@ -11,40 +11,43 @@ namespace Ui
 
 namespace Meduzzza
 {
-	class MainWindow;
-	
-	class ScanWidget : public QWidget
+	class ScanWidget : public MeduzzzaCommonWidget
 	{
 		Q_OBJECT
 		
 	private:
 		Ui::ScanWidget *m_ui;
-		Manager *m_man;
-		MainWindow *m_med;
-		bool m_started;
-		bool m_paused;
 		
 	public:
-		ScanWidget(MainWindow *_med, QWidget *_parent = NULL);
+		ScanWidget(MainWindow *_med);
 		~ScanWidget();
 		QString text() const { return tr("Full scan"); }
 		
+	private:
+		void fileScanStarted(const QString &_file) {}
+		void fileScanCompleted(const QString &_file) {}
+		void fileVirusDetected(const QString &_file, const QString &_virname) {}
+		
+		void procScanStarted(const QString &_name, Q_PID _pid) {}
+		void procScanCompleted(const QString &_name, Q_PID _pid) {}
+		void procVirusDetected(const QString &_name, Q_PID _pid, const QString &_virname) {}
+		
+		void memScanStarted();
+		void memScanCompleted();
+		
+		void dirScanStarted(const QString &_dir);
+		void dirScanCompleted(const QString &_dir);
+		
+		void stopped();
+		void paused();
+		void resumed();
+		
+		void fullScanStarted(const QDateTime &_time);
+		void fullScanCompleted(const QDateTime &_time);
+		
 	private Q_SLOTS:
-		void memScanStartedSlot();
-		void memScanCompletedSlot();
-		void dirScanStartedSlot(const QString &_dir);
-		void dirScanCompletedSlot(const QString &_dir);
-		void scanStartedSlot();
-		void scanStoppedSlot();
 		void startClickedSlot();
 		void stopClickedSlot();
-		
-	Q_SIGNALS:
-		void startFullScanSignal();
-		void stopFullScanSignal();
-		void pauseSignal();
-		void resumeSignal();
-		void showStatisticSignal();
 	};
 }
 #endif

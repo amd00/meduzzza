@@ -34,8 +34,6 @@ namespace Meduzzza
 	private:
 		Ui::MemScanWidget *m_ui;
 		MemScanModel m_mod;
-		bool m_started;
-		bool m_paused;
 		
 	public:
 		MemScanWidget(MainWindow *_med);
@@ -43,20 +41,33 @@ namespace Meduzzza
 		
 		QString text() const { return tr("Memory scan"); }
 		
+	protected:
+		void fileScanStarted(const QString &_file) {}
+		void fileScanCompleted(const QString &_file) {}
+		void fileVirusDetected(const QString &_file, const QString &_virname) {}
+		
+		void procScanStarted(const QString &_name, Q_PID _pid);
+		void procScanCompleted(const QString &_name, Q_PID _pid);
+		void procVirusDetected(const QString &_name, Q_PID _pid, const QString &_virname);
+		
+		void dirScanStarted(const QString &_dir);
+		void dirScanCompleted(const QString &_dir);
+		
+		void memScanStarted();
+		void memScanCompleted();
+		
+		void fullScanStarted(const QDateTime &_time);
+		void fullScanCompleted(const QDateTime &_time);
+		
+		void stopped();
+		void paused();
+		void resumed();
+		
 	protected Q_SLOTS:
 		void startClickedSlot();
 		void stopClickedSlot();
 		
-		void procScanStartedSlot(const QString &_name, Q_PID _pid);
-		void procScanCompletedSlot(const QString &_name, Q_PID _pid);
-		void procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QString &_virname);
-		
-		void memScanStartedSlot();
-		void memScanCompletedSlot();
-		
-		void stoppedSlot();
-		void pausedSlot();
-		void resumedSlot();
+		void rowsInsertedSlot(const QModelIndex &_par, qint32 _start, qint32 _end);
 	};
 }
 

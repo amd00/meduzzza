@@ -18,7 +18,7 @@ namespace Meduzzza
 		m_ui -> setupUi(this);
 		m_ui -> m_menu_view -> setModel(m_menu);
 		
-		ScanWidget *sw = new ScanWidget(this, NULL);
+		ScanWidget *sw = new ScanWidget(this);
 		DirScanWidget *dsw = new DirScanWidget(this);
 		MemScanWidget *msw = new MemScanWidget(this);
 		UpdateWidget *uw = new UpdateWidget(this, NULL);

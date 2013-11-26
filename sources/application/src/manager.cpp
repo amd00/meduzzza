@@ -171,7 +171,9 @@ namespace Meduzzza
 
 	void Manager::fullScan()
 	{
+		Q_EMIT fullScanStartedSignal(QDateTime::currentDateTime());
 		m_full_scan_in_progress = true;
+		connect(m_engine, SIGNAL(memScanCompletedSignal()), this, SLOT(memScanCompletedSlot()));
 		scanMemory();
 	}
 
@@ -211,6 +213,8 @@ namespace Meduzzza
 	void Manager::stop()
 	{
 		m_full_scan_in_progress = false;
+		disconnect(m_engine, SIGNAL(memScanCompletedSignal()), this, SLOT(memScanCompletedSlot()));
+		disconnect(m_engine, SIGNAL(dirScanCompletedSignal(const QString&)), this, SLOT(dirScanCompletedSlot(const QString&)));
 		m_engine -> stop();
 	}
 
@@ -220,21 +224,16 @@ namespace Meduzzza
 			moveToQuarantine(_file, _virus);
 	}
 	
-// 	void Manager::procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QString &_virus)
-// 	{
-// 		
-// 	}
-
 	void Manager::memScanCompletedSlot()
 	{
-		qDebug("Memory scan completed!");
-		if(m_full_scan_in_progress)
-			scanDir("/", QStringList() << "/proc" << "/sys" << "/dev");
+		disconnect(m_engine, SIGNAL(memScanCompletedSignal()), this, SLOT(memScanCompletedSlot()));
+		connect(m_engine, SIGNAL(dirScanCompletedSignal(const QString&)), this, SLOT(dirScanCompletedSlot(const QString&)));
+		scanDir(QDir::rootPath(), QStringList() << "/proc" << "/sys" << "/dev");
 	}
 
-	void Manager::dirScanCompletedSlot()
+	void Manager::dirScanCompletedSlot(const QString &_dir)
 	{
-		qDebug("Directory scan completed!");
+		disconnect(m_engine, SIGNAL(dirScanCompletedSignal(const QString&)), this, SLOT(dirScanCompletedSlot(const QString&)));
 		if(m_full_scan_in_progress)
 		{
 			Q_EMIT fullScanCompletedSignal(QDateTime::currentDateTime());

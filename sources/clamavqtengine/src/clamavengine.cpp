@@ -180,16 +180,22 @@ namespace Meduzzza
 
 	bool ClamavEngine::scanFile(const QString &_file)
 	{
+		if(m_p -> pool() -> activeThreadCount())
+			return false;
 		return scanFileThread(_file);
 	}
 
 	bool ClamavEngine::scanDir(const QString &_dir, const QStringList &_excl_dirs)
 	{
+		if(m_p -> pool() -> activeThreadCount())
+			return false;
 		return scanDirThread(_dir, _excl_dirs);
 	}
 
 	bool ClamavEngine::scanMemory()
 	{
+		if(m_p -> pool() -> activeThreadCount())
+			return false;
 		return scanMemThread();
 	}
 

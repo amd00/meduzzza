@@ -50,14 +50,14 @@ namespace Meduzzza
 	public:
 		static MeduzzzaScanModel *get();
 		
-		virtual ~MeduzzzaScanModel() {}
+		~MeduzzzaScanModel() {}
 	
-		virtual QVariant data(const QModelIndex &_ind, int _role) const;
-		virtual qint32 rowCount(const QModelIndex &_par = QModelIndex()) const { return m_items.size(); }
-		virtual qint32 columnCount(const QModelIndex &_ind) const { return 4; }
-		virtual QModelIndex index(qint32 _row, qint32 _column, const QModelIndex &_par) const;
-		virtual QModelIndex parent(const QModelIndex &_ind) const { return QModelIndex(); }
-		virtual QVariant headerData(int section, Qt::Orientation orientation, int _role) const;
+		QVariant data(const QModelIndex &_ind, int _role) const;
+		qint32 rowCount(const QModelIndex &_par = QModelIndex()) const { return m_items.size(); }
+		qint32 columnCount(const QModelIndex &_ind) const { return 4; }
+		QModelIndex index(qint32 _row, qint32 _column, const QModelIndex &_par) const;
+		QModelIndex parent(const QModelIndex &_ind) const { return QModelIndex(); }
+		QVariant headerData(int section, Qt::Orientation orientation, int _role) const;
 		
 		void clear();
 		
@@ -67,23 +67,23 @@ namespace Meduzzza
 		qint32 findItem(const QString &_name, Q_PID _pid);
 	
 	protected Q_SLOTS:
-		virtual void fileScanStartedSlot(const QString &_file);
-		virtual void fileScanCompletedSlot(const QString &_file);
-		virtual void fileVirusDetectedSlot(const QString &_file, const QString &_virname);
+		void fileScanStartedSlot(const QString &_file);
+		void fileScanCompletedSlot(const QString &_file);
+		void fileVirusDetectedSlot(const QString &_file, const QString &_virname);
 		
-		virtual void procScanStartedSlot(const QString &_name, Q_PID _pid);
-		virtual void procScanCompletedSlot(const QString &_name, Q_PID _pid);
-		virtual void procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QString &_virname);
+		void procScanStartedSlot(const QString &_name, Q_PID _pid);
+		void procScanCompletedSlot(const QString &_name, Q_PID _pid);
+		void procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QString &_virname);
 		
-		virtual void dirScanStartedSlot(const QString &_dir) {}
-		virtual void dirScanCompletedSlot(const QString &_dir) {}
+		void dirScanStartedSlot(const QString &_dir) {}
+		void dirScanCompletedSlot(const QString &_dir) {}
 		
-		virtual void memScanStartedSlot() {}
-		virtual void memScanCompletedSlot() {}
+		void memScanStartedSlot() {}
+		void memScanCompletedSlot() {}
 		
-		virtual void stoppedSlot();
-		virtual void pausedSlot() {}
-		virtual void resumedSlot() {}
+		void stoppedSlot();
+		void pausedSlot() {}
+		void resumedSlot() {}
 		
 	};
 }

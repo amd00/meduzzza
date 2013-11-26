@@ -28,16 +28,82 @@ namespace Meduzzza
 
 
 	DirScanWidget::DirScanWidget(MainWindow *_med) : 
-			MeduzzzaCommonWidget(_med), m_ui(new Ui::DirScanWidget), m_mod(),
-			m_started(false), m_paused(false)
+			MeduzzzaCommonWidget(_med), m_ui(new Ui::DirScanWidget), m_mod()
 	{
 		m_ui -> setupUi(this);
+		connect(&m_mod, SIGNAL(rowsInserted(const QModelIndex&, qint32, qint32)),
+			this, SLOT(rowsInsertedSlot(const QModelIndex&, qint32, qint32)));
 		m_ui -> m_scan_view -> setModel(&m_mod);
 		m_ui -> m_scan_view -> setColumnHidden(MeduzzzaScanModel::Pid, true);
 	}
 
 	DirScanWidget::~DirScanWidget() { delete m_ui; }
 
+	void DirScanWidget::fileScanStarted(const QString &_file)
+	{
+	}
+
+	void DirScanWidget::fileScanCompleted(const QString &_file)
+	{
+	}
+
+	void DirScanWidget::fileVirusDetected(const QString &_file, const QString &_virus)
+	{
+	}
+
+	void DirScanWidget::dirScanStarted(const QString &_dir)
+	{
+		((MeduzzzaScanModel*)m_mod.sourceModel()) -> clear();
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
+	}
+
+	void DirScanWidget::dirScanCompleted(const QString &_dir)
+	{
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/play.png"));
+	}
+	
+	void DirScanWidget::memScanStarted()
+	{
+		m_ui -> m_start_button -> setDisabled(true);
+		m_ui -> m_stop_button -> setDisabled(true);
+	}
+	
+	void DirScanWidget::memScanCompleted()
+	{
+		m_ui -> m_start_button -> setDisabled(false);
+		m_ui -> m_stop_button -> setDisabled(false);
+	}
+		
+	void DirScanWidget::fullScanStarted(const QDateTime &_time)
+	{
+		m_ui -> m_start_button -> setDisabled(true);
+		m_ui -> m_stop_button -> setDisabled(true);
+	}
+	
+	void DirScanWidget::fullScanCompleted(const QDateTime &_time)
+	{
+		m_ui -> m_start_button -> setDisabled(false);
+		m_ui -> m_stop_button -> setDisabled(false);
+	}
+
+	void DirScanWidget::stopped()
+	{
+		m_ui -> m_start_button -> setDisabled(false);
+		m_ui -> m_stop_button -> setDisabled(false);
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/play.png"));
+		QApplication::restoreOverrideCursor();
+	}
+
+	void DirScanWidget::paused()
+	{
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/play.png"));
+	}
+
+	void DirScanWidget::resumed()
+	{
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
+	}
+	
 	void DirScanWidget::dirClickedSlot()
 	{
 		QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
@@ -49,10 +115,7 @@ namespace Meduzzza
 	void DirScanWidget::startClickedSlot()
 	{
 		if(!m_started)
-		{
-			((MeduzzzaScanModel*)m_mod.sourceModel()) -> clear();
 			m_man -> scanDir(m_ui -> m_dir_edit -> text());
-		}
 		else if(!m_paused)
 			m_man -> pause();
 		else
@@ -61,52 +124,15 @@ namespace Meduzzza
 	
 	void DirScanWidget::stopClickedSlot()
 	{
+		QApplication::setOverrideCursor(Qt::WaitCursor);
+		m_ui -> m_stop_button -> setDisabled(true);
 		m_man -> stop();
 	}
 	
-	void DirScanWidget::fileScanStartedSlot(const QString &_file)
+	void DirScanWidget::rowsInsertedSlot(const QModelIndex &_par, qint32 _start, qint32 _end)
 	{
-
+		QModelIndex ind = m_mod.index(_end, 0, _par);
+		m_ui -> m_scan_view -> scrollTo(ind);
 	}
-
-	void DirScanWidget::fileScanCompletedSlot(const QString &_file)
-	{
-	}
-
-	void DirScanWidget::fileVirusDetectedSlot(const QString &_file, const QString &_virus)
-	{
-	}
-
-	void DirScanWidget::dirScanStartedSlot(const QString &_dir)
-	{
-		m_started = true;
-		m_paused = false;
-		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
-	}
-
-	void DirScanWidget::dirScanCompletedSlot(const QString &_dir)
-	{
-		m_started = false;
-		m_paused = false;
-		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/play.png"));
-	}
-
-	void DirScanWidget::stoppedSlot()
-	{
-		m_started = false;
-		m_paused = false;
-		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/play.png"));
-	}
-
-	void DirScanWidget::pausedSlot()
-	{
-		m_paused = true;
-		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/play.png"));
-	}
-
-	void DirScanWidget::resumedSlot()
-	{
-		m_paused = false;
-		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
-	}
+	
 }

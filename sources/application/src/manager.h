@@ -87,7 +87,7 @@ namespace Meduzzza
 	private Q_SLOTS:
 		void fileVirusDetectedSlot(const QString &_file, const QString &_virus);
 // 		void procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QString &_virus);
-		void dirScanCompletedSlot();
+		void dirScanCompletedSlot(const QString &_dir);
 		void memScanCompletedSlot();
 		void updateCompletedSlot();
 		void updateErrorSlot(const QString &_file_name, const QString &_error_string);
@@ -107,6 +107,9 @@ namespace Meduzzza
 		void memScanStartedSignal();
 		void memScanCompletedSignal();
 		
+		void fullScanStartedSignal(const QDateTime &_time);
+		void fullScanCompletedSignal(const QDateTime &_time);
+		
 		void stoppedSignal();
 		void pausedSignal();
 		void resumedSignal();
@@ -115,8 +118,6 @@ namespace Meduzzza
 		void fileMovedToQuarantineSignal(const QString &_source, const QString &_quarantined, const QString &_virus);
 		void dbOutdatedSignal();
 		void sigsLoadedSignal(quint32 _count);
-		void fullScanCompletedSignal(const QDateTime &_time);
-		void scanStoppedSignal();
 		void downloadStartedSignal(const QString &_file);
 		void downloadFinishedSignal(const QString &_file);
 		void downloadProgressSignal(const QString &_file, qint64 _read, qint64 _total);
