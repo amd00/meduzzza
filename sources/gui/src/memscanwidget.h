@@ -2,6 +2,8 @@
 #ifndef _MEMSCANWIDGET_H_
 #define _MEMSCANWIDGET_H_
 
+#include <QSortFilterProxyModel>
+
 #include "meduzzzacommonwidget.h"
 
 namespace Ui
@@ -11,17 +13,32 @@ namespace Ui
 
 namespace Meduzzza
 {
+	class MemScanModel : public QSortFilterProxyModel
+	{
+		Q_OBJECT
+		
+	public:
+		MemScanModel();
+		~MemScanModel() {}
+	
+	protected:
+		bool filterAcceptsRow(qint32 _row, const QModelIndex &_parent) const;
+	};
+
+//==============================================================================//
+
 	class MemScanWidget : public MeduzzzaCommonWidget
 	{
 		Q_OBJECT
 		
 	private:
 		Ui::MemScanWidget *m_ui;
+		MemScanModel m_mod;
 		bool m_started;
 		bool m_paused;
 		
 	public:
-		MemScanWidget(Manager *_man, MainWindow *_med);
+		MemScanWidget(MainWindow *_med);
 		~MemScanWidget();
 		
 		QString text() const { return tr("Memory scan"); }

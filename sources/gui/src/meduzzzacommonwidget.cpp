@@ -7,7 +7,7 @@
 namespace Meduzzza
 {
 
-	MeduzzzaCommonWidget::MeduzzzaCommonWidget(Manager *_man, MainWindow *_mw) : QWidget(), m_man(_man), m_mw(_mw)
+	MeduzzzaCommonWidget::MeduzzzaCommonWidget(MainWindow *_mw) : QWidget(), m_man(Manager::get()), m_mw(_mw)
 	{
 			connect(m_man, SIGNAL(fileScanStartedSignal(const QString&)), this, SLOT(fileScanStartedSlot(const QString&)));
 			connect(m_man, SIGNAL(fileScanCompletedSignal(const QString&)), this, SLOT(fileScanCompletedSlot(const QString&)));

@@ -13,15 +13,15 @@
 namespace Meduzzza
 {
 
-	MainWindow::MainWindow() : QWidget(), m_ui(new Ui::MainWindow), m_menu(new MainMenuModel), m_man(new Meduzzza::Manager)
+	MainWindow::MainWindow() : QWidget(), m_ui(new Ui::MainWindow), m_menu(new MainMenuModel), m_man(Meduzzza::Manager::get())
 	{
 		m_ui -> setupUi(this);
 		m_ui -> m_menu_view -> setModel(m_menu);
 		
-		ScanWidget *sw = new ScanWidget(m_man, this, NULL);
-		DirScanWidget *dsw = new DirScanWidget(m_man, this);
-		MemScanWidget *msw = new MemScanWidget(m_man, this);
-		UpdateWidget *uw = new UpdateWidget(m_man, this, NULL);
+		ScanWidget *sw = new ScanWidget(this, NULL);
+		DirScanWidget *dsw = new DirScanWidget(this);
+		MemScanWidget *msw = new MemScanWidget(this);
+		UpdateWidget *uw = new UpdateWidget(this, NULL);
 		m_menu -> addMenuItem(sw -> text(), ":/images/images/item.png", sw);
 		m_menu -> addMenuItem(dsw -> text(), ":/images/images/item.png", dsw);
 		m_menu -> addMenuItem(msw -> text(), ":/images/images/item.png", msw);
@@ -31,25 +31,28 @@ namespace Meduzzza
 			this, SLOT(menuSelectedSlot(const QModelIndex&, const QModelIndex&)));
 		
 		m_man -> init();
+		m_ui -> m_splitter -> setStretchFactor(0, 10);
+		m_ui -> m_splitter -> setStretchFactor(1, 90);
 	}
 	
 	MainWindow::~MainWindow()
 	{
 		delete m_ui;
 		delete m_menu;
-		delete m_man;
 	}
 
 	void MainWindow::showWidget(QWidget *_w)
 	{ 
-		if(!m_ui -> m_main_widget -> children().isEmpty())
-		{
-			QWidget *win = qobject_cast<QWidget*>(m_ui -> m_main_widget -> children()[0]);
-			win -> setParent(NULL);
-			win -> hide();
-		}
-		_w -> setParent(m_ui -> m_main_widget);
+		if(m_ui -> m_main_widget_layout -> itemAt(0))
+			m_ui -> m_main_widget_layout -> itemAt(0) -> widget() -> hide();
+		m_ui -> m_main_widget_layout -> insertWidget(0, _w);
 		_w -> show();
+	}
+	
+	void MainWindow::closeEvent(QCloseEvent *_event)
+	{
+		m_man -> stop();
+		QWidget::closeEvent(_event);
 	}
 
 	void MainWindow::menuSelectedSlot(const QModelIndex &_current, const QModelIndex &_previous)

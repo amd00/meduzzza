@@ -52,9 +52,12 @@ namespace Meduzzza
 		DbUpdater *m_updater;
 		bool m_full_scan_in_progress;
 		Statist *m_statist;
-
+		
+		static Manager *ms_self;
+		
 	public:
-		Manager();
+		static Manager *get();
+		
 		~Manager();
 		bool init();
 		
@@ -68,6 +71,9 @@ namespace Meduzzza
 		void stop();
 		void pause() { m_engine -> pause(); }
 		void resume() { m_engine -> resume(); }
+		
+	private:
+		Manager();
 		
 	public Q_SLOTS:
 		void scanFile(const QString &_file, bool _non_block = true);

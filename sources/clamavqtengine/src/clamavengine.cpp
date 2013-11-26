@@ -108,7 +108,7 @@ namespace Meduzzza
 				continue;
 			tmp.setTime_t(cvd -> stime);
 			cl_cvdfree(cvd);
-			if(res.isNull() || res > tmp)
+			if(res.isNull() || tmp > res)
 				res = tmp;
 		}
 		return res.date().daysTo(QDate::currentDate());
@@ -196,7 +196,8 @@ namespace Meduzzza
 	void ClamavEngine::stop()
 	{
 		Scanner::stop();
-		m_p -> pool() -> waitForDone();
+		while(!m_p -> pool() -> waitForDone(10))
+			QCoreApplication::processEvents();
 		Scanner::setStopped(false);
 		Q_EMIT stoppedSignal();
 	}

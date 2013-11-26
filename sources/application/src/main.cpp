@@ -102,20 +102,20 @@ int main(int argc, char *argv[])
 		memory = false;
 	}
 	
-	Meduzzza::Manager m;
+	Meduzzza::Manager *m = Meduzzza::Manager::get();
 	if(full_update)
-	  m.downloadDb(false);
+	  m -> downloadDb(false);
 	else if(update)
-		m.updateDb(false);
-	m.init();
+		m -> updateDb(false);
+	m -> init();
 	if(memory)
-		m.scanMemory(false);
+		m -> scanMemory(false);
 	foreach(QString file, files)
-		m.scanFile(file, false);
+		m -> scanFile(file, false);
 	foreach(QString dir, dirs)
-		m.scanDir(dir, QStringList(), true);
+		m -> scanDir(dir, QStringList(), true);
 	if(full)
-		m.fullScan();
+		m -> fullScan();
 	
 	return app.exec();
 }

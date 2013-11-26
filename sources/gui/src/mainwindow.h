@@ -29,6 +29,9 @@ namespace Meduzzza
 		
 		void showWidget(QWidget *_w);
 		
+	protected:
+		void closeEvent(QCloseEvent *_event);
+		
 	private Q_SLOTS:
 		void menuSelectedSlot(const QModelIndex &_current, const QModelIndex &_previous);
 	};

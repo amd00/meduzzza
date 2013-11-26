@@ -10,10 +10,11 @@
 namespace Meduzzza
 {
 
-	ScanWidget::ScanWidget(Manager *_man, MainWindow *_med, QWidget *_parent) : QWidget(_parent), 
-		m_ui(new Ui::ScanWidget),  m_man(_man), m_med(_med), m_started(false), m_paused(false)
+	ScanWidget::ScanWidget(MainWindow *_med, QWidget *_parent) : QWidget(_parent), 
+		m_ui(new Ui::ScanWidget),  m_man(Manager::get()), m_med(_med), m_started(false), m_paused(false)
 	{
 		m_ui -> setupUi(this);
+		Manager *_man = Manager::get();
 		connect(m_ui -> m_start_button, SIGNAL(clicked()), this, SLOT(startClickedSlot()));
 		connect(m_ui -> m_stop_button, SIGNAL(clicked()), this, SLOT(stopClickedSlot()));
 		connect(_man, SIGNAL(memScanStartedSignal()), this, SLOT(memScanStartedSlot()));

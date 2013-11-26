@@ -11,7 +11,6 @@ namespace Ui
 
 namespace Meduzzza
 {
-	class Manager;
 	class MainWindow;
 	
 	class ScanWidget : public QWidget
@@ -26,7 +25,7 @@ namespace Meduzzza
 		bool m_paused;
 		
 	public:
-		ScanWidget(Manager *_man, MainWindow *_med, QWidget *_parent = NULL);
+		ScanWidget(MainWindow *_med, QWidget *_parent = NULL);
 		~ScanWidget();
 		QString text() const { return tr("Full scan"); }
 		

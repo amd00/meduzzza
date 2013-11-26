@@ -32,6 +32,15 @@
 
 namespace Meduzzza
 {
+	
+	Manager *Manager::ms_self = NULL;
+	
+	Manager *Manager::get()
+	{
+		if(ms_self == NULL)
+			ms_self = new Manager();
+		return ms_self;
+	}
 
 	Manager::Manager() : QObject(), m_app_dir(QDir::home().absoluteFilePath(".meduzzza")), m_db_dir(m_app_dir.absoluteFilePath("database")), 
 						m_quarantine_dir(m_app_dir.absoluteFilePath("quarantine")),
@@ -194,7 +203,7 @@ namespace Meduzzza
 		if(!tmp_file)
 			return;
 
-		QFile::rename(_file, tmp_file);
+// 		QFile::rename(_file, tmp_file);
 		Q_EMIT fileMovedToQuarantineSignal(_file, tmp_file, _virus);
 		free(tmp_file);
 	}

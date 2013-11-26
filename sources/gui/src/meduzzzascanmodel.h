@@ -14,6 +14,14 @@ namespace Meduzzza
 		Q_OBJECT
 		
 	public:
+		enum Status
+		{
+			Scanning,
+			Clean,
+			Infected,
+			Stopped
+		};
+		
 		enum Columns
 		{
 			Name = 0,
@@ -25,11 +33,14 @@ namespace Meduzzza
 	private:
 		struct ScanItem
 		{
-			ScanItem(QString _file) : name(_file), pid(0), virname(QString::null) {}
-			ScanItem(QString _name, Q_PID _pid) : name(_name), pid(_pid), virname(QString::null) {}
+			ScanItem(QString _file) : name(_file), pid(0), 
+				virname(QString::null), status(MeduzzzaScanModel::Scanning) {}
+			ScanItem(QString _name, Q_PID _pid) : name(_name), pid(_pid), 
+				virname(QString::null), status(MeduzzzaScanModel::Scanning) {}
 			QString name;
 			Q_PID pid;
 			QString virname;
+			qint32 status;
 		};
 		
 	private:

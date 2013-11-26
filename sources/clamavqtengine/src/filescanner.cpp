@@ -20,11 +20,6 @@
  *  along with clamavqtengine.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QObject>
-#include <QRegExp>
-#include <QFileInfo>
-#include <QDir>
-
 #include <clamav.h>
 
 #include "filescanner.h"
@@ -38,20 +33,12 @@ namespace Meduzzza
 		if(Scanner::stopped())
 			return;
 		
-		QFile f(m_file);
-		if(!f.open(QIODevice::ReadOnly))
-		{
-			qCritical("ERROR: Open file error: %s : %s", m_file.toLocal8Bit().data(), f.errorString().toLocal8Bit().data());
-			Q_EMIT errorSignal(m_file, f.errorString());
-			return;
-		}
 		qDebug("INFO: Scanning file: %s", m_file.toLocal8Bit().data());
 		Q_EMIT fileScanStartedSignal(m_file);
-		
+
 		const char *virname = NULL;
 		long unsigned int scanned = 0;
-		int result = cl_scandesc(f.handle(), &virname, &scanned, m_engine, CL_SCAN_STDOPT);
-		f.close();
+		int result = cl_scanfile(m_file.toLocal8Bit().data(), &virname, &scanned, m_engine, CL_SCAN_STDOPT);
 
 		Q_EMIT fileScanCompletedSignal(m_file, result, virname);
 	}

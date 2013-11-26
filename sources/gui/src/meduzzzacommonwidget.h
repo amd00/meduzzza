@@ -19,7 +19,7 @@ namespace Meduzzza
 		MainWindow *m_mw;
 		
 	public:
-		MeduzzzaCommonWidget(Manager *_man, MainWindow *_mw);
+		MeduzzzaCommonWidget(MainWindow *_mw);
 		virtual ~MeduzzzaCommonWidget() {}
 		
 	protected Q_SLOTS:

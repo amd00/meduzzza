@@ -27,7 +27,7 @@ namespace Meduzzza
 		MainWindow *m_med;
 		
 	public:
-		explicit UpdateWidget(Manager *_man, MainWindow *_med, QWidget *_parent = NULL);
+		explicit UpdateWidget(MainWindow *_med, QWidget *_parent = NULL);
 		~UpdateWidget();
 		QString text() { return tr("Update"); }
 		

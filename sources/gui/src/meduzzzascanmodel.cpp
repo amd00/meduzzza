@@ -51,18 +51,44 @@ namespace Meduzzza
 				switch(_ind.column())
 				{
 				case Name:
-					res = item.name;
+					res = _ind.data(Qt::UserRole + Name);
 					break;
 				case Pid:
-					res = item.pid == 0 ? QVariant() : item.pid;
+					res = res = _ind.data(Qt::UserRole + Pid);
 					break;
 				case Status:
-					res = item.virname.isNull() ? tr("Scanning...") : (item.virname.isEmpty() ? tr("Clean") : tr("Infected"));
+					switch(_ind.data(Qt::UserRole + Status).toInt())
+					{
+					case Scanning:
+						res = tr("Scanning...");
+						break;
+					case Clean:
+						res = tr("Clean");
+						break;
+					case Infected:
+						res = tr("Infected");
+						break;
+					case Stopped:
+						res = tr("Stopped");
+						break;
+					}
 					break;
 				case VirName:
 					res = item.virname;
 					break;
 				}
+				break;
+			case Qt::UserRole + Name:
+				res = item.name;
+				break;
+			case Qt::UserRole + Pid:
+				res = item.pid == 0 ? QVariant() : item.pid;
+				break;
+			case Qt::UserRole + Status:
+				res = item.status;
+				break;
+			case Qt::UserRole + VirName:
+				res = item.virname;
 				break;
 			default:
 				break;
@@ -146,6 +172,7 @@ namespace Meduzzza
 			if(i == -1)
 				return;
 			m_items[i].virname = "";
+			m_items[i].status = MeduzzzaScanModel::Clean;
 			QModelIndex ind_begin = index(i, MeduzzzaScanModel::Status, QModelIndex());
 			QModelIndex ind_end = index(i, MeduzzzaScanModel::VirName, QModelIndex());
 			Q_EMIT dataChanged(ind_begin, ind_end);
@@ -157,6 +184,7 @@ namespace Meduzzza
 			if(i == -1)
 				return;
 			m_items[i].virname = _virname;
+			m_items[i].status = MeduzzzaScanModel::Infected;
 			QModelIndex ind_begin = index(i, MeduzzzaScanModel::Status, QModelIndex());
 			QModelIndex ind_end = index(i, MeduzzzaScanModel::VirName, QModelIndex());
 			Q_EMIT dataChanged(ind_begin, ind_end);
@@ -176,6 +204,7 @@ namespace Meduzzza
 			if(i == -1)
 				return;
 			m_items[i].virname = "";
+			m_items[i].status = MeduzzzaScanModel::Clean;
 			QModelIndex ind_begin = index(i, MeduzzzaScanModel::Status, QModelIndex());
 			QModelIndex ind_end = index(i, MeduzzzaScanModel::VirName, QModelIndex());
 			Q_EMIT dataChanged(ind_begin, ind_end);
@@ -187,6 +216,7 @@ namespace Meduzzza
 			if(i == -1)
 				return;
 			m_items[i].virname = _virname;
+			m_items[i].status = MeduzzzaScanModel::Infected;
 			QModelIndex ind_begin = index(i, MeduzzzaScanModel::Status, QModelIndex());
 			QModelIndex ind_end = index(i, MeduzzzaScanModel::VirName, QModelIndex());
 			Q_EMIT dataChanged(ind_begin, ind_end);
@@ -194,7 +224,13 @@ namespace Meduzzza
 		
 		void MeduzzzaScanModel::stoppedSlot() 
 		{
-			
+			for(qint32 i = 0; i < m_items.size(); i++)
+				if(m_items[i].status == MeduzzzaScanModel::Scanning)
+				{
+					m_items[i].status = MeduzzzaScanModel::Stopped;
+					QModelIndex ind = index(i, MeduzzzaScanModel::Status, QModelIndex());
+					Q_EMIT dataChanged(ind, ind);
+				}
 		}
 		
 }

@@ -9,8 +9,8 @@
 namespace Meduzzza
 {
 
-	UpdateWidget:: UpdateWidget(Meduzzza::Manager *_man, MainWindow *_med, QWidget *_parent) : QWidget(_parent),
-		m_ui(new Ui::UpdateWidget), m_items(), m_man(_man), m_med(_med)
+	UpdateWidget:: UpdateWidget(MainWindow *_med, QWidget *_parent) : QWidget(_parent),
+		m_ui(new Ui::UpdateWidget), m_items(), m_man(Manager::get()), m_med(_med)
 	{
 		m_ui -> setupUi(this);
 		connect(m_man, SIGNAL(downloadStartedSignal(const QString&)), this, SLOT(downloadStartedSlot(const QString&)));
