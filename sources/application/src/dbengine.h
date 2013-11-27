@@ -40,10 +40,10 @@ private:
 public:
 	DbEngine(const QDir &_dir);
 	~DbEngine();
-	void transaction() { m_db.transaction(); }
-	void commit() { m_db.commit(); }
 
 public Q_SLOTS:
+	void transaction() { m_db.transaction(); }
+	void commit() { m_db.commit(); }
 	void fileScanCompletedSlot(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end);
 	void procScanCompletedSlot(const QString &_name, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end);
 	void fileVirusDetectedSlot(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus);

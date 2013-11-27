@@ -74,6 +74,8 @@ namespace Meduzzza
 		void pause() { m_engine -> pause(); }
 		void resume() { m_engine -> resume(); }
 		
+		Statist *statist() const { return m_statist; }
+		
 	private:
 		Manager();
 		

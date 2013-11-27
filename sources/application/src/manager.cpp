@@ -105,9 +105,19 @@ namespace Meduzzza
 				m_db, SLOT(memScanCompletedSlot(const QDateTime&, const QDateTime&)));
 		connect(this, SIGNAL(fullScanCompletedSignal(const QDateTime&, const QDateTime&)), 
 				m_db, SLOT(fullScanCompletedSlot(const QDateTime&, const QDateTime&)));
+		connect(m_engine, SIGNAL(stoppedSignal()), m_db, SIGNAL(commit()));
 
 
-
+		connect(this, SIGNAL(fileScanCompletedSignal(const QString&, const QDateTime&, const QDateTime&)), 
+				m_statist, SLOT(fileScanCompletedSlot(const QString&, const QDateTime&, const QDateTime&)));
+		connect(this, SIGNAL(fileVirusDetectedSignal(const QString&, const QDateTime&, const QDateTime&, const QString&)), 
+				m_statist, SLOT(fileVirusDetectedSlot(const QString&, const QDateTime&, const QDateTime&, const QString&)));
+		connect(this, SIGNAL(procScanCompletedSignal(const QString&, Q_PID, const QDateTime&, const QDateTime&)), 
+				m_statist, SLOT(procScanCompletedSlot(const QString&, Q_PID, const QDateTime&, const QDateTime&)));
+		connect(this, SIGNAL(procVirusDetectedSignal(const QString&, Q_PID, const QDateTime&, const QDateTime&, const QString&)), 
+				m_statist, SLOT(procVirusDetectedSlot(const QString&, Q_PID, const QDateTime&, const QDateTime&, const QString&)));
+		connect(this, SIGNAL(fileMovedToQuarantineSignal(const QString&, const QString&, const QString&)), 
+				m_statist, SLOT(fileMovedToQuarantineSlot(const QString&, const QString&, const QString&)));
 
 		connect(m_updater, SIGNAL(downloadStartedSignal(const QString&)), this, SIGNAL(downloadStartedSignal(const QString&)));
 		connect(m_updater, SIGNAL(downloadFinishedSignal(const QString&)), this, SIGNAL(downloadFinishedSignal(const QString&)));
@@ -160,7 +170,6 @@ namespace Meduzzza
 		loop.connect(m_engine, SIGNAL(fileScanCompletedSignal(const QString&)), SLOT(quit()));
 		loop.connect(m_engine, SIGNAL(scanStoppedSignal()), SLOT(quit()));
 
-		m_statist -> reset();
 		m_engine -> scanFile(_file);
 		
 		if(!_non_block)
@@ -172,7 +181,6 @@ namespace Meduzzza
 		QEventLoop loop;
 		loop.connect(m_engine, SIGNAL(dirScanCompletedSignal(const QString&)), SLOT(quit()));
 
-		m_statist -> reset();
 		m_db -> transaction();
 		m_engine -> scanDir(_dir, QStringList() << _excl_dirs << m_quarantine_dir.absolutePath());
 
