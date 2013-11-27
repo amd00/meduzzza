@@ -47,6 +47,8 @@ namespace Meduzzza
 		Scanner();
 		virtual ~Scanner();
 		
+		void run();
+		
 		static void stop();
 		static void pause();
 		static void resume();
@@ -55,6 +57,7 @@ namespace Meduzzza
 		static void setStopped(bool _is_stopped);
 
 	protected:
+		virtual void runThread() = 0;
 		void checkPause();
 	};
 }

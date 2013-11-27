@@ -75,6 +75,16 @@
     </layout>
    </item>
    <item>
+    <widget class="QProgressBar" name="m_progress">
+     <property name="maximum">
+      <number>999999999</number>
+     </property>
+     <property name="value">
+      <number>0</number>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QTreeView" name="m_scan_view">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">

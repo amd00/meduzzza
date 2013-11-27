@@ -28,7 +28,7 @@
 namespace Meduzzza
 {
 
-	void DirScanner::run()
+	void DirScanner::runThread()
 	{
 		scanDir(m_dir, true);
 	}

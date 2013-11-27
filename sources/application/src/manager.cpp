@@ -85,6 +85,9 @@ namespace Meduzzza
 		connect(m_engine, SIGNAL(pausedSignal()), this, SIGNAL(pausedSignal()));
 		connect(m_engine, SIGNAL(resumedSignal()), this, SIGNAL(resumedSignal()));
 		
+		connect(m_engine, SIGNAL(filesFoundSignal(quint64)), this, SIGNAL(filesFoundSignal(quint64)));
+		connect(m_engine, SIGNAL(procsFoundSignal(quint64)), this, SIGNAL(procsFoundSignal(quint64)));
+		
 
 		connect(this, SIGNAL(fileScanCompletedSignal(const QString&, const QDateTime&, const QDateTime&)), 
 				m_db, SLOT(fileScanCompletedSlot(const QString&, const QDateTime&, const QDateTime&)));

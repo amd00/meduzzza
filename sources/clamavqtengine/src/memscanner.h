@@ -40,7 +40,7 @@ namespace Meduzzza
 		~MemScanner() {}
 
 	protected:
-		void run();
+		void runThread();
 
 	private:
 		void scanMemory();

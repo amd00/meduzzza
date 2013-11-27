@@ -46,6 +46,9 @@ namespace Meduzzza
 		virtual void paused() = 0;
 		virtual void resumed() = 0;
 		
+		virtual void filesFound(quint64 _count) = 0;
+		virtual void procsFound(quint64 _count) = 0;
+		
 	private Q_SLOTS:
 		void fileScanStartedSlot(const QString &_file, const QDateTime &_time_start) { fileScanStarted(_file); }
 		void fileScanCompletedSlot(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end) { fileScanCompleted(_file); }
@@ -70,6 +73,8 @@ namespace Meduzzza
 		void pausedSlot();
 		void resumedSlot();
 		
+		void filesFoundSlot(quint64 _count) { filesFound(_count); }
+		void procsFoundSlot(quint64 _count) { procsFound(_count); }
 	};
 }
 #endif

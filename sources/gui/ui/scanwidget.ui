@@ -94,7 +94,10 @@
       </layout>
      </item>
      <item>
-      <widget class="QProgressBar" name="m_scan_progress">
+      <widget class="QProgressBar" name="m_progress">
+       <property name="maximum">
+        <number>999999999</number>
+       </property>
        <property name="value">
         <number>0</number>
        </property>

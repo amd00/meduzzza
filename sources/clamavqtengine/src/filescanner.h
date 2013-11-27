@@ -44,7 +44,7 @@ namespace Meduzzza
 		~FileScanner() {}
 
 	protected:
-		void run();
+		void runThread();
 
 	Q_SIGNALS:
 		void fileScanStartedSignal(const QString &_file, const QDateTime &_time_start);

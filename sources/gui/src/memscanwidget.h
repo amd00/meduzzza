@@ -48,6 +48,9 @@ namespace Meduzzza
 		void fullScanStarted(const QDateTime &_time);
 		void fullScanCompleted(const QDateTime &_time);
 		
+		void filesFound(quint64 _count) {}
+		void procsFound(quint64 _count);
+		
 		void stopped();
 		void paused();
 		void resumed();
@@ -55,8 +58,6 @@ namespace Meduzzza
 	protected Q_SLOTS:
 		void startClickedSlot();
 		void stopClickedSlot();
-		
-		void rowsInsertedSlot(const QModelIndex &_par, qint32 _start, qint32 _end);
 	};
 }
 

@@ -44,7 +44,7 @@ namespace Meduzzza
 		~ProcScanner() {}
 
 	protected:
-		void run();
+		void runThread();
 
 	Q_SIGNALS:
 		void procScanStartedSignal(const QString &_name, Q_PID _pid, const QDateTime &_time_start);

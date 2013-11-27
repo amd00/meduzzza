@@ -29,7 +29,7 @@
 namespace Meduzzza
 {
 
-	void FileScanner::run()
+	void FileScanner::runThread()
 	{
 		checkPause();
 		if(Scanner::stopped())

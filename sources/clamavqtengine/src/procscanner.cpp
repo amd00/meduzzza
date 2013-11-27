@@ -32,7 +32,7 @@
 namespace Meduzzza
 {
 
-	void ProcScanner::run()
+	void ProcScanner::runThread()
 	{
 		checkPause();
 		if(Scanner::stopped())

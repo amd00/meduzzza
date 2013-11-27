@@ -16,8 +16,6 @@ namespace Meduzzza
 			MeduzzzaCommonWidget(_med), m_ui(new Ui::DirScanWidget), m_mod(new MeduzzzaScanModel(false))
 	{
 		m_ui -> setupUi(this);
-		connect(m_mod, SIGNAL(rowsInserted(const QModelIndex&, qint32, qint32)),
-			this, SLOT(rowsInsertedSlot(const QModelIndex&, qint32, qint32)));
 		m_ui -> m_scan_view -> setModel(m_mod);
 		m_ui -> m_scan_view -> setColumnHidden(MeduzzzaScanModel::Pid, true);
 	}
@@ -30,10 +28,12 @@ namespace Meduzzza
 
 	void DirScanWidget::fileScanCompleted(const QString &_file)
 	{
+		m_ui -> m_progress -> setValue(m_ui -> m_progress -> value() + 1);
 	}
 
 	void DirScanWidget::fileVirusDetected(const QString &_file, const QString &_virus)
 	{
+		m_ui -> m_progress -> setValue(m_ui -> m_progress -> value() + 1);
 	}
 
 	void DirScanWidget::dirScanStarted(const QString &_dir)
@@ -90,6 +90,11 @@ namespace Meduzzza
 		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
 	}
 	
+	void DirScanWidget::filesFound(quint64 _count)
+	{
+		m_ui -> m_progress -> setMaximum(_count);
+	}
+	
 	void DirScanWidget::dirClickedSlot()
 	{
 		QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
@@ -114,11 +119,6 @@ namespace Meduzzza
 		m_ui -> m_stop_button -> setDisabled(true);
 		m_man -> stop();
 	}
-	
-	void DirScanWidget::rowsInsertedSlot(const QModelIndex &_par, qint32 _start, qint32 _end)
-	{
-		QModelIndex ind = m_mod -> index(_end, 0, _par);
-// 		m_ui -> m_scan_view -> scrollTo(ind);
-	}
+
 	
 }

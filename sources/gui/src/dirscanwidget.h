@@ -50,12 +50,13 @@ namespace Meduzzza
 		void paused();
 		void resumed();
 		
+		void filesFound(quint64 _count);
+		void procsFound(quint64 _count) {}
+		
 	protected Q_SLOTS:
 		void dirClickedSlot();
 		void startClickedSlot();
 		void stopClickedSlot();
-		
-		void rowsInsertedSlot(const QModelIndex &_par, qint32 _start, qint32 _end);
 	};
 }
 

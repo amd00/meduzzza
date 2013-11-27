@@ -43,7 +43,7 @@ namespace Meduzzza
 		~DirScanner() {}
 
 	protected:
-		void run();
+		void runThread();
 
 	private:
 		void scanDir(const QString &_dir, bool _top);

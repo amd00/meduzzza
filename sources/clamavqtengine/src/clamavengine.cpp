@@ -277,14 +277,14 @@ namespace Meduzzza
 	
 	void ClamavEngine::dirScanCompletedSlot(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end)
 	{
-		while(!m_p -> pool() -> waitForDone(100))
-			QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+		while(!m_p -> pool() -> waitForDone(10))
+			QCoreApplication::processEvents();
 		Q_EMIT dirScanCompletedSignal(_dir, _time_start, QDateTime::currentDateTime());
 	}
 	
 	void ClamavEngine::memScanCompletedSlot(const QDateTime &_time_start, const QDateTime &_time_end)
 	{
-		while(!m_p -> pool() -> waitForDone(100))
+		while(!m_p -> pool() -> waitForDone(10))
 			QCoreApplication::processEvents();
 		Q_EMIT memScanCompletedSignal(_time_start, QDateTime::currentDateTime());
 	}
@@ -294,7 +294,10 @@ namespace Meduzzza
 		m_p -> setFilesCount(m_p -> filesCount() + _file_list.size());
 		Q_EMIT filesFoundSignal(m_p -> filesCount());
 		foreach(QString file, _file_list)
+		{
 			scanFileThread(file);
+			QCoreApplication::processEvents();
+		}
 	}
 	
 	void ClamavEngine::procsFindedSlot(const PidList &_proc_list)
@@ -302,7 +305,10 @@ namespace Meduzzza
 		m_p -> setProcsCount(m_p -> procsCount() + _proc_list.size());
 		Q_EMIT procsFoundSignal(m_p -> procsCount());
 		foreach(Q_PID pid, _proc_list)
+		{
 			scanProcThread(pid);
+// 			QCoreApplication::processEvents();
+		}
 	}
 	
 }

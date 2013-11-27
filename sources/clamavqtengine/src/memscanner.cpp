@@ -29,7 +29,7 @@
 namespace Meduzzza
 {
 
-	void MemScanner::run()
+	void MemScanner::runThread()
 	{
 		scanMemory();
 	}

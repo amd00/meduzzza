@@ -117,6 +117,9 @@ namespace Meduzzza
 		void pausedSignal();
 		void resumedSignal();
 		
+		void filesFoundSignal(quint64 _count);
+		void procsFoundSignal(quint64 _count);
+		
 		void errorSignal(const QString &_file, const QString &_err);
 		void fileMovedToQuarantineSignal(const QString &_source, const QString &_quarantined, const QString &_virus);
 		void dbOutdatedSignal();

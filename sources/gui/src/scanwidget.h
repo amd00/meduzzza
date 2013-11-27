@@ -25,12 +25,12 @@ namespace Meduzzza
 		
 	private:
 		void fileScanStarted(const QString &_file) {}
-		void fileScanCompleted(const QString &_file) {}
-		void fileVirusDetected(const QString &_file, const QString &_virname) {}
+		void fileScanCompleted(const QString &_file);
+		void fileVirusDetected(const QString &_file, const QString &_virname);
 		
 		void procScanStarted(const QString &_name, Q_PID _pid) {}
-		void procScanCompleted(const QString &_name, Q_PID _pid) {}
-		void procVirusDetected(const QString &_name, Q_PID _pid, const QString &_virname) {}
+		void procScanCompleted(const QString &_name, Q_PID _pid);
+		void procVirusDetected(const QString &_name, Q_PID _pid, const QString &_virname);
 		
 		void memScanStarted();
 		void memScanCompleted();
@@ -41,6 +41,9 @@ namespace Meduzzza
 		void stopped();
 		void paused();
 		void resumed();
+		
+		void filesFound(quint64 _count);
+		void procsFound(quint64 _count);
 		
 		void fullScanStarted(const QDateTime &_time);
 		void fullScanCompleted(const QDateTime &_time);

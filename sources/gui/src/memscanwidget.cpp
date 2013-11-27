@@ -14,8 +14,6 @@ namespace Meduzzza
 			MeduzzzaCommonWidget(_med), m_ui(new Ui::MemScanWidget), m_mod(new MeduzzzaScanModel(true))
 	{
 		m_ui -> setupUi(this);
-		connect(m_mod, SIGNAL(rowsInserted(const QModelIndex&, qint32, qint32)),
-			this, SLOT(rowsInsertedSlot(const QModelIndex&, qint32, qint32)));
 		m_ui -> m_scan_view -> setModel(m_mod);
 	}
 
@@ -45,10 +43,12 @@ namespace Meduzzza
 
 	void MemScanWidget::procScanCompleted(const QString &_name, Q_PID _pid)
 	{
+		m_ui -> m_progress -> setValue(m_ui -> m_progress -> value() + 1);
 	}
 
 	void MemScanWidget::procVirusDetected(const QString &_name, Q_PID _pid, const QString &_virus)
 	{
+		m_ui -> m_progress -> setValue(m_ui -> m_progress -> value() + 1);
 	}
 	
 	void MemScanWidget::dirScanStarted(const QString &_dir)
@@ -104,10 +104,9 @@ namespace Meduzzza
 		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
 	}
 	
-	void MemScanWidget::rowsInsertedSlot(const QModelIndex &_par, qint32 _start, qint32 _end)
+	void MemScanWidget::procsFound(quint64 _count)
 	{
-		QModelIndex ind = m_mod -> index(_end, 0, _par);
-// 		m_ui -> m_scan_view -> scrollTo(ind);
+		m_ui -> m_progress -> setMaximum(_count);
 	}
 	
 }

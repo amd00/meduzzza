@@ -40,6 +40,9 @@ namespace Meduzzza
 			connect(m_man, SIGNAL(stoppedSignal()), this, SLOT(stoppedSlot()));
 			connect(m_man, SIGNAL(pausedSignal()), this, SLOT(pausedSlot()));
 			connect(m_man, SIGNAL(resumedSignal()), this, SLOT(resumedSlot()));
+			
+			connect(m_man, SIGNAL(filesFoundSignal(quint64)), this, SLOT(filesFoundSlot(quint64)));
+			connect(m_man, SIGNAL(procsFoundSignal(quint64)), this, SLOT(procsFoundSlot(quint64)));
 	}
 	
 	void MeduzzzaCommonWidget::dirScanStartedSlot(const QString &_dir, const QDateTime &_time_start) 

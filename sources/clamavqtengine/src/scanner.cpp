@@ -38,6 +38,12 @@ namespace Meduzzza
 	
 	Scanner::~Scanner() { delete m_p; }
 	
+	void Scanner::run()
+	{
+		QThread::currentThread() -> setPriority(QThread::LowestPriority);
+		runThread();
+	}
+	
 	void Scanner::stop() { ScannerPrivate::setStopped(true); if(ScannerPrivate::paused()) Scanner::resume(); }
 	
 	void Scanner::pause() { ScannerPrivate::setPaused(true); }

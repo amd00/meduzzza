@@ -18,6 +18,26 @@ namespace Meduzzza
 
 	ScanWidget::~ScanWidget() { delete m_ui; }
 
+	void ScanWidget::fileScanCompleted(const QString &_file) 
+	{ 
+		m_ui -> m_progress -> setValue(m_ui -> m_progress -> value() + 1); 
+	}
+	
+	void ScanWidget::fileVirusDetected(const QString &_file, const QString &_virname) 
+	{ 
+		m_ui -> m_progress -> setValue(m_ui -> m_progress -> value() + 1); 
+	}
+	
+	void ScanWidget::procScanCompleted(const QString &_name, Q_PID _pid) 
+	{ 
+		m_ui -> m_progress -> setValue(m_ui -> m_progress -> value() + 1); 
+	}
+	
+	void ScanWidget::procVirusDetected(const QString &_name, Q_PID _pid, const QString &_virname) 
+	{ 
+		m_ui -> m_progress -> setValue(m_ui -> m_progress -> value() + 1); 
+	}
+	
 	void ScanWidget::memScanStarted()
 	{
 		m_ui -> m_scanobj_label -> setText(tr("Memory scanning..."));
@@ -25,7 +45,7 @@ namespace Meduzzza
 	
 	void ScanWidget::memScanCompleted()
 	{
-		
+		m_ui -> m_progress -> setValue(0);
 	}
 	
 	void ScanWidget::dirScanStarted(const QString &_dir)
@@ -35,6 +55,7 @@ namespace Meduzzza
 	
 	void ScanWidget::dirScanCompleted(const QString &_dir)
 	{
+		m_ui -> m_progress -> setValue(0);
 	}
 	
 	void ScanWidget::stopped()
@@ -51,6 +72,16 @@ namespace Meduzzza
 	void ScanWidget::resumed()
 	{
 		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
+	}
+	
+	void ScanWidget::filesFound(quint64 _count) 
+	{ 
+		m_ui -> m_progress -> setMaximum(_count); 
+	}
+		
+	void ScanWidget::procsFound(quint64 _count) 
+	{ 
+		m_ui -> m_progress -> setMaximum(_count); 
 	}
 	
 	void ScanWidget::fullScanStarted(const QDateTime &_time)
