@@ -48,10 +48,9 @@ namespace Meduzzza
 
 	Q_SIGNALS:
 		void procsFindedSignal(const PidList &_proc_list);
-		void procFindedSignal(Q_PID);
 		
-		void memScanStartedSignal();
-		void memScanCompletedSignal();
+		void memScanStartedSignal(const QDateTime &_time_start);
+		void memScanCompletedSignal(const QDateTime &_time_start, const QDateTime &_time_end);
 	};
 }
 #endif

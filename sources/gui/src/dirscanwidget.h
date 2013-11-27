@@ -2,8 +2,6 @@
 #ifndef _DIRSCANWIDGET_H_
 #define _DIRSCANWIDGET_H_
 
-#include <QSortFilterProxyModel>
-
 #include "meduzzzacommonwidget.h"
 
 namespace Ui
@@ -14,19 +12,7 @@ namespace Ui
 namespace Meduzzza
 {
 	
-	class DirScanModel : public QSortFilterProxyModel
-	{
-		Q_OBJECT
-		
-	public:
-		DirScanModel();
-		~DirScanModel() {}
-	
-	protected:
-		bool filterAcceptsRow(qint32 _row, const QModelIndex &_parent) const;
-	};
-
-//==============================================================================//	
+	class MeduzzzaScanModel;
 	
 	class DirScanWidget : public MeduzzzaCommonWidget
 	{
@@ -34,7 +20,7 @@ namespace Meduzzza
 		
 	private:
 		Ui::DirScanWidget *m_ui;
-		DirScanModel m_mod;
+		MeduzzzaScanModel *m_mod;
 		
 	public:
 		DirScanWidget(MainWindow *_med);

@@ -21,9 +21,7 @@
  */
 
 #include <QTemporaryFile>
-#include <QProcess>
 #include <QEventLoop>
-#include <QDateTime>
 
 #include <clamav.h>
 #include <string.h>
@@ -57,24 +55,57 @@ namespace Meduzzza
 		m_updater = new DbUpdater(m_settings.dbUpdateMirror(), m_db_dir.absolutePath(), 
 			m_settings.hasProxy(), m_settings.proxyHost(), m_settings.proxyPort(), m_settings.proxyUser(), m_settings.proxyPassword());
 		
-		connect(m_engine, SIGNAL(dirScanStartedSignal(const QString&)), this, SIGNAL(dirScanStartedSignal(const QString&)));
-		connect(m_engine, SIGNAL(dirScanCompletedSignal(const QString&)), this, SIGNAL(dirScanCompletedSignal(const QString&)));
-		connect(m_engine, SIGNAL(memScanStartedSignal()), this, SIGNAL(memScanStartedSignal()));
-		connect(m_engine, SIGNAL(memScanCompletedSignal()), this, SIGNAL(memScanCompletedSignal()));
+		connect(m_engine, SIGNAL(dirScanStartedSignal(const QString&, const QDateTime&)), 
+				this, SIGNAL(dirScanStartedSignal(const QString&, const QDateTime&)));
+		connect(m_engine, SIGNAL(dirScanCompletedSignal(const QString&, const QDateTime&, const QDateTime&)), 
+				this, SIGNAL(dirScanCompletedSignal(const QString&, const QDateTime&, const QDateTime&)));
+		connect(m_engine, SIGNAL(dirScanCompletedSignal(const QString&, const QDateTime&, const QDateTime&)), 
+				this, SLOT(dirScanCompletedSlot(const QString&, const QDateTime&, const QDateTime&)));
+		connect(m_engine, SIGNAL(memScanStartedSignal(const QDateTime&)), this, SIGNAL(memScanStartedSignal(const QDateTime&)));
+		connect(m_engine, SIGNAL(memScanCompletedSignal(const QDateTime&, const QDateTime&)), 
+				this, SIGNAL(memScanCompletedSignal(const QDateTime&, const QDateTime&)));
+		connect(m_engine, SIGNAL(memScanCompletedSignal(const QDateTime&, const QDateTime&)), 
+				this, SLOT(memScanCompletedSlot(const QDateTime&, const QDateTime&)));
 		
-		connect(m_engine, SIGNAL(fileScanStartedSignal(const QString&)), this, SIGNAL(fileScanStartedSignal(const QString&)));
-		connect(m_engine, SIGNAL(fileScanCompletedSignal(const QString&)), this, SIGNAL(fileScanCompletedSignal(const QString&)));
-		connect(m_engine, SIGNAL(fileVirusDetectedSignal(const QString&, const QString&)), this, SIGNAL(fileVirusDetectedSignal(const QString&, const QString&)));
+		connect(m_engine, SIGNAL(fileScanStartedSignal(const QString&, const QDateTime&)), 
+				this, SIGNAL(fileScanStartedSignal(const QString&, const QDateTime&)));
+		connect(m_engine, SIGNAL(fileScanCompletedSignal(const QString&, const QDateTime&, const QDateTime&)), 
+				this, SIGNAL(fileScanCompletedSignal(const QString&, const QDateTime&, const QDateTime&)));
+		connect(m_engine, SIGNAL(fileVirusDetectedSignal(const QString&, const QDateTime&, const QDateTime&, const QString&)), 
+				this, SIGNAL(fileVirusDetectedSignal(const QString&, const QDateTime&, const QDateTime&, const QString&)));
 		
-		connect(m_engine, SIGNAL(procScanStartedSignal(const QString&, Q_PID)), this, SIGNAL(procScanStartedSignal(const QString&, Q_PID)));
-		connect(m_engine, SIGNAL(procScanCompletedSignal(const QString&, Q_PID)), this, SIGNAL(procScanCompletedSignal(const QString&, Q_PID)));
-		connect(m_engine, SIGNAL(procVirusDetectedSignal(const QString&, Q_PID, const QString&)), 
-				this, SIGNAL(procVirusDetectedSignal(const QString&, Q_PID, const QString&)));
+		connect(m_engine, SIGNAL(procScanStartedSignal(const QString&, Q_PID, const QDateTime&)), 
+				this, SIGNAL(procScanStartedSignal(const QString&, Q_PID, const QDateTime&)));
+		connect(m_engine, SIGNAL(procScanCompletedSignal(const QString&, Q_PID, const QDateTime&, const QDateTime&)), 
+				this, SIGNAL(procScanCompletedSignal(const QString&, Q_PID, const QDateTime&, const QDateTime&)));
+		connect(m_engine, SIGNAL(procVirusDetectedSignal(const QString&, Q_PID, const QDateTime&, const QDateTime&, const QString&)), 
+				this, SIGNAL(procVirusDetectedSignal(const QString&, Q_PID, const QDateTime&, const QDateTime&, const QString&)));
 		
 		connect(m_engine, SIGNAL(stoppedSignal()), this, SIGNAL(stoppedSignal()));
 		connect(m_engine, SIGNAL(pausedSignal()), this, SIGNAL(pausedSignal()));
 		connect(m_engine, SIGNAL(resumedSignal()), this, SIGNAL(resumedSignal()));
 		
+
+		connect(this, SIGNAL(fileScanCompletedSignal(const QString&, const QDateTime&, const QDateTime&)), 
+				m_db, SLOT(fileScanCompletedSlot(const QString&, const QDateTime&, const QDateTime&)));
+		connect(this, SIGNAL(fileVirusDetectedSignal(const QString&, const QDateTime&, const QDateTime&, const QString&)), 
+				m_db, SLOT(fileVirusDetectedSlot(const QString&, const QDateTime&, const QDateTime&, const QString&)));
+		connect(this, SIGNAL(procScanCompletedSignal(const QString&, Q_PID, const QDateTime&, const QDateTime&)), 
+				m_db, SLOT(procScanCompletedSlot(const QString&, Q_PID, const QDateTime&, const QDateTime&)));
+		connect(this, SIGNAL(procVirusDetectedSignal(const QString&, Q_PID, const QDateTime&, const QDateTime&, const QString&)), 
+				m_db, SLOT(procVirusDetectedSlot(const QString&, Q_PID, const QDateTime&, const QDateTime&, const QString&)));
+		connect(this, SIGNAL(fileMovedToQuarantineSignal(const QString&, const QString&, const QString&)), 
+				m_db, SLOT(fileMovedToQuarantineSlot(const QString&, const QString&, const QString&)));
+		connect(this, SIGNAL(dirScanCompletedSignal(const QString&, const QDateTime&, const QDateTime&)), 
+				m_db, SLOT(dirScanCompletedSlot(const QString&, const QDateTime&, const QDateTime&)));
+		connect(this, SIGNAL(memScanCompletedSignal(const QDateTime&, const QDateTime&)), 
+				m_db, SLOT(memScanCompletedSlot(const QDateTime&, const QDateTime&)));
+		connect(this, SIGNAL(fullScanCompletedSignal(const QDateTime&, const QDateTime&)), 
+				m_db, SLOT(fullScanCompletedSlot(const QDateTime&, const QDateTime&)));
+
+
+
+
 		connect(m_updater, SIGNAL(downloadStartedSignal(const QString&)), this, SIGNAL(downloadStartedSignal(const QString&)));
 		connect(m_updater, SIGNAL(downloadFinishedSignal(const QString&)), this, SIGNAL(downloadFinishedSignal(const QString&)));
 		connect(m_updater, SIGNAL(downloadProgressSignal(const QString&, qint64, qint64)), 
@@ -83,19 +114,9 @@ namespace Meduzzza
 		connect(m_updater, SIGNAL(updateCompletedSignal()), this, SIGNAL(updateCompletedSignal()));
 		connect(m_updater, SIGNAL(errorSignal(const QString&, const QString&)), this, SLOT(updateErrorSlot(const QString&, const QString&)));
 		
-		connect(this, SIGNAL(fileScanCompletedSignal(const QString&)), m_statist, SLOT(fileScanCompletedSlot(const QString&)));
-		connect(this, SIGNAL(fileVirusDetectedSignal(const QString&, const QString&)), m_statist, SLOT(fileVirusDetectedSlot(const QString&, const QString&)));
 		
-// 		connect(this, SIGNAL(procScanCompletedSignal(const QString&, Q_PID)), m_statist, SLOT(procScanCompletedSlot(const QString&, Q_PID)));
-// 		connect(this, SIGNAL(procVirusDetectedSignal(const QString&, Q_PID, const QString&)), 
-// 				m_statist, SLOT(procVirusDetectedSlot(const QString&, Q_PID, const QString&)));
-		
-		connect(this, SIGNAL(fileVirusDetectedSignal(const QString&, const QString&)), this, SLOT(fileVirusDetectedSlot(const QString&, const QString&)));
-		connect(this, SIGNAL(fileMovedToQuarantineSignal(const QString&, const QString&, const QString&)), m_db, SLOT(fileMovedToQuarantineSlot(const QString&, const QString&, const QString&)));
-		connect(this, SIGNAL(fullScanCompletedSignal(const QDateTime&)), m_db, SLOT(fullScanCompletedSlot(const QDateTime&)));
-		
-		connect(this, SIGNAL(fileMovedToQuarantineSignal(const QString&, const QString&, const QString&)), 
-				m_statist, SLOT(fileMovedToQuarantineSlot(const QString&, const QString&, const QString&)));
+		connect(this, SIGNAL(fileVirusDetectedSignal(const QString&, const QDateTime&, const QDateTime&, const QString&)), 
+				this, SLOT(fileVirusDetectedSlot(const QString&, const QDateTime&, const QDateTime&, const QString&)));
 		
 		connect(&m_settings, SIGNAL(dbUpdateMirrorChangedSignal(const QString&)), m_updater, SLOT(dbUpdateMirrorChangedSlot(const QString&)));
 		connect(&m_settings, SIGNAL(hasProxyChangedSignal(bool)), m_updater, SLOT(hasProxyChangedSlot(bool)));
@@ -147,7 +168,6 @@ namespace Meduzzza
 	{
 		QEventLoop loop;
 		loop.connect(m_engine, SIGNAL(dirScanCompletedSignal(const QString&)), SLOT(quit()));
-	// 	loop.connect(m_engine, SIGNAL(scanStoppedSignal()), SLOT(quit()));
 
 		m_statist -> reset();
 		m_db -> transaction();
@@ -161,8 +181,8 @@ namespace Meduzzza
 	{
 		QEventLoop loop;
 		loop.connect(m_engine, SIGNAL(memScanCompletedSignal()), SLOT(quit()));
-		loop.connect(m_engine, SIGNAL(stoppedSignal()), SLOT(quit()));
 	
+		m_db -> transaction();
 		m_engine -> scanMemory();
 	
 		if(!_non_block)
@@ -171,9 +191,9 @@ namespace Meduzzza
 
 	void Manager::fullScan()
 	{
-		Q_EMIT fullScanStartedSignal(QDateTime::currentDateTime());
+		m_full_scan_time_start = QDateTime::currentDateTime();
+		Q_EMIT fullScanStartedSignal(m_full_scan_time_start);
 		m_full_scan_in_progress = true;
-		connect(m_engine, SIGNAL(memScanCompletedSignal()), this, SLOT(memScanCompletedSlot()));
 		scanMemory();
 	}
 
@@ -199,13 +219,12 @@ namespace Meduzzza
 			loop.exec();
 	}
 
-	void Manager::moveToQuarantine(const QString &_file, const QString &_virus)
+	void Manager::moveToQuarantine(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus)
 	{
 		char *tmp_file = tempnam(m_quarantine_dir.absolutePath().toLocal8Bit().data(), "amdq_");
 		if(!tmp_file)
 			return;
 
-// 		QFile::rename(_file, tmp_file);
 		Q_EMIT fileMovedToQuarantineSignal(_file, tmp_file, _virus);
 		free(tmp_file);
 	}
@@ -213,34 +232,30 @@ namespace Meduzzza
 	void Manager::stop()
 	{
 		m_full_scan_in_progress = false;
-		disconnect(m_engine, SIGNAL(memScanCompletedSignal()), this, SLOT(memScanCompletedSlot()));
-		disconnect(m_engine, SIGNAL(dirScanCompletedSignal(const QString&)), this, SLOT(dirScanCompletedSlot(const QString&)));
 		m_engine -> stop();
 	}
 
-	void Manager::fileVirusDetectedSlot(const QString &_file, const QString &_virus)
+	void Manager::fileVirusDetectedSlot(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus)
 	{
 		if(m_settings.autoQuarantine())
-			moveToQuarantine(_file, _virus);
+			moveToQuarantine(_file, _time_start, _time_end, _virus);
 	}
 	
-	void Manager::memScanCompletedSlot()
+	void Manager::memScanCompletedSlot(const QDateTime &_time_start, const QDateTime &_time_end)
 	{
-		disconnect(m_engine, SIGNAL(memScanCompletedSignal()), this, SLOT(memScanCompletedSlot()));
-		connect(m_engine, SIGNAL(dirScanCompletedSignal(const QString&)), this, SLOT(dirScanCompletedSlot(const QString&)));
-		scanDir(QDir::rootPath(), QStringList() << "/proc" << "/sys" << "/dev");
+		m_db -> commit();
+		if(m_full_scan_in_progress)
+			scanDir(QDir::rootPath(), QStringList() << "/proc" << "/sys" << "/dev");
 	}
 
-	void Manager::dirScanCompletedSlot(const QString &_dir)
+	void Manager::dirScanCompletedSlot(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end)
 	{
-		disconnect(m_engine, SIGNAL(dirScanCompletedSignal(const QString&)), this, SLOT(dirScanCompletedSlot(const QString&)));
+		m_db -> commit();
 		if(m_full_scan_in_progress)
 		{
-			Q_EMIT fullScanCompletedSignal(QDateTime::currentDateTime());
+			Q_EMIT fullScanCompletedSignal(m_full_scan_time_start, QDateTime::currentDateTime());
 			m_full_scan_in_progress = false;
 		}
-		m_db -> dirScanCompletedSlot(QDateTime::currentDateTime(), m_statist -> filesCount(), m_statist -> fileVirusesCount());
-		m_db -> commit();
 	}
 
 	void Manager::updateCompletedSlot()

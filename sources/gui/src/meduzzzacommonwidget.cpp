@@ -10,70 +10,78 @@ namespace Meduzzza
 	MeduzzzaCommonWidget::MeduzzzaCommonWidget(MainWindow *_mw) : QWidget(), m_man(Manager::get()), m_mw(_mw),
 			m_started(false), m_paused(false)
 	{
-			connect(m_man, SIGNAL(fileScanStartedSignal(const QString&)), this, SLOT(fileScanStartedSlot(const QString&)));
-			connect(m_man, SIGNAL(fileScanCompletedSignal(const QString&)), this, SLOT(fileScanCompletedSlot(const QString&)));
-			connect(m_man, SIGNAL(fileVirusDetectedSignal(const QString&, const QString&)), 
-					this, SLOT(fileVirusDetectedSlot(const QString&, const QString&)));
+			connect(m_man, SIGNAL(fileScanStartedSignal(const QString&, const QDateTime&)), 
+					this, SLOT(fileScanStartedSlot(const QString&, const QDateTime&)));
+			connect(m_man, SIGNAL(fileScanCompletedSignal(const QString&, const QDateTime&, const QDateTime&)), 
+					this, SLOT(fileScanCompletedSlot(const QString&, const QDateTime&, const QDateTime&)));
+			connect(m_man, SIGNAL(fileVirusDetectedSignal(const QString&, const QDateTime&, const QDateTime&, const QString&)), 
+					this, SLOT(fileVirusDetectedSlot(const QString&, const QDateTime&, const QDateTime&, const QString&)));
 			
-			connect(m_man, SIGNAL(procScanStartedSignal(const QString&, Q_PID)), this, SLOT(procScanStartedSlot(const QString&, Q_PID)));
-			connect(m_man, SIGNAL(procScanCompletedSignal(const QString&, Q_PID)), this, SLOT(procScanCompletedSlot(const QString&, Q_PID)));
-			connect(m_man, SIGNAL(procVirusDetectedSignal(const QString&, Q_PID, const QString&)), 
-					this, SLOT(procVirusDetectedSlot(const QString&, Q_PID, const QString&)));
+			connect(m_man, SIGNAL(procScanStartedSignal(const QString&, Q_PID, const QDateTime&)), 
+					this, SLOT(procScanStartedSlot(const QString&, Q_PID, const QDateTime&)));
+			connect(m_man, SIGNAL(procScanCompletedSignal(const QString&, Q_PID, const QDateTime&, const QDateTime&)), 
+					this, SLOT(procScanCompletedSlot(const QString&, Q_PID, const QDateTime&, const QDateTime&)));
+			connect(m_man, SIGNAL(procVirusDetectedSignal(const QString&, Q_PID, const QDateTime&, const QDateTime&, const QString&)), 
+					this, SLOT(procVirusDetectedSlot(const QString&, Q_PID, const QDateTime&, const QDateTime&, const QString&)));
 			
-			connect(m_man, SIGNAL(dirScanStartedSignal(const QString&)), this, SLOT(dirScanStartedSlot(const QString&)));
-			connect(m_man, SIGNAL(dirScanCompletedSignal(const QString&)), this, SLOT(dirScanCompletedSlot(const QString&)));
+			connect(m_man, SIGNAL(dirScanStartedSignal(const QString&, const QDateTime&)), 
+					this, SLOT(dirScanStartedSlot(const QString&, const QDateTime&)));
+			connect(m_man, SIGNAL(dirScanCompletedSignal(const QString&, const QDateTime&, const QDateTime&)), 
+					this, SLOT(dirScanCompletedSlot(const QString&, const QDateTime&, const QDateTime&)));
 			
-			connect(m_man, SIGNAL(memScanStartedSignal()), this, SLOT(memScanStartedSlot()));
-			connect(m_man, SIGNAL(memScanCompletedSignal()), this, SLOT(memScanCompletedSlot()));
+			connect(m_man, SIGNAL(memScanStartedSignal(const QDateTime&)), this, SLOT(memScanStartedSlot(const QDateTime&)));
+			connect(m_man, SIGNAL(memScanCompletedSignal(const QDateTime&, const QDateTime&)), 
+					this, SLOT(memScanCompletedSlot(const QDateTime&, const QDateTime&)));
 			
 			connect(m_man, SIGNAL(fullScanStartedSignal(const QDateTime&)), this, SLOT(fullScanStartedSlot(const QDateTime&)));
-			connect(m_man, SIGNAL(fullScanCompletedSignal(const QDateTime&)), this, SLOT(fullScanCompletedSlot(const QDateTime&)));
+			connect(m_man, SIGNAL(fullScanCompletedSignal(const QDateTime&, const QDateTime&)), 
+					this, SLOT(fullScanCompletedSlot(const QDateTime&, const QDateTime&)));
 			
 			connect(m_man, SIGNAL(stoppedSignal()), this, SLOT(stoppedSlot()));
 			connect(m_man, SIGNAL(pausedSignal()), this, SLOT(pausedSlot()));
 			connect(m_man, SIGNAL(resumedSignal()), this, SLOT(resumedSlot()));
 	}
 	
-	void MeduzzzaCommonWidget::dirScanStartedSlot(const QString &_dir) 
+	void MeduzzzaCommonWidget::dirScanStartedSlot(const QString &_dir, const QDateTime &_time_start) 
 	{
 		m_started = true;
 		m_paused = false;
 		dirScanStarted(_dir);
 	}
 	
-	void MeduzzzaCommonWidget::dirScanCompletedSlot(const QString &_dir) 
+	void MeduzzzaCommonWidget::dirScanCompletedSlot(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end) 
 	{
 		m_started = false;
 		m_paused = false;
 		dirScanCompleted(_dir);
 	}
 	
-	void MeduzzzaCommonWidget::memScanStartedSlot() 
+	void MeduzzzaCommonWidget::memScanStartedSlot(const QDateTime &_time_start) 
 	{
 		m_started = true;
 		m_paused = false;
 		memScanStarted();
 	}
 	
-	void MeduzzzaCommonWidget::memScanCompletedSlot() 
+	void MeduzzzaCommonWidget::memScanCompletedSlot(const QDateTime &_time_start, const QDateTime &_time_end) 
 	{
 		m_started = false;
 		m_paused = false;
 		memScanCompleted();
 	}
 	
-	void MeduzzzaCommonWidget::fullScanStartedSlot(const QDateTime &_time) 
+	void MeduzzzaCommonWidget::fullScanStartedSlot(const QDateTime &_time_start) 
 	{
 		m_started = true;
 		m_paused = false;
-		fullScanStarted(_time);
+		fullScanStarted(_time_start);
 	}
 	
-	void MeduzzzaCommonWidget::fullScanCompletedSlot(const QDateTime &_time) 
+	void MeduzzzaCommonWidget::fullScanCompletedSlot(const QDateTime &_time_start, const QDateTime &_time_end) 
 	{
 		m_started = false;
 		m_paused = false;
-		fullScanCompleted(_time);
+		fullScanCompleted(_time_end);
 	}
 	
 	void MeduzzzaCommonWidget::stoppedSlot() 

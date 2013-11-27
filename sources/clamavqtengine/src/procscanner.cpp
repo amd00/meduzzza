@@ -23,6 +23,7 @@
 #include <QRegExp>
 #include <QDir>
 #include <QTextStream>
+#include <QDateTime>
 
 #include <clamav.h>
 
@@ -64,7 +65,8 @@ namespace Meduzzza
 		long unsigned int scanned = 0;
 		qint32 result = CL_CLEAN;
 		const char *virname = NULL;
-		Q_EMIT procScanStartedSignal(proc_name, m_pid);
+		QDateTime time_start = QDateTime::currentDateTime();
+		Q_EMIT procScanStartedSignal(proc_name, m_pid, time_start);
 		qDebug("INFO: Scanning process: %s(%lli)", proc_name.toLocal8Bit().data(), m_pid);
 		for(QString line = maps_str.readLine(); !line.isNull(); line = maps_str.readLine())
 		{
@@ -107,6 +109,6 @@ namespace Meduzzza
 		}
 		maps_file.close();
 		mem_file.close();
-		Q_EMIT procScanCompletedSignal(proc_name, m_pid, result, virname);
+		Q_EMIT procScanCompletedSignal(proc_name, m_pid, result, time_start, QDateTime::currentDateTime(), virname);
 	}
 }

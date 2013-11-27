@@ -22,6 +22,7 @@
 
 #include <QDir>
 #include <QCoreApplication>
+#include <QDateTime>
 
 #include "memscanner.h"
 
@@ -35,7 +36,8 @@ namespace Meduzzza
 
 	void MemScanner::scanMemory()
 	{
-		Q_EMIT memScanStartedSignal();
+		QDateTime time_start = QDateTime::currentDateTime();
+		Q_EMIT memScanStartedSignal(time_start);
 		QDir proc_dir("/proc");
 		QStringList procs = proc_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot).filter(QRegExp("\\d+"));
 		PidList proc_list;
@@ -47,10 +49,9 @@ namespace Meduzzza
 			Q_PID proc_pid = proc.toInt();
 			if(proc_pid == QCoreApplication::applicationPid())
 				continue;
-			Q_EMIT procFindedSignal(proc_pid);
 			proc_list << proc_pid;
 		}
 		Q_EMIT procsFindedSignal(proc_list);
-		Q_EMIT memScanCompletedSignal();
+		Q_EMIT memScanCompletedSignal(time_start, QDateTime::currentDateTime());
 	}
 }

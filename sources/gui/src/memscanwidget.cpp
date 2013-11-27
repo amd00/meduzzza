@@ -10,29 +10,13 @@
 namespace Meduzzza
 {
 	
-	MemScanModel::MemScanModel() : QSortFilterProxyModel()
-	{
-		MeduzzzaScanModel *mod = MeduzzzaScanModel::get();
-		setSourceModel(mod);
-	}
-
-	bool MemScanModel::filterAcceptsRow(qint32 _row, const QModelIndex &_parent) const
-	{
-		QModelIndex ind = sourceModel() -> index(_row, MeduzzzaScanModel::Pid);
-		if(ind.data().isNull())
-			return false;
-		return true;
-	}
-	
-	
-
 	MemScanWidget::MemScanWidget(MainWindow *_med) : 
-			MeduzzzaCommonWidget(_med), m_ui(new Ui::MemScanWidget), m_mod()
+			MeduzzzaCommonWidget(_med), m_ui(new Ui::MemScanWidget), m_mod(new MeduzzzaScanModel(true))
 	{
 		m_ui -> setupUi(this);
-		connect(&m_mod, SIGNAL(rowsInserted(const QModelIndex&, qint32, qint32)),
+		connect(m_mod, SIGNAL(rowsInserted(const QModelIndex&, qint32, qint32)),
 			this, SLOT(rowsInsertedSlot(const QModelIndex&, qint32, qint32)));
-		m_ui -> m_scan_view -> setModel(&m_mod);
+		m_ui -> m_scan_view -> setModel(m_mod);
 	}
 
 	MemScanWidget::~MemScanWidget() { delete m_ui; }
@@ -81,7 +65,7 @@ namespace Meduzzza
 
 	void MemScanWidget::memScanStarted()
 	{
-		((MeduzzzaScanModel*)m_mod.sourceModel()) -> clear();
+		m_mod -> clear();
 		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
 	}
 
@@ -122,8 +106,8 @@ namespace Meduzzza
 	
 	void MemScanWidget::rowsInsertedSlot(const QModelIndex &_par, qint32 _start, qint32 _end)
 	{
-		QModelIndex ind = m_mod.index(_end, 0, _par);
-		m_ui -> m_scan_view -> scrollTo(ind);
+		QModelIndex ind = m_mod -> index(_end, 0, _par);
+// 		m_ui -> m_scan_view -> scrollTo(ind);
 	}
 	
 }

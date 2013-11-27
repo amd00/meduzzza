@@ -70,31 +70,35 @@ namespace Meduzzza
 	private Q_SLOTS:
 		void filesFindedSlot(const QStringList &_file_list);
 		void procsFindedSlot(const PidList &_proc_list);
-		void procFindedSlot(Q_PID _pid);
 		
-		void fileScanCompletedSlot(const QString &_file, qint32 _result, const QString &_virname);
-		void procScanCompletedSlot(const QString &_name, Q_PID _pid, qint32 _result, const QString &_virname);
-		void dirScanCompletedSlot(const QString &_dir);
-		void memScanCompletedSlot();
-		
+		void fileScanCompletedSlot(const QString &_file, qint32 _result, const QDateTime &_time_start, 
+				const QDateTime &_time_end, const QString &_virname);
+		void procScanCompletedSlot(const QString &_name, Q_PID _pid, qint32 _result, 
+				const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virname);
+		void dirScanCompletedSlot(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end);
+		void memScanCompletedSlot(const QDateTime &_time_start, const QDateTime &_time_end);
+
 	Q_SIGNALS:
-		void fileScanStartedSignal(const QString &_file);
-		void fileScanCompletedSignal(const QString &_file);
-		void fileVirusDetectedSignal(const QString &_file, const QString &_virname);
+		void fileScanStartedSignal(const QString &_file, const QDateTime &_time_start);
+		void fileScanCompletedSignal(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end);
+		void fileVirusDetectedSignal(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virname);
 		
-		void procScanStartedSignal(const QString &_name, Q_PID _pid);
-		void procScanCompletedSignal(const QString &_name, Q_PID _pid);
-		void procVirusDetectedSignal(const QString &_name, Q_PID _pid, const QString &_virname);
+		void procScanStartedSignal(const QString &_name, Q_PID _pid, const QDateTime &_time_start);
+		void procScanCompletedSignal(const QString &_name, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end);
+		void procVirusDetectedSignal(const QString &_name, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virname);
 		
-		void dirScanStartedSignal(const QString &_dir);
-		void dirScanCompletedSignal(const QString &_dir);
+		void dirScanStartedSignal(const QString &_dir, const QDateTime &_time_start);
+		void dirScanCompletedSignal(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end);
 		
-		void memScanStartedSignal();
-		void memScanCompletedSignal();
+		void memScanStartedSignal(const QDateTime &_time_start);
+		void memScanCompletedSignal(const QDateTime &_time_start, const QDateTime &_time_end);
 		
 		void stoppedSignal();
 		void pausedSignal();
 		void resumedSignal();
+		
+		void filesFoundSignal(quint64 _count);
+		void procsFoundSignal(quint64 _count);
 	};
 }
 #endif

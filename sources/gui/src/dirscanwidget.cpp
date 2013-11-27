@@ -11,29 +11,14 @@
 
 namespace Meduzzza
 {
-	DirScanModel::DirScanModel() : QSortFilterProxyModel()
-	{
-		MeduzzzaScanModel *mod = MeduzzzaScanModel::get();
-		setSourceModel(mod);
-	}
-
-	bool DirScanModel::filterAcceptsRow(qint32 _row, const QModelIndex &_parent) const
-	{
-		QModelIndex ind = sourceModel() -> index(_row, MeduzzzaScanModel::Pid);
-		if(ind.data().isNull())
-			return true;
-		return false;
-	}
-
-
 
 	DirScanWidget::DirScanWidget(MainWindow *_med) : 
-			MeduzzzaCommonWidget(_med), m_ui(new Ui::DirScanWidget), m_mod()
+			MeduzzzaCommonWidget(_med), m_ui(new Ui::DirScanWidget), m_mod(new MeduzzzaScanModel(false))
 	{
 		m_ui -> setupUi(this);
-		connect(&m_mod, SIGNAL(rowsInserted(const QModelIndex&, qint32, qint32)),
+		connect(m_mod, SIGNAL(rowsInserted(const QModelIndex&, qint32, qint32)),
 			this, SLOT(rowsInsertedSlot(const QModelIndex&, qint32, qint32)));
-		m_ui -> m_scan_view -> setModel(&m_mod);
+		m_ui -> m_scan_view -> setModel(m_mod);
 		m_ui -> m_scan_view -> setColumnHidden(MeduzzzaScanModel::Pid, true);
 	}
 
@@ -53,7 +38,8 @@ namespace Meduzzza
 
 	void DirScanWidget::dirScanStarted(const QString &_dir)
 	{
-		((MeduzzzaScanModel*)m_mod.sourceModel()) -> clear();
+// 		((MeduzzzaScanModel*)m_mod.sourceModel()) -> clear();
+		m_mod -> clear();
 		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
 	}
 
@@ -131,8 +117,8 @@ namespace Meduzzza
 	
 	void DirScanWidget::rowsInsertedSlot(const QModelIndex &_par, qint32 _start, qint32 _end)
 	{
-		QModelIndex ind = m_mod.index(_end, 0, _par);
-		m_ui -> m_scan_view -> scrollTo(ind);
+		QModelIndex ind = m_mod -> index(_end, 0, _par);
+// 		m_ui -> m_scan_view -> scrollTo(ind);
 	}
 	
 }

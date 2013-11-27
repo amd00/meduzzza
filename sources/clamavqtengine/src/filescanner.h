@@ -47,8 +47,9 @@ namespace Meduzzza
 		void run();
 
 	Q_SIGNALS:
-		void fileScanStartedSignal(const QString &_file);
-		void fileScanCompletedSignal(const QString &_fd, qint32 _result, const QString &_virname);
+		void fileScanStartedSignal(const QString &_file, const QDateTime &_time_start);
+		void fileScanCompletedSignal(const QString &_fd, qint32 _result, const QDateTime &_time_start, 
+				const QDateTime &_time_end, const QString &_virname);
 		void errorSignal(const QString &_file, const QString &_err);
 	};
 }

@@ -47,22 +47,24 @@ namespace Meduzzza
 		virtual void resumed() = 0;
 		
 	private Q_SLOTS:
-		void fileScanStartedSlot(const QString &_file) { fileScanStarted(_file); }
-		void fileScanCompletedSlot(const QString &_file) { fileScanCompleted(_file); }
-		void fileVirusDetectedSlot(const QString &_file, const QString &_virname) { fileVirusDetected(_file, _virname); }
+		void fileScanStartedSlot(const QString &_file, const QDateTime &_time_start) { fileScanStarted(_file); }
+		void fileScanCompletedSlot(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end) { fileScanCompleted(_file); }
+		void fileVirusDetectedSlot(const QString &_file, const QDateTime &_time_start, 
+				const QDateTime &_time_end, const QString &_virname) { fileVirusDetected(_file, _virname); }
 		
-		void procScanStartedSlot(const QString &_name, Q_PID _pid) { procScanStarted(_name, _pid); }
-		void procScanCompletedSlot(const QString &_name, Q_PID _pid) { procScanCompleted(_name, _pid); }
-		void procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QString &_virname) { procVirusDetected(_name, _pid, _virname); }
+		void procScanStartedSlot(const QString &_name, Q_PID _pid, const QDateTime &_time_start) { procScanStarted(_name, _pid); }
+		void procScanCompletedSlot(const QString &_name, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end) { procScanCompleted(_name, _pid); }
+		void procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QDateTime &_time_start, 
+				const QDateTime &_time_end, const QString &_virname) { procVirusDetected(_name, _pid, _virname); }
 		
-		void dirScanStartedSlot(const QString &_dir);
-		void dirScanCompletedSlot(const QString &_dir);
+		void dirScanStartedSlot(const QString &_dir, const QDateTime &_time_start);
+		void dirScanCompletedSlot(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end);
 		
-		void memScanStartedSlot();
-		void memScanCompletedSlot();
+		void memScanStartedSlot(const QDateTime &_time_start);
+		void memScanCompletedSlot(const QDateTime &_time_start, const QDateTime &_time_end);
 		
-		void fullScanStartedSlot(const QDateTime &_time);
-		void fullScanCompletedSlot(const QDateTime &_time);
+		void fullScanStartedSlot(const QDateTime &_time_start);
+		void fullScanCompletedSlot(const QDateTime &_time_start, const QDateTime &_time_end);
 		
 		void stoppedSlot();
 		void pausedSlot();

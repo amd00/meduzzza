@@ -51,8 +51,8 @@ namespace Meduzzza
 	Q_SIGNALS:
 		void filesFindedSignal(const QStringList &_file_list);
 		void errorSignal(const QString &_file, const QString &_err);
-		void dirScanStartedSignal(const QString &_dir);
-		void dirScanCompletedSignal(const QString &_dir);
+		void dirScanStartedSignal(const QString &_dir, const QDateTime &_time_start);
+		void dirScanCompletedSignal(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end);
 	};
 }
 #endif

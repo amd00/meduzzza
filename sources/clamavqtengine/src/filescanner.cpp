@@ -20,6 +20,8 @@
  *  along with clamavqtengine.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QDateTime>
+
 #include <clamav.h>
 
 #include "filescanner.h"
@@ -34,13 +36,14 @@ namespace Meduzzza
 			return;
 		
 		qDebug("INFO: Scanning file: %s", m_file.toLocal8Bit().data());
-		Q_EMIT fileScanStartedSignal(m_file);
+		QDateTime time_start = QDateTime::currentDateTime();
+		Q_EMIT fileScanStartedSignal(m_file, time_start);
 
 		const char *virname = NULL;
 		long unsigned int scanned = 0;
 		int result = cl_scanfile(m_file.toLocal8Bit().data(), &virname, &scanned, m_engine, CL_SCAN_STDOPT);
 
-		Q_EMIT fileScanCompletedSignal(m_file, result, virname);
+		Q_EMIT fileScanCompletedSignal(m_file, result, time_start, QDateTime::currentDateTime(),  virname);
 	}
 
 }

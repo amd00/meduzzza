@@ -21,6 +21,7 @@
  */
 
 #include <QDir>
+#include <QDateTime>
 
 #include "dirscanner.h"
 
@@ -29,12 +30,14 @@ namespace Meduzzza
 
 	void DirScanner::run()
 	{
-		Q_EMIT dirScanStartedSignal(m_dir);
 		scanDir(m_dir, true);
 	}
 
 	void DirScanner::scanDir(const QString &_dir, bool _top)
 	{
+		QDateTime time_start = QDateTime::currentDateTime();
+		if(_top)
+			Q_EMIT dirScanStartedSignal(m_dir, time_start);
 		QDir dir(_dir);
 		if(m_excl_dirs.contains(dir.absolutePath()))
 			return;
@@ -54,10 +57,9 @@ namespace Meduzzza
 			if(Scanner::stopped())
 				return;
 			file_list << dir.absoluteFilePath(f);
-			Sleeper::usleep(100);
 		}
 		Q_EMIT filesFindedSignal(file_list);
 		if(_top)
-			Q_EMIT dirScanCompletedSignal(m_dir);
+			Q_EMIT dirScanCompletedSignal(m_dir, time_start, QDateTime::currentDateTime());
 	}
 }

@@ -4,6 +4,7 @@
 
 #include <QAbstractItemModel>
 #include <QProcess>
+#include <QDateTime>
 
 namespace Meduzzza
 {
@@ -27,7 +28,9 @@ namespace Meduzzza
 			Name = 0,
 			Pid,
 			Status,
-			VirName
+			VirName,
+			StartTime,
+			EndTime
 		};
 		
 	private:
@@ -41,20 +44,21 @@ namespace Meduzzza
 			Q_PID pid;
 			QString virname;
 			qint32 status;
+			QDateTime start_time;
+			QDateTime end_time;
 		};
 		
 	private:
 		QList<ScanItem> m_items;
-		static MeduzzzaScanModel *ms_self;
+		bool m_proc_model;
 		
 	public:
-		static MeduzzzaScanModel *get();
-		
+		MeduzzzaScanModel(bool _proc_model);
 		~MeduzzzaScanModel() {}
 	
 		QVariant data(const QModelIndex &_ind, int _role) const;
 		qint32 rowCount(const QModelIndex &_par = QModelIndex()) const { return m_items.size(); }
-		qint32 columnCount(const QModelIndex &_ind) const { return 4; }
+		qint32 columnCount(const QModelIndex &_ind) const { return 6; }
 		QModelIndex index(qint32 _row, qint32 _column, const QModelIndex &_par) const;
 		QModelIndex parent(const QModelIndex &_ind) const { return QModelIndex(); }
 		QVariant headerData(int section, Qt::Orientation orientation, int _role) const;
@@ -62,24 +66,23 @@ namespace Meduzzza
 		void clear();
 		
 	private:
-		MeduzzzaScanModel();
 		qint32 findItem(const QString &_file);
 		qint32 findItem(const QString &_name, Q_PID _pid);
 	
 	protected Q_SLOTS:
-		void fileScanStartedSlot(const QString &_file);
-		void fileScanCompletedSlot(const QString &_file);
-		void fileVirusDetectedSlot(const QString &_file, const QString &_virname);
+		void fileScanStartedSlot(const QString &_file, const QDateTime &_time_start);
+		void fileScanCompletedSlot(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end);
+		void fileVirusDetectedSlot(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virname);
 		
-		void procScanStartedSlot(const QString &_name, Q_PID _pid);
-		void procScanCompletedSlot(const QString &_name, Q_PID _pid);
-		void procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QString &_virname);
+		void procScanStartedSlot(const QString &_name, Q_PID _pid, const QDateTime &_time_start);
+		void procScanCompletedSlot(const QString &_name, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end);
+		void procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virname);
 		
-		void dirScanStartedSlot(const QString &_dir) {}
-		void dirScanCompletedSlot(const QString &_dir) {}
+		void dirScanStartedSlot(const QString &_dir, const QDateTime &_time_start) {}
+		void dirScanCompletedSlot(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end) {}
 		
-		void memScanStartedSlot() {}
-		void memScanCompletedSlot() {}
+		void memScanStartedSlot(const QDateTime &_time_start) {}
+		void memScanCompletedSlot(const QDateTime &_time_start, const QDateTime &_time_end) {}
 		
 		void stoppedSlot();
 		void pausedSlot() {}

@@ -25,6 +25,7 @@
 
 #include <QObject>
 #include <QProcess>
+#include <QDateTime>
 
 #include <clamavengine.h>
 
@@ -52,6 +53,7 @@ namespace Meduzzza
 		DbUpdater *m_updater;
 		bool m_full_scan_in_progress;
 		Statist *m_statist;
+		QDateTime m_full_scan_time_start;
 		
 		static Manager *ms_self;
 		
@@ -82,33 +84,34 @@ namespace Meduzzza
 		void fullScan();
 		void updateDb(bool _non_block = true);
 		void downloadDb(bool _non_block = true);
-		void moveToQuarantine(const QString &_file, const QString &_virus);
+		void moveToQuarantine(const QString &_file, const QDateTime &_time_start, 
+				const QDateTime &_time_end, const QString &_virus);
 
 	private Q_SLOTS:
-		void fileVirusDetectedSlot(const QString &_file, const QString &_virus);
-// 		void procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QString &_virus);
-		void dirScanCompletedSlot(const QString &_dir);
-		void memScanCompletedSlot();
+		void fileVirusDetectedSlot(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus);
+// 		void procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus);
+		void dirScanCompletedSlot(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end);
+		void memScanCompletedSlot(const QDateTime &_time_start, const QDateTime &_time_end);
 		void updateCompletedSlot();
 		void updateErrorSlot(const QString &_file_name, const QString &_error_string);
 		
 	Q_SIGNALS:
-		void fileScanStartedSignal(const QString &_file);
-		void fileScanCompletedSignal(const QString &_file);
-		void fileVirusDetectedSignal(const QString &_file, const QString &_virus);
+		void fileScanStartedSignal(const QString &_file, const QDateTime &_time_start);
+		void fileScanCompletedSignal(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end);
+		void fileVirusDetectedSignal(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus);
 		
-		void procScanStartedSignal(const QString &_name, Q_PID _pid);
-		void procScanCompletedSignal(const QString &_name, Q_PID _pid);
-		void procVirusDetectedSignal(const QString &_name, Q_PID _pid, const QString &_virus);
+		void procScanStartedSignal(const QString &_name, Q_PID _pid, const QDateTime &_time_start);
+		void procScanCompletedSignal(const QString &_name, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end);
+		void procVirusDetectedSignal(const QString &_name, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus);
 		
-		void dirScanStartedSignal(const QString &_dir);
-		void dirScanCompletedSignal(const QString &_dir);
+		void dirScanStartedSignal(const QString &_dir, const QDateTime &_time_start);
+		void dirScanCompletedSignal(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end);
 		
-		void memScanStartedSignal();
-		void memScanCompletedSignal();
+		void memScanStartedSignal(const QDateTime &_time_start);
+		void memScanCompletedSignal(const QDateTime &_time_start, const QDateTime &_time_end);
 		
-		void fullScanStartedSignal(const QDateTime &_time);
-		void fullScanCompletedSignal(const QDateTime &_time);
+		void fullScanStartedSignal(const QDateTime &_time_start);
+		void fullScanCompletedSignal(const QDateTime &_time_start, const QDateTime &_time_end);
 		
 		void stoppedSignal();
 		void pausedSignal();

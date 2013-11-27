@@ -13,19 +13,8 @@ namespace Ui
 
 namespace Meduzzza
 {
-	class MemScanModel : public QSortFilterProxyModel
-	{
-		Q_OBJECT
-		
-	public:
-		MemScanModel();
-		~MemScanModel() {}
 	
-	protected:
-		bool filterAcceptsRow(qint32 _row, const QModelIndex &_parent) const;
-	};
-
-//==============================================================================//
+	class MeduzzzaScanModel;
 
 	class MemScanWidget : public MeduzzzaCommonWidget
 	{
@@ -33,7 +22,7 @@ namespace Meduzzza
 		
 	private:
 		Ui::MemScanWidget *m_ui;
-		MemScanModel m_mod;
+		MeduzzzaScanModel *m_mod;
 		
 	public:
 		MemScanWidget(MainWindow *_med);

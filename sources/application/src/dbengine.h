@@ -26,6 +26,9 @@
 #include <QObject>
 #include <QSqlDatabase>
 #include <QDir>
+#include <QProcess>
+#include <QMap>
+#include <QDebug>
 
 class DbEngine : public QObject
 {
@@ -33,6 +36,7 @@ class DbEngine : public QObject
 
 private:
 	QSqlDatabase m_db;
+	QMap<QString, QSqlQuery*> m_queries;
 
 public:
 	DbEngine(const QDir &_dir);
@@ -41,10 +45,14 @@ public:
 	void commit() { m_db.commit(); }
 
 public Q_SLOTS:
-	void fileMovedToQuarantineSlot(const QString &_source, const QString &_quarantined, const QString &_virus);
-	void fullScanCompletedSlot(const QDateTime &_time);
-	void fileVirusDetectedSlot(const QString &_file, const QString &_virus);
-	void dirScanCompletedSlot(const QDateTime &_time, quint64 _files_count, quint64 _viruses_count);
+	void fileScanCompletedSlot(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end);
+	void procScanCompletedSlot(const QString &_name, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end);
+	void fileVirusDetectedSlot(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus);
+	void procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus);
+	void fileMovedToQuarantineSlot(const QString &_file, const QString &_q_file, const QString &_virus);
+	void dirScanCompletedSlot(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end);
+	void memScanCompletedSlot(const QDateTime &_time_start, const QDateTime &_time_end);
+	void fullScanCompletedSlot(const QDateTime &_time_start, const QDateTime &_time_end);
 };
 
 #endif

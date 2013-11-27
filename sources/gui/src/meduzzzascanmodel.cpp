@@ -6,33 +6,34 @@
 namespace Meduzzza
 {
 	
-	MeduzzzaScanModel *MeduzzzaScanModel::ms_self = NULL;
-		
-	MeduzzzaScanModel *MeduzzzaScanModel::get()
-	{
-		if(ms_self == NULL)
-			ms_self = new MeduzzzaScanModel;
-		return ms_self;
-	}
-
-	MeduzzzaScanModel::MeduzzzaScanModel() : QAbstractItemModel()
+	MeduzzzaScanModel::MeduzzzaScanModel(bool _proc_model) : QAbstractItemModel(), m_proc_model(_proc_model)
 	{
 		Manager *_man = Manager::get();
-		connect(_man, SIGNAL(fileScanStartedSignal(const QString&)), this, SLOT(fileScanStartedSlot(const QString&)));
-		connect(_man, SIGNAL(fileScanCompletedSignal(const QString&)), this, SLOT(fileScanCompletedSlot(const QString&)));
-		connect(_man, SIGNAL(fileVirusDetectedSignal(const QString&, const QString&)), 
-				this, SLOT(fileVirusDetectedSlot(const QString&, const QString&)));
 		
-		connect(_man, SIGNAL(procScanStartedSignal(const QString&, Q_PID)), this, SLOT(procScanStartedSlot(const QString&, Q_PID)));
-		connect(_man, SIGNAL(procScanCompletedSignal(const QString&, Q_PID)), this, SLOT(procScanCompletedSlot(const QString&, Q_PID)));
-		connect(_man, SIGNAL(procVirusDetectedSignal(const QString&, Q_PID, const QString&)), 
-				this, SLOT(procVirusDetectedSlot(const QString&, Q_PID, const QString&)));
-		
-		connect(_man, SIGNAL(dirScanStartedSignal(const QString&)), this, SLOT(dirScanStartedSlot(const QString&)));
-		connect(_man, SIGNAL(dirScanCompletedSignal(const QString&)), this, SLOT(dirScanCompletedSlot(const QString&)));
-		
-		connect(_man, SIGNAL(memScanStartedSignal()), this, SLOT(memScanStartedSlot()));
-		connect(_man, SIGNAL(memScanCompletedSignal()), this, SLOT(memScanCompletedSlot()));
+		if(m_proc_model)
+		{
+			connect(_man, SIGNAL(memScanStartedSignal(const QDateTime&)), this, SLOT(memScanStartedSlot(const QDateTime&)));
+			connect(_man, SIGNAL(memScanCompletedSignal(const QDateTime&, const QDateTime&)), this, SLOT(memScanCompletedSlot(const QDateTime&, const QDateTime&)));
+			connect(_man, SIGNAL(procScanStartedSignal(const QString&, Q_PID, const QDateTime&)), 
+				this, SLOT(procScanStartedSlot(const QString&, Q_PID, const QDateTime&)));
+			connect(_man, SIGNAL(procScanCompletedSignal(const QString&, Q_PID, const QDateTime&, const QDateTime&)), 
+				this, SLOT(procScanCompletedSlot(const QString&, Q_PID, const QDateTime&, const QDateTime&)));
+			connect(_man, SIGNAL(procVirusDetectedSignal(const QString&, Q_PID, const QDateTime&, const QDateTime&, const QString&)), 
+				this, SLOT(procVirusDetectedSlot(const QString&, Q_PID, const QDateTime&, const QDateTime&, const QString&)));
+		}
+		else
+		{
+			connect(_man, SIGNAL(dirScanStartedSignal(const QString&, const QDateTime&)), 
+					this, SLOT(dirScanStartedSlot(const QString&, const QDateTime&)));
+			connect(_man, SIGNAL(dirScanCompletedSignal(const QString&, const QDateTime&, const QDateTime&)), 
+					this, SLOT(dirScanCompletedSlot(const QString&, const QDateTime&, const QDateTime&)));
+			connect(_man, SIGNAL(fileScanStartedSignal(const QString&, const QDateTime&)), 
+					this, SLOT(fileScanStartedSlot(const QString&, const QDateTime&)));
+			connect(_man, SIGNAL(fileScanCompletedSignal(const QString&, const QDateTime&, const QDateTime&)), 
+					this, SLOT(fileScanCompletedSlot(const QString&, const QDateTime&, const QDateTime&)));
+			connect(_man, SIGNAL(fileVirusDetectedSignal(const QString&, const QDateTime&, const QDateTime&, const QString&)), 
+					this, SLOT(fileVirusDetectedSlot(const QString&, const QDateTime&, const QDateTime&, const QString&)));
+		}
 		
 		connect(_man, SIGNAL(stoppedSignal()), this, SLOT(stoppedSlot()));
 		connect(_man, SIGNAL(pausedSignal()), this, SLOT(pausedSlot()));
@@ -74,7 +75,13 @@ namespace Meduzzza
 					}
 					break;
 				case VirName:
-					res = item.virname;
+					res = _ind.data(Qt::UserRole + VirName);
+					break;
+				case StartTime:
+					res = QLocale().toString(_ind.data(Qt::UserRole + StartTime).toDateTime(), QLocale::ShortFormat);
+					break;
+				case EndTime:
+					res = QLocale().toString(_ind.data(Qt::UserRole + EndTime).toDateTime(), QLocale::ShortFormat);
 					break;
 				}
 				break;
@@ -89,6 +96,12 @@ namespace Meduzzza
 				break;
 			case Qt::UserRole + VirName:
 				res = item.virname;
+				break;
+			case Qt::UserRole + StartTime:
+				res = item.start_time;
+				break;
+			case Qt::UserRole + EndTime:
+				res = item.end_time;
 				break;
 			default:
 				break;
@@ -127,6 +140,12 @@ namespace Meduzzza
 				case VirName:
 					res = tr("Virus");
 					break;
+				case StartTime:
+					res = tr("Start time");
+					break;
+				case EndTime:
+					res = tr("End time");
+					break;
 				}
 				break;
 			default:
@@ -158,65 +177,73 @@ namespace Meduzzza
 			return -1;
 		}
 	
-		void MeduzzzaScanModel::fileScanStartedSlot(const QString &_file)
+		void MeduzzzaScanModel::fileScanStartedSlot(const QString &_file, const QDateTime &_time_start)
 		{
-			beginInsertRows(QModelIndex(), rowCount(), rowCount());
 			ScanItem item(_file);
+			item.start_time = _time_start;
+			beginInsertRows(QModelIndex(), rowCount(), rowCount());
 			m_items << item;
 			endInsertRows();
 		}
 		
-		void MeduzzzaScanModel::fileScanCompletedSlot(const QString &_file) 
+		void MeduzzzaScanModel::fileScanCompletedSlot(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end) 
 		{
 			qint32 i = findItem(_file);
 			if(i == -1)
 				return;
 			m_items[i].virname = "";
 			m_items[i].status = MeduzzzaScanModel::Clean;
+			m_items[i].end_time = _time_end;
 			QModelIndex ind_begin = index(i, MeduzzzaScanModel::Status, QModelIndex());
 			QModelIndex ind_end = index(i, MeduzzzaScanModel::VirName, QModelIndex());
 			Q_EMIT dataChanged(ind_begin, ind_end);
 		}
 		
-		void MeduzzzaScanModel::fileVirusDetectedSlot(const QString &_file, const QString &_virname) 
+		void MeduzzzaScanModel::fileVirusDetectedSlot(const QString &_file, const QDateTime &_time_start, 
+													  const QDateTime &_time_end, const QString &_virname) 
 		{
 			qint32 i = findItem(_file);
 			if(i == -1)
 				return;
 			m_items[i].virname = _virname;
 			m_items[i].status = MeduzzzaScanModel::Infected;
+			m_items[i].end_time = _time_end;
 			QModelIndex ind_begin = index(i, MeduzzzaScanModel::Status, QModelIndex());
 			QModelIndex ind_end = index(i, MeduzzzaScanModel::VirName, QModelIndex());
 			Q_EMIT dataChanged(ind_begin, ind_end);
 		}
 		
-		void MeduzzzaScanModel::procScanStartedSlot(const QString &_name, Q_PID _pid) 
+		void MeduzzzaScanModel::procScanStartedSlot(const QString &_name, Q_PID _pid, const QDateTime &_time_start) 
 		{
 			beginInsertRows(QModelIndex(), rowCount(), rowCount());
 			ScanItem item(_name, _pid);
+			item.start_time = _time_start;
 			m_items << item;
 			endInsertRows();
 		}
 		
-		void MeduzzzaScanModel::procScanCompletedSlot(const QString &_name, Q_PID _pid) 
+		void MeduzzzaScanModel::procScanCompletedSlot(const QString &_name, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end) 
 		{
 			qint32 i = findItem(_name, _pid);
 			if(i == -1)
 				return;
 			m_items[i].virname = "";
 			m_items[i].status = MeduzzzaScanModel::Clean;
+			m_items[i].end_time = _time_end;
 			QModelIndex ind_begin = index(i, MeduzzzaScanModel::Status, QModelIndex());
 			QModelIndex ind_end = index(i, MeduzzzaScanModel::VirName, QModelIndex());
 			Q_EMIT dataChanged(ind_begin, ind_end);
 		}
 		
-		void MeduzzzaScanModel::procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QString &_virname) 
+		void MeduzzzaScanModel::procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QDateTime &_time_start, 
+				const QDateTime &_time_end, const QString &_virname) 
 		{
 			qint32 i = findItem(_name, _pid);
 			if(i == -1)
 				return;
 			m_items[i].virname = _virname;
 			m_items[i].status = MeduzzzaScanModel::Infected;
+			m_items[i].end_time = _time_end;
 			QModelIndex ind_begin = index(i, MeduzzzaScanModel::Status, QModelIndex());
 			QModelIndex ind_end = index(i, MeduzzzaScanModel::VirName, QModelIndex());
 			Q_EMIT dataChanged(ind_begin, ind_end);
