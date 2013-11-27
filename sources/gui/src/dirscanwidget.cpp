@@ -38,7 +38,7 @@ namespace Meduzzza
 
 	void DirScanWidget::dirScanStarted(const QString &_dir)
 	{
-// 		((MeduzzzaScanModel*)m_mod.sourceModel()) -> clear();
+		m_ui -> m_progress -> setValue(0);
 		m_mod -> clear();
 		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
 	}

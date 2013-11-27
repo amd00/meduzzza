@@ -32,7 +32,7 @@
 #include "procscanner.h"
 #include "dirscanner.h"
 #include "memscanner.h"
-#include <QDebug>
+
 namespace Meduzzza
 {
 	class ClamavEnginePrivate
@@ -163,6 +163,7 @@ namespace Meduzzza
 				this, SIGNAL(procScanStartedSignal(const QString&, Q_PID, const QDateTime&)));
 		connect(scanner, SIGNAL(procScanCompletedSignal(const QString&, Q_PID, qint32, const QDateTime&, const QDateTime&, const QString&)), 
 				this, SLOT(procScanCompletedSlot(const QString&, Q_PID, qint32, const QDateTime&, const QDateTime&, const QString&)));
+		connect(scanner, SIGNAL(errorSignal(const QString&, Q_PID, const QString&)), this, SLOT(procScanErrorSlot(const QString&, Q_PID, const QString&)));
 		m_p -> pool() -> start(scanner);
 		return true;
 	}
@@ -201,6 +202,7 @@ namespace Meduzzza
 	{
 		if(m_p -> pool() -> activeThreadCount())
 			return false;
+		m_p -> setFilesCount(0);
 		return scanDirThread(_dir, _excl_dirs);
 	}
 
@@ -208,6 +210,7 @@ namespace Meduzzza
 	{
 		if(m_p -> pool() -> activeThreadCount())
 			return false;
+		m_p -> setProcsCount(0);
 		return scanMemThread();
 	}
 
@@ -287,6 +290,12 @@ namespace Meduzzza
 		while(!m_p -> pool() -> waitForDone(10))
 			QCoreApplication::processEvents();
 		Q_EMIT memScanCompletedSignal(_time_start, QDateTime::currentDateTime());
+	}
+	
+	void ClamavEngine::procScanErrorSlot(const QString &_name, Q_PID _pid, const QString &_error)
+	{
+		m_p -> setProcsCount(m_p -> procsCount() - 1);
+		Q_EMIT procsFoundSignal(m_p -> procsCount());
 	}
 
 	void ClamavEngine::filesFindedSlot(const QStringList &_file_list)

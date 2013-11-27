@@ -28,7 +28,6 @@
 #include <QDir>
 #include <QProcess>
 #include <QMap>
-#include <QDebug>
 
 class DbEngine : public QObject
 {

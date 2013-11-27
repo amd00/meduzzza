@@ -91,7 +91,6 @@ namespace Meduzzza
 					if((quint64)buf.size() < size - read && mem_file.error() != QFile::NoError)
 					{
 						qCritical("ERROR: Read file error: mem: %s", mem_file.errorString().toLocal8Bit().data());
-// 						Q_EMIT errorSignal(proc_name, m_pid, mem_file.errorString());
 						read += size - read;
 						continue;
 					}

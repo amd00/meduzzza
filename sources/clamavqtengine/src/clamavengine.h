@@ -77,6 +77,7 @@ namespace Meduzzza
 				const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virname);
 		void dirScanCompletedSlot(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end);
 		void memScanCompletedSlot(const QDateTime &_time_start, const QDateTime &_time_end);
+		void procScanErrorSlot(const QString &_name, Q_PID _pid, const QString &_error);
 
 	Q_SIGNALS:
 		void fileScanStartedSignal(const QString &_file, const QDateTime &_time_start);

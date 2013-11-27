@@ -65,6 +65,7 @@ namespace Meduzzza
 
 	void MemScanWidget::memScanStarted()
 	{
+		m_ui -> m_progress -> setValue(0);
 		m_mod -> clear();
 		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
 	}

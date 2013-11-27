@@ -40,6 +40,7 @@ namespace Meduzzza
 	
 	void ScanWidget::memScanStarted()
 	{
+		m_ui -> m_progress -> setValue(0);
 		m_ui -> m_scanobj_label -> setText(tr("Memory scanning..."));
 	}
 	
@@ -50,6 +51,7 @@ namespace Meduzzza
 	
 	void ScanWidget::dirScanStarted(const QString &_dir)
 	{
+		m_ui -> m_progress -> setValue(0);
 		m_ui -> m_scanobj_label -> setText(tr("Filesystem scanning..."));
 	}
 	
