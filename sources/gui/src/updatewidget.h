@@ -5,6 +5,7 @@
 #include <QWidget>
 
 class QProgressBar;
+class QLabel;
 
 namespace Ui
 {

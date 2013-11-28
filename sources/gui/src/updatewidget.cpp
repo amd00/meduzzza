@@ -1,5 +1,7 @@
 
 #include <QProgressBar>
+#include <QLabel>
+
 #include <manager.h>
 
 #include <ui_updatewidget.h>

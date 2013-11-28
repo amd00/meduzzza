@@ -32,7 +32,7 @@
 #include "procscanner.h"
 #include "dirscanner.h"
 #include "memscanner.h"
-
+#include <QDebug>
 namespace Meduzzza
 {
 	class ClamavEnginePrivate
@@ -57,8 +57,8 @@ namespace Meduzzza
 		QString dbPath() const { return m_db_path; }
 		cl_engine *engine() const { return m_engine; }
 		QThreadPool *pool() const { return m_pool; }
-		quint64 filesCount() { return m_files_count; }
-		quint64 procsCount() { return m_procs_count; }
+		quint64 filesCount() const { return m_files_count; }
+		quint64 procsCount() const { return m_procs_count; }
 		
 		void setDbPath(const QString _db_path) { m_db_path = _db_path; }
 		void setEngine(cl_engine *_engine) { m_engine = _engine; }

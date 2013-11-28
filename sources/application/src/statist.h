@@ -24,6 +24,7 @@
 #define _STATIST_H_
 
 #include <QObject>
+#include <QProcess>
 
 namespace Meduzzza
 {
@@ -54,8 +55,8 @@ namespace Meduzzza
 	public Q_SLOTS:
 		void fileScanCompletedSlot(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end);
 		void fileVirusDetectedSlot(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus);
-		void procScanCompletedSlot(const QString &_proc, qint32 _pid, const QDateTime &_time_start, const QDateTime &_time_end);
-		void procVirusDetectedSlot(const QString &_proc, qint32 _pid, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus);
+		void procScanCompletedSlot(const QString &_proc, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end);
+		void procVirusDetectedSlot(const QString &_proc, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus);
 		void fileMovedToQuarantineSlot(const QString &_source, const QString &_quarantined, const QString &_virus) 
 		{ Q_UNUSED(_source) Q_UNUSED(_quarantined) Q_UNUSED(_virus) m_quarantined++; }
 	};

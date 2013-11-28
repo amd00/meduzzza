@@ -4,7 +4,7 @@
 #include <ui_scanwidget.h>
 
 #include "scanwidget.h"
-#include "scanreswidget.h"
+#include "scanresdialog.h"
 #include "mainwindow.h"
 
 namespace Meduzzza

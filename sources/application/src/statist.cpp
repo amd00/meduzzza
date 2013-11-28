@@ -48,14 +48,14 @@ namespace Meduzzza
 		m_file_viruses_count++;
 	}
 
-	void Statist::procScanCompletedSlot(const QString &_proc, qint32 _pid, const QDateTime &_time_start, const QDateTime &_time_end)
+	void Statist::procScanCompletedSlot(const QString &_proc, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end)
 	{
 		Q_UNUSED(_proc)
 		Q_UNUSED(_pid)
 		m_proc_count++;
 	}
 
-	void Statist::procVirusDetectedSlot(const QString &_proc, qint32 _pid, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus)
+	void Statist::procVirusDetectedSlot(const QString &_proc, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus)
 	{
 		Q_UNUSED(_proc)
 		Q_UNUSED(_pid)

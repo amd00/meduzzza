@@ -105,7 +105,7 @@ namespace Meduzzza
 				m_db, SLOT(memScanCompletedSlot(const QDateTime&, const QDateTime&)));
 		connect(this, SIGNAL(fullScanCompletedSignal(const QDateTime&, const QDateTime&)), 
 				m_db, SLOT(fullScanCompletedSlot(const QDateTime&, const QDateTime&)));
-		connect(m_engine, SIGNAL(stoppedSignal()), m_db, SIGNAL(commit()));
+		connect(m_engine, SIGNAL(stoppedSignal()), m_db, SLOT(commit()));
 
 
 		connect(this, SIGNAL(fileScanCompletedSignal(const QString&, const QDateTime&, const QDateTime&)), 
@@ -181,6 +181,7 @@ namespace Meduzzza
 		QEventLoop loop;
 		loop.connect(m_engine, SIGNAL(dirScanCompletedSignal(const QString&)), SLOT(quit()));
 
+		m_statist -> reset();
 		m_db -> transaction();
 		m_engine -> scanDir(_dir, QStringList() << _excl_dirs << m_quarantine_dir.absolutePath());
 

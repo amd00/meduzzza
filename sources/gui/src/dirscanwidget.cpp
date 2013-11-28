@@ -8,6 +8,7 @@
 #include "mainwindow.h"
 #include "dirscanwidget.h"
 #include "meduzzzascanmodel.h"
+#include "scanresdialog.h"
 
 namespace Meduzzza
 {
@@ -46,7 +47,8 @@ namespace Meduzzza
 	void DirScanWidget::dirScanCompleted(const QString &_dir)
 	{
 		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/play.png"));
-		
+		ScanResDialog res;
+		res.exec();
 	}
 	
 	void DirScanWidget::memScanStarted()
