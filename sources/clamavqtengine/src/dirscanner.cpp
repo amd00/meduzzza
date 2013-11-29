@@ -22,8 +22,10 @@
 
 #include <QDir>
 #include <QDateTime>
+#include <QCoreApplication>
 
 #include "dirscanner.h"
+#include "scanevent.h"
 
 namespace Meduzzza
 {
@@ -37,7 +39,11 @@ namespace Meduzzza
 	{
 		QDateTime time_start = QDateTime::currentDateTime();
 		if(_top)
-			Q_EMIT dirScanStartedSignal(m_dir, time_start);
+		{
+			DirScanStartedEvent *event(new DirScanStartedEvent(m_dir, time_start));
+			QCoreApplication::postEvent((QObject*)engine(), event, event -> priority());
+		}
+// 			Q_EMIT dirScanStartedSignal(m_dir, time_start);
 		QDir dir(_dir);
 		if(m_excl_dirs.contains(dir.absolutePath()))
 			return;
@@ -60,6 +66,10 @@ namespace Meduzzza
 		}
 		Q_EMIT filesFindedSignal(file_list);
 		if(_top)
+// 		{
+// 			DirScanCompletedEvent *event(new DirScanCompletedEvent(m_dir, time_start, QDateTime::currentDateTime()));
+// 			QCoreApplication::postEvent((QObject*)engine(), event, event -> priority());
+// 		}
 			Q_EMIT dirScanCompletedSignal(m_dir, time_start, QDateTime::currentDateTime());
 	}
 }

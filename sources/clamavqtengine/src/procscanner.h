@@ -40,7 +40,7 @@ namespace Meduzzza
 		Q_PID m_pid;
 
 	public:
-		ProcScanner(cl_engine *_engine, Q_PID &_pid) : Scanner(), m_engine(_engine), m_pid(_pid) {}
+		ProcScanner(ClamavEngine *_engine, Q_PID &_pid) : Scanner(_engine), m_pid(_pid) {}
 		~ProcScanner() {}
 
 	protected:

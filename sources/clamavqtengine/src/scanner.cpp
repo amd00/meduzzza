@@ -3,6 +3,7 @@
 #include <QWaitCondition>
 
 #include "scanner.h"
+#include "clamavengine.h"
 
 namespace Meduzzza
 {
@@ -13,6 +14,7 @@ namespace Meduzzza
 		static bool m_is_paused;
 		static QMutex m_mutex;
 		static QWaitCondition m_pause_manager;
+		ClamavEngine *m_engine;
 
 	public:
 		ScannerPrivate() {}
@@ -22,9 +24,11 @@ namespace Meduzzza
 		static bool paused() { return ScannerPrivate::m_is_paused; }
 		static QMutex &mutex() { return ScannerPrivate::m_mutex; }
 		static QWaitCondition &pauseManager() { return ScannerPrivate::m_pause_manager; }
+		ClamavEngine *engine() const { return m_engine; }
 		
 		static void setStopped(bool _is_stopped) { ScannerPrivate::m_is_stopped = _is_stopped; }
 		static void setPaused(bool _is_paused) { ScannerPrivate::m_is_paused = _is_paused; }
+		void setEngine(ClamavEngine *_engine) { m_engine = _engine; }
 	};
 	
 	bool ScannerPrivate::m_is_stopped(false);
@@ -34,7 +38,10 @@ namespace Meduzzza
 	
 //============================================================================================//	
 	
-	Scanner::Scanner() : m_p(new ScannerPrivate) {}
+	Scanner::Scanner(ClamavEngine *_engine) : m_p(new ScannerPrivate) 
+	{
+		m_p -> setEngine(_engine);
+	}
 	
 	Scanner::~Scanner() { delete m_p; }
 	
@@ -69,4 +76,6 @@ namespace Meduzzza
 			ScannerPrivate::mutex().unlock();
 		}
 	}
+	
+	ClamavEngine *Scanner::engine() const { return m_p -> engine(); }
 }

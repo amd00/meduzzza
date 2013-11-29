@@ -70,7 +70,7 @@
           <item>
            <widget class="QLabel" name="m_info_label">
             <property name="text">
-             <string>TextLabel</string>
+             <string>Information</string>
             </property>
            </widget>
           </item>
@@ -126,28 +126,28 @@
             <item>
              <widget class="QLabel" name="m_healthinfo_label">
               <property name="text">
-               <string>TextLabel</string>
+               <string/>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QLabel" name="m_infinfo_label">
               <property name="text">
-               <string>TextLabel</string>
+               <string/>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QLabel" name="m_quarinfo_label">
               <property name="text">
-               <string>TextLabel</string>
+               <string/>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QLabel" name="m_otherinfo_label">
               <property name="text">
-               <string>TextLabel</string>
+               <string/>
               </property>
              </widget>
             </item>

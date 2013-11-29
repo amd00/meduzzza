@@ -36,7 +36,7 @@ namespace Meduzzza
 		Q_OBJECT
 
 	public:
-		MemScanner()  : Scanner() {}
+		MemScanner(ClamavEngine *_engine)  : Scanner(_engine) {}
 		~MemScanner() {}
 
 	protected:

@@ -21,7 +21,7 @@ namespace Meduzzza
 		m_ui -> m_infinfo_label -> setText(QString::number(statist -> fileVirusesCount()));
 		m_ui -> m_quarinfo_label -> setText(QString::number(statist -> quarantined()));
 		
-		qint32 health_str = (float)statist -> filesCount() - statist -> fileVirusesCount() / (float)statist -> filesCount() * 100;
+		qint32 health_str = ((float)statist -> filesCount() - statist -> fileVirusesCount()) / (float)statist -> filesCount() * 100;
 		qint32 inf_str = (float)statist -> fileVirusesCount() / (float)statist -> filesCount() * 100;
 		qint32 quar_str = (float)statist -> quarantined() / (float)statist -> filesCount() * 100;
 		m_ui -> m_diagram_layout -> setStretch(0, health_str);

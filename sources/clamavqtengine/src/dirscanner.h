@@ -38,7 +38,7 @@ namespace Meduzzza
 		QStringList m_excl_dirs;
 
 	public:
-		DirScanner(const QString &_dir, const QStringList &_excl_dirs)  : Scanner(), 
+		DirScanner(ClamavEngine *_engine, const QString &_dir, const QStringList &_excl_dirs)  : Scanner(_engine), 
 				m_dir(_dir), m_excl_dirs(_excl_dirs) {}
 		~DirScanner() {}
 

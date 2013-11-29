@@ -29,6 +29,7 @@
 namespace Meduzzza
 {
 	class ScannerPrivate;
+	class ClamavEngine;
 	
 	class Sleeper : public QThread
 	{
@@ -40,11 +41,10 @@ namespace Meduzzza
 	
 	class Scanner : public QObject, public QRunnable
 	{
-	private:
 		ScannerPrivate *m_p;
 
 	public:
-		Scanner();
+		Scanner(ClamavEngine *_engine);
 		virtual ~Scanner();
 		
 		void run();
@@ -59,6 +59,7 @@ namespace Meduzzza
 	protected:
 		virtual void runThread() = 0;
 		void checkPause();
+		ClamavEngine *engine() const;
 	};
 }
 

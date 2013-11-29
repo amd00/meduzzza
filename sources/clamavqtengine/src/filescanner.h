@@ -36,11 +36,10 @@ namespace Meduzzza
 		Q_OBJECT
 
 	private:
-		cl_engine *m_engine;
 		QString m_file;
 
 	public:
-		FileScanner(cl_engine *_engine, const QString &_file) : Scanner(), m_engine(_engine), m_file(_file) {}
+		FileScanner(ClamavEngine *_engine, const QString &_file) : Scanner(_engine), m_file(_file) {}
 		~FileScanner() {}
 
 	protected:

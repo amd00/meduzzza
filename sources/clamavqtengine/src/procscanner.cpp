@@ -28,6 +28,7 @@
 #include <clamav.h>
 
 #include "procscanner.h"
+#include "clamavengine.h"
 
 namespace Meduzzza
 {
@@ -96,7 +97,7 @@ namespace Meduzzza
 					}
 					
 					cl_fmap_t *fmap = cl_fmap_open_memory(buf.data(), buf.size());
-					result = cl_scanmap_callback(fmap, &virname, &scanned, m_engine, CL_SCAN_STDOPT, NULL);
+					result = cl_scanmap_callback(fmap, &virname, &scanned, engine() -> engine(), CL_SCAN_STDOPT, NULL);
 					cl_fmap_close(fmap);
 					if(result == CL_VIRUS)
 						break;

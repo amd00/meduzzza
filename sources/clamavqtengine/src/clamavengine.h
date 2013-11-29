@@ -29,6 +29,8 @@
 class QThreadPool;
 typedef QList<Q_PID> PidList;
 
+class cl_engine;
+
 namespace Meduzzza
 {
 	class ClamavEnginePrivate;
@@ -45,6 +47,7 @@ namespace Meduzzza
 		virtual ~ClamavEngine();
 		
 		bool init();
+		cl_engine *engine() const;
 		
 		qint32 dbAge() const;
 		qint32 loadDb();
@@ -56,6 +59,8 @@ namespace Meduzzza
 		void stop();
 		void pause();
 		void resume();
+		
+		bool event(QEvent *_event);
 
 	protected:
 		virtual qint32 loadSignature(const QString &_type, const QString &_name) const;
