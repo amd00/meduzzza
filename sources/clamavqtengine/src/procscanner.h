@@ -47,9 +47,6 @@ namespace Meduzzza
 		void runThread();
 
 	Q_SIGNALS:
-		void procScanStartedSignal(const QString &_name, Q_PID _pid, const QDateTime &_time_start);
-		void procScanCompletedSignal(const QString &_name, Q_PID _pid, qint32 _result, 
-				const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virname);
 		void errorSignal(const QString &_name, Q_PID _pid, const QString &_err);
 	};
 }

@@ -24,11 +24,13 @@
 #include <QDir>
 #include <QTextStream>
 #include <QDateTime>
+#include <QCoreApplication>
 
 #include <clamav.h>
 
 #include "procscanner.h"
 #include "clamavengine.h"
+#include "scanevent.h"
 
 namespace Meduzzza
 {
@@ -67,7 +69,9 @@ namespace Meduzzza
 		qint32 result = CL_CLEAN;
 		const char *virname = NULL;
 		QDateTime time_start = QDateTime::currentDateTime();
-		Q_EMIT procScanStartedSignal(proc_name, m_pid, time_start);
+		ProcScanStartedEvent *start_event(new ProcScanStartedEvent(proc_name, m_pid, time_start));
+		QCoreApplication::postEvent((QObject*)engine(), start_event, start_event -> priority());
+		
 		qDebug("INFO: Scanning process: %s(%lli)", proc_name.toLocal8Bit().data(), m_pid);
 		for(QString line = maps_str.readLine(); !line.isNull(); line = maps_str.readLine())
 		{
@@ -109,6 +113,7 @@ namespace Meduzzza
 		}
 		maps_file.close();
 		mem_file.close();
-		Q_EMIT procScanCompletedSignal(proc_name, m_pid, result, time_start, QDateTime::currentDateTime(), virname);
+		ProcScanCompletedEvent *end_event(new ProcScanCompletedEvent(proc_name, m_pid, result, time_start, QDateTime::currentDateTime(), virname));
+		QCoreApplication::postEvent((QObject*)engine(), end_event, end_event -> priority());
 	}
 }

@@ -41,6 +41,7 @@ namespace Meduzzza
 	
 	class Scanner : public QObject, public QRunnable
 	{
+	private:
 		ScannerPrivate *m_p;
 
 	public:

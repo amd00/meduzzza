@@ -24,20 +24,27 @@
 #define _MEMSCANNER_H_
 
 #include <QProcess>
+#include <QDateTime>
 
 #include "scanner.h"
 
 typedef QList<Q_PID> PidList;
+
+class QThreadPool;
 
 namespace Meduzzza
 {
 	class MemScanner : public Scanner
 	{
 		Q_OBJECT
+		
+	private:
+		QThreadPool *m_pool;
+		QDateTime m_start_time;
 
 	public:
-		MemScanner(ClamavEngine *_engine)  : Scanner(_engine) {}
-		~MemScanner() {}
+		MemScanner(ClamavEngine *_engine);
+		~MemScanner();
 
 	protected:
 		void runThread();
@@ -48,9 +55,7 @@ namespace Meduzzza
 
 	Q_SIGNALS:
 		void procsFindedSignal(const PidList &_proc_list);
-		
-		void memScanStartedSignal(const QDateTime &_time_start);
-		void memScanCompletedSignal(const QDateTime &_time_start, const QDateTime &_time_end);
+		void errorSignal(const QString &_name, Q_PID _pid, const QString &_err);
 	};
 }
 #endif

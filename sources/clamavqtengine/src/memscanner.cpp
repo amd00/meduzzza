@@ -23,21 +23,39 @@
 #include <QDir>
 #include <QCoreApplication>
 #include <QDateTime>
+#include <QThreadPool>
 
 #include "memscanner.h"
+#include "procscanner.h"
+#include "scanevent.h"
 
 namespace Meduzzza
 {
+	
+	MemScanner::MemScanner(ClamavEngine *_engine) : Scanner(_engine), m_pool(new QThreadPool)
+	{
+		qint32 th_count = QThread::idealThreadCount();
+		m_pool -> setMaxThreadCount(th_count <=0 ? 1 : th_count);
+	}
+		
+	MemScanner::~MemScanner()
+	{
+		m_pool -> waitForDone();
+		MemScanCompletedEvent *end_event(new MemScanCompletedEvent(m_start_time, QDateTime::currentDateTime()));
+		QCoreApplication::postEvent((QObject*)engine(), end_event, end_event -> priority());
+		delete m_pool;
+	}
 
 	void MemScanner::runThread()
 	{
+		QDateTime m_start_time = QDateTime::currentDateTime();
+		MemScanStartedEvent *start_event(new MemScanStartedEvent(m_start_time));
+		QCoreApplication::postEvent((QObject*)engine(), start_event, start_event -> priority());
 		scanMemory();
 	}
 
 	void MemScanner::scanMemory()
 	{
-		QDateTime time_start = QDateTime::currentDateTime();
-		Q_EMIT memScanStartedSignal(time_start);
 		QDir proc_dir("/proc");
 		QStringList procs = proc_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot).filter(QRegExp("\\d+"));
 		PidList proc_list;
@@ -50,8 +68,10 @@ namespace Meduzzza
 			if(proc_pid == QCoreApplication::applicationPid())
 				continue;
 			proc_list << proc_pid;
+			ProcScanner *scanner = new ProcScanner(engine(), proc_pid);
+			connect(scanner, SIGNAL(errorSignal(const QString&, Q_PID, const QString&)), this, SIGNAL(errorSignal(const QString&, Q_PID, const QString&)));
+			m_pool -> start(scanner);
 		}
 		Q_EMIT procsFindedSignal(proc_list);
-		Q_EMIT memScanCompletedSignal(time_start, QDateTime::currentDateTime());
 	}
 }

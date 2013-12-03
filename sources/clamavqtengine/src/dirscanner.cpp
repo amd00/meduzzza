@@ -23,27 +23,39 @@
 #include <QDir>
 #include <QDateTime>
 #include <QCoreApplication>
+#include <QThreadPool>
 
 #include "dirscanner.h"
+#include "filescanner.h"
 #include "scanevent.h"
 
 namespace Meduzzza
 {
+	DirScanner::DirScanner(ClamavEngine *_engine, const QString &_dir, const QStringList &_excl_dirs)  : Scanner(_engine), 
+				m_dir(_dir), m_excl_dirs(_excl_dirs), m_pool(new QThreadPool) 
+	{
+		qint32 th_count = QThread::idealThreadCount();
+		m_pool -> setMaxThreadCount(th_count <=0 ? 1 : th_count);
+	}
+		
+	DirScanner::~DirScanner() 
+	{
+		m_pool -> waitForDone();
+		DirScanCompletedEvent *event(new DirScanCompletedEvent(m_dir, m_time_start, QDateTime::currentDateTime()));
+		QCoreApplication::postEvent((QObject*)engine(), event, event -> priority());
+		delete m_pool; 
+	}
 
 	void DirScanner::runThread()
 	{
-		scanDir(m_dir, true);
+		m_time_start = QDateTime::currentDateTime();
+		DirScanStartedEvent *event(new DirScanStartedEvent(m_dir, m_time_start));
+		QCoreApplication::postEvent((QObject*)engine(), event, event -> priority());
+		scanDir(m_dir);
 	}
 
-	void DirScanner::scanDir(const QString &_dir, bool _top)
+	void DirScanner::scanDir(const QString &_dir)
 	{
-		QDateTime time_start = QDateTime::currentDateTime();
-		if(_top)
-		{
-			DirScanStartedEvent *event(new DirScanStartedEvent(m_dir, time_start));
-			QCoreApplication::postEvent((QObject*)engine(), event, event -> priority());
-		}
-// 			Q_EMIT dirScanStartedSignal(m_dir, time_start);
 		QDir dir(_dir);
 		if(m_excl_dirs.contains(dir.absolutePath()))
 			return;
@@ -53,7 +65,7 @@ namespace Meduzzza
 			checkPause();
 			if(Scanner::stopped())
 				return;
-			scanDir(dir.absoluteFilePath(d), false);
+			scanDir(dir.absoluteFilePath(d));
 		}
 		QStringList files = dir.entryList(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
 		QStringList file_list;
@@ -62,14 +74,11 @@ namespace Meduzzza
 			checkPause();
 			if(Scanner::stopped())
 				return;
-			file_list << dir.absoluteFilePath(f);
+			QString file = dir.absoluteFilePath(f);
+			file_list << file;
+			FileScanner *scanner = new FileScanner(engine(), file);
+			m_pool -> start(scanner);
 		}
 		Q_EMIT filesFindedSignal(file_list);
-		if(_top)
-// 		{
-// 			DirScanCompletedEvent *event(new DirScanCompletedEvent(m_dir, time_start, QDateTime::currentDateTime()));
-// 			QCoreApplication::postEvent((QObject*)engine(), event, event -> priority());
-// 		}
-			Q_EMIT dirScanCompletedSignal(m_dir, time_start, QDateTime::currentDateTime());
 	}
 }

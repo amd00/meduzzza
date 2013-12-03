@@ -33,7 +33,7 @@
 #include "dirscanner.h"
 #include "memscanner.h"
 #include "scanevent.h"
-#include <QDebug>
+
 namespace Meduzzza
 {
 	class ClamavEnginePrivate
@@ -46,11 +46,11 @@ namespace Meduzzza
 		quint64 m_procs_count;
 		
 	public:
-		ClamavEnginePrivate() : m_db_path(), m_engine(NULL), m_pool(new QThreadPool), 
+		ClamavEnginePrivate() : m_db_path(), m_engine(NULL), m_pool(QThreadPool::globalInstance()), 
 			m_files_count(0), m_procs_count(0) {}
 		~ClamavEnginePrivate()
 		{
-			delete m_pool;
+// 			delete m_pool;
 			if(m_engine)
 				cl_engine_free(m_engine);
 		}
@@ -151,10 +151,6 @@ namespace Meduzzza
 	bool ClamavEngine::scanFileThread(const QString &_file)
 	{
 		FileScanner *scanner = new FileScanner(this, _file);
-		connect(scanner, SIGNAL(fileScanStartedSignal(const QString&, const QDateTime&)), 
-				this, SIGNAL(fileScanStartedSignal(const QString&, const QDateTime&)));
-		connect(scanner, SIGNAL(fileScanCompletedSignal(const QString&, qint32, const QDateTime&, const QDateTime&, const QString&)), 
-				this, SLOT(fileScanCompletedSlot(const QString&, qint32, const QDateTime&, const QDateTime&, const QString&)));
 		m_p -> pool() -> start(scanner);
 		return true;
 	}
@@ -162,11 +158,6 @@ namespace Meduzzza
 	bool ClamavEngine::scanProcThread(Q_PID _pid)
 	{
 		ProcScanner *scanner = new ProcScanner(this, _pid);
-		connect(scanner, SIGNAL(procScanStartedSignal(const QString&, Q_PID, const QDateTime&)), 
-				this, SIGNAL(procScanStartedSignal(const QString&, Q_PID, const QDateTime&)));
-		connect(scanner, SIGNAL(procScanCompletedSignal(const QString&, Q_PID, qint32, const QDateTime&, const QDateTime&, const QString&)), 
-				this, SLOT(procScanCompletedSlot(const QString&, Q_PID, qint32, const QDateTime&, const QDateTime&, const QString&)));
-		connect(scanner, SIGNAL(errorSignal(const QString&, Q_PID, const QString&)), this, SLOT(procScanErrorSlot(const QString&, Q_PID, const QString&)));
 		m_p -> pool() -> start(scanner);
 		return true;
 	}
@@ -174,10 +165,6 @@ namespace Meduzzza
 	bool ClamavEngine::scanDirThread(const QString &_dir, const QStringList &_excl_dirs)
 	{
 		DirScanner *scanner = new DirScanner(this, _dir, _excl_dirs);
-		connect(scanner, SIGNAL(dirScanStartedSignal(const QString&, const QDateTime&)), 
-				this, SIGNAL(dirScanStartedSignal(const QString&, const QDateTime&)));
-		connect(scanner, SIGNAL(dirScanCompletedSignal(const QString&, const QDateTime&, const QDateTime&)), 
-				this, SLOT(dirScanCompletedSlot(const QString&, const QDateTime&, const QDateTime&)));
 		connect(scanner, SIGNAL(filesFindedSignal(const QStringList&)), this, SLOT(filesFindedSlot(const QStringList&)));
 		m_p -> pool() -> start(scanner);
 		return true;
@@ -186,10 +173,8 @@ namespace Meduzzza
 	bool ClamavEngine::scanMemThread()
 	{
 		MemScanner *scanner = new MemScanner(this);
-		connect(scanner, SIGNAL(memScanStartedSignal(const QDateTime&)), this, SIGNAL(memScanStartedSignal(const QDateTime&)));
-		connect(scanner, SIGNAL(memScanCompletedSignal(const QDateTime&, const QDateTime&)), 
-				this, SLOT(memScanCompletedSlot(const QDateTime&, const QDateTime&)));
 		connect(scanner, SIGNAL(procsFindedSignal(const PidList&)), this, SLOT(procsFindedSlot(const PidList&)));
+		connect(scanner, SIGNAL(errorSignal(const QString&, Q_PID, const QString&)), this, SLOT(procScanErrorSlot(const QString&, Q_PID, const QString&)));
 		m_p -> pool() -> start(scanner);
 		return true;
 	}
@@ -260,11 +245,35 @@ namespace Meduzzza
 				res = true;
 				break;
 			case ScanEvent::FileScanCompleted:
-				fileScanCompletedSlot(((FileScanCompletedEvent*)_event) -> file(),
+				fileScanCompleted(((FileScanCompletedEvent*)_event) -> file(),
 									  ((FileScanCompletedEvent*)_event) -> result(),
 									  ((FileScanCompletedEvent*)_event) -> startTime(),
 									  ((FileScanCompletedEvent*)_event) -> endTime(),
 									  ((FileScanCompletedEvent*)_event) -> virname());
+				res = true;
+				break;
+			case ScanEvent::MemScanStarted:
+				Q_EMIT memScanStartedSignal(((MemScanStartedEvent*)_event) -> startTime());
+				res = true;
+				break;
+			case ScanEvent::MemScanCompleted:
+				Q_EMIT memScanCompletedSignal(((MemScanCompletedEvent*)_event) -> startTime(), 
+											  QDateTime::currentDateTime());
+				res = true;
+				break;
+			case ScanEvent::ProcScanStarted:
+				Q_EMIT procScanStartedSignal(((ProcScanStartedEvent*)_event) -> name(),
+											((ProcScanStartedEvent*)_event) -> pid(),
+											((ProcScanStartedEvent*)_event) -> startTime());
+				res = true;
+				break;
+			case ScanEvent::ProcScanCompleted:
+				procScanCompleted(((ProcScanCompletedEvent*)_event) -> name(),
+									((ProcScanCompletedEvent*)_event) -> pid(),
+									((ProcScanCompletedEvent*)_event) -> result(),
+									((ProcScanCompletedEvent*)_event) -> startTime(),
+									((ProcScanCompletedEvent*)_event) -> endTime(),
+									((ProcScanCompletedEvent*)_event) -> virname());
 				res = true;
 				break;
 			default:
@@ -280,7 +289,7 @@ namespace Meduzzza
 		return 0;
 	}
 
-	void ClamavEngine::fileScanCompletedSlot(const QString &_file, qint32 _result, const QDateTime &_time_start, 
+	void ClamavEngine::fileScanCompleted(const QString &_file, qint32 _result, const QDateTime &_time_start, 
 											 const QDateTime &_time_end, const QString &_virname)
 	{
 		switch(_result)
@@ -298,7 +307,7 @@ namespace Meduzzza
 		}
 	}
 	
-	void ClamavEngine::procScanCompletedSlot(const QString &_name, Q_PID _pid, qint32 _result, const QDateTime &_time_start, 
+	void ClamavEngine::procScanCompleted(const QString &_name, Q_PID _pid, qint32 _result, const QDateTime &_time_start, 
 											 const QDateTime &_time_end, const QString &_virname)
 	{
 		switch(_result)
@@ -316,23 +325,6 @@ namespace Meduzzza
 		}
 	}
 	
-	void ClamavEngine::dirScanCompletedSlot(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end)
-	{
-		qDebug("INFO: End directory scanning: %s", _dir.toLocal8Bit().data());
-		while(!m_p -> pool() -> waitForDone(10))
-			QCoreApplication::processEvents();
-// 		Q_EMIT dirScanCompletedSignal(_dir, _time_start, QDateTime::currentDateTime());
-		DirScanCompletedEvent *event(new DirScanCompletedEvent(_dir, _time_start, _time_end));
-		QCoreApplication::postEvent(this, event, event -> priority());
-	}
-	
-	void ClamavEngine::memScanCompletedSlot(const QDateTime &_time_start, const QDateTime &_time_end)
-	{
-		while(!m_p -> pool() -> waitForDone(10))
-			QCoreApplication::processEvents();
-		Q_EMIT memScanCompletedSignal(_time_start, QDateTime::currentDateTime());
-	}
-	
 	void ClamavEngine::procScanErrorSlot(const QString &_name, Q_PID _pid, const QString &_error)
 	{
 		m_p -> setProcsCount(m_p -> procsCount() - 1);
@@ -343,22 +335,12 @@ namespace Meduzzza
 	{
 		m_p -> setFilesCount(m_p -> filesCount() + _file_list.size());
 		Q_EMIT filesFoundSignal(m_p -> filesCount());
-		foreach(QString file, _file_list)
-		{
-			scanFileThread(file);
-// 			QCoreApplication::processEvents();
-		}
 	}
 	
 	void ClamavEngine::procsFindedSlot(const PidList &_proc_list)
 	{
 		m_p -> setProcsCount(m_p -> procsCount() + _proc_list.size());
 		Q_EMIT procsFoundSignal(m_p -> procsCount());
-		foreach(Q_PID pid, _proc_list)
-		{
-			scanProcThread(pid);
-// 			QCoreApplication::processEvents();
-		}
 	}
 	
 }

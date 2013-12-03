@@ -42,14 +42,12 @@ namespace Meduzzza
 		QDateTime time_start = QDateTime::currentDateTime();
 		FileScanStartedEvent *start_event(new FileScanStartedEvent(m_file, time_start));
 		QCoreApplication::postEvent((QObject*)engine(), start_event, start_event -> priority());
-// 		Q_EMIT fileScanStartedSignal(m_file, time_start);
 
 		const char *virname = NULL;
 		long unsigned int scanned = 0;
 		int result = cl_scanfile(m_file.toLocal8Bit().data(), &virname, &scanned, engine() -> engine(), CL_SCAN_STDOPT);
 		FileScanCompletedEvent *end_event(new FileScanCompletedEvent(m_file, result, time_start, QDateTime::currentDateTime(),  virname));
 		QCoreApplication::postEvent((QObject*)engine(), end_event, end_event -> priority());
-// 		Q_EMIT fileScanCompletedSignal(m_file, result, time_start, QDateTime::currentDateTime(),  virname);
 	}
 
 }

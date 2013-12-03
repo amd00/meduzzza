@@ -24,8 +24,11 @@
 #define _DIRSCANNER_H_
 
 #include <QStringList>
+#include <QDateTime>
 
 #include "scanner.h"
+
+class QThreadPool;
 
 namespace Meduzzza
 {
@@ -36,23 +39,22 @@ namespace Meduzzza
 	private:
 		QString m_dir;
 		QStringList m_excl_dirs;
+		QThreadPool *m_pool;
+		QDateTime m_time_start;
 
 	public:
-		DirScanner(ClamavEngine *_engine, const QString &_dir, const QStringList &_excl_dirs)  : Scanner(_engine), 
-				m_dir(_dir), m_excl_dirs(_excl_dirs) {}
-		~DirScanner() {}
+		DirScanner(ClamavEngine *_engine, const QString &_dir, const QStringList &_excl_dirs);
+		~DirScanner();
 
 	protected:
 		void runThread();
 
 	private:
-		void scanDir(const QString &_dir, bool _top);
+		void scanDir(const QString &_dir);
 
 	Q_SIGNALS:
 		void filesFindedSignal(const QStringList &_file_list);
 		void errorSignal(const QString &_file, const QString &_err);
-		void dirScanStartedSignal(const QString &_dir, const QDateTime &_time_start);
-		void dirScanCompletedSignal(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end);
 	};
 }
 #endif

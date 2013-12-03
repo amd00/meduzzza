@@ -108,7 +108,7 @@ namespace Meduzzza
 		
 		QString name() const { return m_name; }
 		Q_PID pid() const { return m_pid; }
-		qint32 status() const { return m_result; }
+		qint32 result() const { return m_result; }
 		QDateTime startTime() const { return m_start_time; }
 		QDateTime endTime() const { return m_end_time; }
 		QString virname() const { return m_virname; }
@@ -167,7 +167,7 @@ namespace Meduzzza
 		QDateTime m_end_time;
 		
 	public:
-		MemScanCompletedEvent(const QString &_dir, const QDateTime &_start_time, const QDateTime &_end_time) : 
+		MemScanCompletedEvent(const QDateTime &_start_time, const QDateTime &_end_time) : 
 				ScanEvent(ScanEvent::MemScanCompleted, 500), m_start_time(_start_time),
 				m_end_time(_end_time) {}
 		~MemScanCompletedEvent() {}

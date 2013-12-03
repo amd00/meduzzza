@@ -34,6 +34,7 @@ class cl_engine;
 namespace Meduzzza
 {
 	class ClamavEnginePrivate;
+	class ScanEvent;
 	
 	class ClamavEngine : public QObject
 	{
@@ -71,17 +72,19 @@ namespace Meduzzza
 		bool scanProcThread(Q_PID _pid);
 		bool scanDirThread(const QString &_dir, const QStringList &_excl_dirs);
 		bool scanMemThread();
+		
+		void fileScanCompleted(const QString &_file, qint32 _result, const QDateTime &_time_start, 
+				const QDateTime &_time_end, const QString &_virname);
+		void procScanCompleted(const QString &_name, Q_PID _pid, qint32 _result, 
+				const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virname);
+		void dirScanCompleted(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end);
+		void memScanCompleted(const QDateTime &_time_start, const QDateTime &_time_end);
+		void procScanError(const QString &_name, Q_PID _pid, const QString &_error);
 
 	private Q_SLOTS:
 		void filesFindedSlot(const QStringList &_file_list);
 		void procsFindedSlot(const PidList &_proc_list);
 		
-		void fileScanCompletedSlot(const QString &_file, qint32 _result, const QDateTime &_time_start, 
-				const QDateTime &_time_end, const QString &_virname);
-		void procScanCompletedSlot(const QString &_name, Q_PID _pid, qint32 _result, 
-				const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virname);
-		void dirScanCompletedSlot(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end);
-		void memScanCompletedSlot(const QDateTime &_time_start, const QDateTime &_time_end);
 		void procScanErrorSlot(const QString &_name, Q_PID _pid, const QString &_error);
 
 	Q_SIGNALS:
