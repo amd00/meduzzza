@@ -33,8 +33,6 @@ namespace Meduzzza
 {
 	class ProcScanner : public Scanner
 	{
-		Q_OBJECT
-
 	private:
 		cl_engine *m_engine;
 		Q_PID m_pid;
@@ -45,9 +43,6 @@ namespace Meduzzza
 
 	protected:
 		void runThread();
-
-	Q_SIGNALS:
-		void errorSignal(const QString &_name, Q_PID _pid, const QString &_err);
 	};
 }
 

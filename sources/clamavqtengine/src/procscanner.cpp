@@ -49,18 +49,26 @@ namespace Meduzzza
 		QString proc_name = QFileInfo(QFile::symLinkTarget(proc_dir.absoluteFilePath("exe"))).fileName();
 		QFile maps_file(maps_file_str);
 		QFile mem_file(mem_file_str);
+		
+		QDateTime time_start = QDateTime::currentDateTime();
+		ProcScanStartedEvent *start_event(new ProcScanStartedEvent(proc_name, m_pid, time_start));
+		QCoreApplication::postEvent((QObject*)engine(), start_event, start_event -> priority());
 
 		if(!maps_file.open(QIODevice::ReadOnly) || !mem_file.open(QIODevice::ReadOnly))
 		{
 			if(maps_file.error() != QFile::NoError)
 			{
 				qCritical("ERROR: Open file error: maps: %s", maps_file.errorString().toLocal8Bit().data());
-				Q_EMIT errorSignal(proc_name, m_pid, maps_file.errorString());
+// 				Q_EMIT errorSignal(proc_name, m_pid, maps_file.errorString());
+				ProcScanErrorEvent *error_event(new ProcScanErrorEvent(proc_name, m_pid, maps_file.errorString()));
+				QCoreApplication::postEvent((QObject*)engine(), error_event, error_event -> priority());
 			}
 			if(mem_file.error() != QFile::NoError)
 			{
 				qCritical("ERROR: Open file error: mem: %s", mem_file.errorString().toLocal8Bit().data());
-				Q_EMIT errorSignal(proc_name, m_pid, mem_file.errorString());
+// 				Q_EMIT errorSignal(proc_name, m_pid, mem_file.errorString());
+				ProcScanErrorEvent *error_event(new ProcScanErrorEvent(proc_name, m_pid, maps_file.errorString()));
+				QCoreApplication::postEvent((QObject*)engine(), error_event, error_event -> priority());
 			}
 			return;
 		}
@@ -68,9 +76,6 @@ namespace Meduzzza
 		long unsigned int scanned = 0;
 		qint32 result = CL_CLEAN;
 		const char *virname = NULL;
-		QDateTime time_start = QDateTime::currentDateTime();
-		ProcScanStartedEvent *start_event(new ProcScanStartedEvent(proc_name, m_pid, time_start));
-		QCoreApplication::postEvent((QObject*)engine(), start_event, start_event -> priority());
 		
 		qDebug("INFO: Scanning process: %s(%lli)", proc_name.toLocal8Bit().data(), m_pid);
 		for(QString line = maps_str.readLine(); !line.isNull(); line = maps_str.readLine())

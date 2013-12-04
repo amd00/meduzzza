@@ -38,6 +38,7 @@ namespace Meduzzza
 		void procScanStarted(const QString &_name, Q_PID _pid);
 		void procScanCompleted(const QString &_name, Q_PID _pid);
 		void procVirusDetected(const QString &_name, Q_PID _pid, const QString &_virname);
+		void procScanError(const QString &_name, Q_PID _pid, const QString &_error);
 		
 		void dirScanStarted(const QString &_dir);
 		void dirScanCompleted(const QString &_dir);

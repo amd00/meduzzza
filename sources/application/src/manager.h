@@ -105,6 +105,7 @@ namespace Meduzzza
 		void procScanStartedSignal(const QString &_name, Q_PID _pid, const QDateTime &_time_start);
 		void procScanCompletedSignal(const QString &_name, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end);
 		void procVirusDetectedSignal(const QString &_name, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus);
+		void procScanErrorSignal(const QString &_name, Q_PID _pid, const QString &_error);
 		
 		void dirScanStartedSignal(const QString &_dir, const QDateTime &_time_start);
 		void dirScanCompletedSignal(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end);

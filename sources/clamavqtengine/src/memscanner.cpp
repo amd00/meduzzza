@@ -28,11 +28,11 @@
 #include "memscanner.h"
 #include "procscanner.h"
 #include "scanevent.h"
-
+#include <QDebug>
 namespace Meduzzza
 {
 	
-	MemScanner::MemScanner(ClamavEngine *_engine) : Scanner(_engine), m_pool(new QThreadPool)
+	MemScanner::MemScanner(ClamavEngine *_engine) : Scanner(_engine), m_pool(new QThreadPool), m_procs_count(0)
 	{
 		qint32 th_count = QThread::idealThreadCount();
 		m_pool -> setMaxThreadCount(th_count <=0 ? 1 : th_count);
@@ -40,7 +40,8 @@ namespace Meduzzza
 		
 	MemScanner::~MemScanner()
 	{
-		m_pool -> waitForDone();
+		while(!m_pool -> waitForDone(10))
+			QCoreApplication::processEvents();
 		MemScanCompletedEvent *end_event(new MemScanCompletedEvent(m_start_time, QDateTime::currentDateTime()));
 		QCoreApplication::postEvent((QObject*)engine(), end_event, end_event -> priority());
 		delete m_pool;
@@ -58,7 +59,9 @@ namespace Meduzzza
 	{
 		QDir proc_dir("/proc");
 		QStringList procs = proc_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot).filter(QRegExp("\\d+"));
-		PidList proc_list;
+		m_procs_count = procs.size() - 1;
+		ProcsFoundEvent *found_event(new ProcsFoundEvent(m_procs_count));
+		QCoreApplication::postEvent((QObject*)engine(), found_event, found_event -> priority());
 		foreach(QString proc, procs)
 		{
 			checkPause();
@@ -67,11 +70,8 @@ namespace Meduzzza
 			Q_PID proc_pid = proc.toInt();
 			if(proc_pid == QCoreApplication::applicationPid())
 				continue;
-			proc_list << proc_pid;
 			ProcScanner *scanner = new ProcScanner(engine(), proc_pid);
-			connect(scanner, SIGNAL(errorSignal(const QString&, Q_PID, const QString&)), this, SIGNAL(errorSignal(const QString&, Q_PID, const QString&)));
 			m_pool -> start(scanner);
 		}
-		Q_EMIT procsFindedSignal(proc_list);
 	}
 }

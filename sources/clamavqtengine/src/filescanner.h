@@ -33,8 +33,6 @@ namespace Meduzzza
 {
 	class FileScanner : public Scanner
 	{
-		Q_OBJECT
-
 	private:
 		QString m_file;
 
@@ -44,9 +42,6 @@ namespace Meduzzza
 
 	protected:
 		void runThread();
-
-	Q_SIGNALS:
-		void errorSignal(const QString &_file, const QString &_err);
 	};
 }
 

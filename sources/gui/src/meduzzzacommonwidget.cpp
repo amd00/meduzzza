@@ -23,6 +23,8 @@ namespace Meduzzza
 					this, SLOT(procScanCompletedSlot(const QString&, Q_PID, const QDateTime&, const QDateTime&)));
 			connect(m_man, SIGNAL(procVirusDetectedSignal(const QString&, Q_PID, const QDateTime&, const QDateTime&, const QString&)), 
 					this, SLOT(procVirusDetectedSlot(const QString&, Q_PID, const QDateTime&, const QDateTime&, const QString&)));
+			connect(m_man, SIGNAL(procScanErrorSignal(const QString&, Q_PID, const QString&)), 
+					this, SLOT(procScanErrorSlot(const QString&, Q_PID, const QString&)));
 			
 			connect(m_man, SIGNAL(dirScanStartedSignal(const QString&, const QDateTime&)), 
 					this, SLOT(dirScanStartedSlot(const QString&, const QDateTime&)));

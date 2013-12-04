@@ -34,13 +34,12 @@ namespace Meduzzza
 {
 	class DirScanner : public Scanner
 	{
-		Q_OBJECT
-
 	private:
 		QString m_dir;
 		QStringList m_excl_dirs;
 		QThreadPool *m_pool;
 		QDateTime m_time_start;
+		quint64 m_files_count;
 
 	public:
 		DirScanner(ClamavEngine *_engine, const QString &_dir, const QStringList &_excl_dirs);
@@ -51,10 +50,6 @@ namespace Meduzzza
 
 	private:
 		void scanDir(const QString &_dir);
-
-	Q_SIGNALS:
-		void filesFindedSignal(const QStringList &_file_list);
-		void errorSignal(const QString &_file, const QString &_err);
 	};
 }
 #endif

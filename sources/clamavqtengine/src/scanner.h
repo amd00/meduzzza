@@ -39,7 +39,7 @@ namespace Meduzzza
 		static void sleep(unsigned long secs) { QThread::sleep(secs); }
 	};
 	
-	class Scanner : public QObject, public QRunnable
+	class Scanner : public QRunnable
 	{
 	private:
 		ScannerPrivate *m_p;

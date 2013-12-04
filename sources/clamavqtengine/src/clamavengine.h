@@ -79,13 +79,6 @@ namespace Meduzzza
 				const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virname);
 		void dirScanCompleted(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end);
 		void memScanCompleted(const QDateTime &_time_start, const QDateTime &_time_end);
-		void procScanError(const QString &_name, Q_PID _pid, const QString &_error);
-
-	private Q_SLOTS:
-		void filesFindedSlot(const QStringList &_file_list);
-		void procsFindedSlot(const PidList &_proc_list);
-		
-		void procScanErrorSlot(const QString &_name, Q_PID _pid, const QString &_error);
 
 	Q_SIGNALS:
 		void fileScanStartedSignal(const QString &_file, const QDateTime &_time_start);
@@ -95,6 +88,7 @@ namespace Meduzzza
 		void procScanStartedSignal(const QString &_name, Q_PID _pid, const QDateTime &_time_start);
 		void procScanCompletedSignal(const QString &_name, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end);
 		void procVirusDetectedSignal(const QString &_name, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virname);
+		void procScanErrorSignal(const QString &_name, Q_PID _pid, const QString &_error);
 		
 		void dirScanStartedSignal(const QString &_dir, const QDateTime &_time_start);
 		void dirScanCompletedSignal(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end);

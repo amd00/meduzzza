@@ -32,7 +32,7 @@
 namespace Meduzzza
 {
 	DirScanner::DirScanner(ClamavEngine *_engine, const QString &_dir, const QStringList &_excl_dirs)  : Scanner(_engine), 
-				m_dir(_dir), m_excl_dirs(_excl_dirs), m_pool(new QThreadPool) 
+				m_dir(_dir), m_excl_dirs(_excl_dirs), m_pool(new QThreadPool), m_files_count(0)
 	{
 		qint32 th_count = QThread::idealThreadCount();
 		m_pool -> setMaxThreadCount(th_count <=0 ? 1 : th_count);
@@ -68,17 +68,18 @@ namespace Meduzzza
 			scanDir(dir.absoluteFilePath(d));
 		}
 		QStringList files = dir.entryList(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
-		QStringList file_list;
+		m_files_count += files.size();
+		FilesFoundEvent *found_event(new FilesFoundEvent(m_files_count));
+		QCoreApplication::postEvent((QObject*)engine(), found_event, found_event -> priority());
+// 		Q_EMIT filesFoundSignal(m_files_count);
 		foreach(QString f, files)
 		{
 			checkPause();
 			if(Scanner::stopped())
 				return;
 			QString file = dir.absoluteFilePath(f);
-			file_list << file;
 			FileScanner *scanner = new FileScanner(engine(), file);
 			m_pool -> start(scanner);
 		}
-		Q_EMIT filesFindedSignal(file_list);
 	}
 }

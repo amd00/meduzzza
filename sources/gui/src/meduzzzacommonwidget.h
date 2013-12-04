@@ -32,6 +32,7 @@ namespace Meduzzza
 		virtual void procScanStarted(const QString &_name, Q_PID _pid) = 0;
 		virtual void procScanCompleted(const QString &_name, Q_PID _pid) = 0;
 		virtual void procVirusDetected(const QString &_name, Q_PID _pid, const QString &_virname) = 0;
+		virtual void procScanError(const QString &_name, Q_PID _pid, const QString &_error) = 0;
 		
 		virtual void dirScanStarted(const QString &_dir) = 0;
 		virtual void dirScanCompleted(const QString &_dir) = 0;
@@ -59,6 +60,7 @@ namespace Meduzzza
 		void procScanCompletedSlot(const QString &_name, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end) { procScanCompleted(_name, _pid); }
 		void procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QDateTime &_time_start, 
 				const QDateTime &_time_end, const QString &_virname) { procVirusDetected(_name, _pid, _virname); }
+		void procScanErrorSlot(const QString &_name, Q_PID _pid, const QString &_error) { procScanError(_name, _pid, _error); }
 		
 		void dirScanStartedSlot(const QString &_dir, const QDateTime &_time_start);
 		void dirScanCompletedSlot(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end);

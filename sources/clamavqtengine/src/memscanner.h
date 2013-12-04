@@ -36,11 +36,10 @@ namespace Meduzzza
 {
 	class MemScanner : public Scanner
 	{
-		Q_OBJECT
-		
 	private:
 		QThreadPool *m_pool;
 		QDateTime m_start_time;
+		quint64 m_procs_count;
 
 	public:
 		MemScanner(ClamavEngine *_engine);
@@ -52,10 +51,6 @@ namespace Meduzzza
 	private:
 		void scanMemory();
 		qint32 scanProcess(Q_PID _pid, const char **_virname);
-
-	Q_SIGNALS:
-		void procsFindedSignal(const PidList &_proc_list);
-		void errorSignal(const QString &_name, Q_PID _pid, const QString &_err);
 	};
 }
 #endif

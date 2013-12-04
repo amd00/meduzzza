@@ -31,6 +31,7 @@ namespace Meduzzza
 		m_proc_count = 0;
 		m_file_viruses_count = 0;
 		m_proc_viruses_count = 0;
+		m_proc_errors_count = 0;
 		m_quarantined = 0;
 	}
 

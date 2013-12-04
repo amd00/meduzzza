@@ -21,7 +21,11 @@ namespace Meduzzza
 			DirScanStarted,
 			DirScanCompleted,
 			MemScanStarted,
-			MemScanCompleted
+			MemScanCompleted,
+			FileScanError,
+			ProcScanError,
+			FilesFound,
+			ProcsFound,
 		};
 		
 	private:
@@ -114,6 +118,23 @@ namespace Meduzzza
 		QString virname() const { return m_virname; }
 	};
 	
+	class ProcScanErrorEvent : public ScanEvent
+	{
+	private:
+		QString m_name;
+		Q_PID m_pid;
+		QString m_error;
+		
+	public:
+		ProcScanErrorEvent(const QString &_name, Q_PID _pid, const QString &_error) : 
+				ScanEvent(ScanEvent::ProcScanError, 1000), m_name(_name), m_pid(_pid), m_error(_error) {}
+		~ProcScanErrorEvent() {}
+		
+		QString name() const { return m_name; }
+		Q_PID pid() const { return m_pid; }
+		QString error() const { return m_error; }
+	};
+	
 	class DirScanStartedEvent : public ScanEvent
 	{
 	private:
@@ -138,7 +159,7 @@ namespace Meduzzza
 		
 	public:
 		DirScanCompletedEvent(const QString &_dir, const QDateTime &_start_time, const QDateTime &_end_time) : 
-				ScanEvent(ScanEvent::DirScanCompleted, 500), m_dir(_dir), m_start_time(_start_time),
+				ScanEvent(ScanEvent::DirScanCompleted, 900), m_dir(_dir), m_start_time(_start_time),
 				m_end_time(_end_time) {}
 		~DirScanCompletedEvent() {}
 		
@@ -168,12 +189,38 @@ namespace Meduzzza
 		
 	public:
 		MemScanCompletedEvent(const QDateTime &_start_time, const QDateTime &_end_time) : 
-				ScanEvent(ScanEvent::MemScanCompleted, 500), m_start_time(_start_time),
+				ScanEvent(ScanEvent::MemScanCompleted, 900), m_start_time(_start_time),
 				m_end_time(_end_time) {}
 		~MemScanCompletedEvent() {}
 		
 		QDateTime startTime() const { return m_start_time; }
 		QDateTime endTime() const { return m_end_time; }
+	};
+	
+	class FilesFoundEvent : public ScanEvent
+	{
+	private:
+		quint64 m_files_count;
+		
+	public:
+		FilesFoundEvent(quint64 _files_count) : 
+		ScanEvent(ScanEvent::FilesFound, 1100), m_files_count(_files_count) {}
+		~FilesFoundEvent() {}
+		
+		quint64 filesCount() const { return m_files_count; }
+	};
+	
+	class ProcsFoundEvent : public ScanEvent
+	{
+	private:
+		quint64 m_procs_count;
+		
+	public:
+		ProcsFoundEvent(quint64 _procs_count) : 
+		ScanEvent(ScanEvent::ProcsFound, 1100), m_procs_count(_procs_count) {}
+		~ProcsFoundEvent() {}
+		
+		quint64 procsCount() const { return m_procs_count; }
 	};
 }
 #endif

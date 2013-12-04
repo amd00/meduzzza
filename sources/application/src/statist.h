@@ -37,17 +37,19 @@ namespace Meduzzza
 		quint64 m_proc_count;
 		quint64 m_file_viruses_count;
 		quint64 m_proc_viruses_count;
+		quint64 m_proc_errors_count;
 		quint64 m_quarantined;
 		
 	public:
 		Statist() : QObject(), m_files_count(0), m_proc_count(0), 
-				m_file_viruses_count(0), m_proc_viruses_count(0), m_quarantined(0) {}
+				m_file_viruses_count(0), m_proc_viruses_count(0), m_proc_errors_count(0), m_quarantined(0) {}
 		~Statist() {}
 		
 		quint64 filesCount() const { return m_files_count; }
 		quint64 procCount() const { return m_proc_count; }
 		quint64 fileVirusesCount() const { return m_file_viruses_count; }
 		quint64 procVirusesCount() const { return m_proc_viruses_count; }
+		quint64 procErrorsCount() const { return m_proc_errors_count; }
 		quint64 quarantined() const { return m_quarantined; }
 		
 		void reset();
@@ -57,6 +59,7 @@ namespace Meduzzza
 		void fileVirusDetectedSlot(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus);
 		void procScanCompletedSlot(const QString &_proc, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end);
 		void procVirusDetectedSlot(const QString &_proc, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus);
+		void procScanErrorSlot(const QString &_proc, Q_PID _pid, const QString &_error) { m_proc_errors_count++; }
 		void fileMovedToQuarantineSlot(const QString &_source, const QString &_quarantined, const QString &_virus) 
 		{ Q_UNUSED(_source) Q_UNUSED(_quarantined) Q_UNUSED(_virus) m_quarantined++; }
 	};

@@ -20,6 +20,8 @@ namespace Meduzzza
 				this, SLOT(procScanCompletedSlot(const QString&, Q_PID, const QDateTime&, const QDateTime&)));
 			connect(_man, SIGNAL(procVirusDetectedSignal(const QString&, Q_PID, const QDateTime&, const QDateTime&, const QString&)), 
 				this, SLOT(procVirusDetectedSlot(const QString&, Q_PID, const QDateTime&, const QDateTime&, const QString&)));
+			connect(_man, SIGNAL(procScanErrorSignal(const QString&, Q_PID, const QString&)), 
+				this, SLOT(procScanErrorSlot(const QString&, Q_PID, const QString&)));
 		}
 		else
 		{
@@ -72,10 +74,13 @@ namespace Meduzzza
 					case Stopped:
 						res = tr("Stopped");
 						break;
+					case Error:
+						res = tr("Error");
+						break;
 					}
 					break;
-				case VirName:
-					res = _ind.data(Qt::UserRole + VirName);
+				case Data:
+					res = _ind.data(Qt::UserRole + Data);
 					break;
 				case StartTime:
 					res = QLocale().toString(_ind.data(Qt::UserRole + StartTime).toDateTime(), QLocale::ShortFormat);
@@ -94,8 +99,8 @@ namespace Meduzzza
 			case Qt::UserRole + Status:
 				res = item.status;
 				break;
-			case Qt::UserRole + VirName:
-				res = item.virname;
+			case Qt::UserRole + Data:
+				res = item.data;
 				break;
 			case Qt::UserRole + StartTime:
 				res = item.start_time;
@@ -137,8 +142,8 @@ namespace Meduzzza
 				case Status:
 					res = tr("Status");
 					break;
-				case VirName:
-					res = tr("Virus");
+				case Data:
+					res = tr("Data");
 					break;
 				case StartTime:
 					res = tr("Start time");
@@ -191,11 +196,11 @@ namespace Meduzzza
 			qint32 i = findItem(_file);
 			if(i == -1)
 				return;
-			m_items[i].virname = "";
+			m_items[i].data = "";
 			m_items[i].status = MeduzzzaScanModel::Clean;
 			m_items[i].end_time = _time_end;
 			QModelIndex ind_begin = index(i, MeduzzzaScanModel::Status, QModelIndex());
-			QModelIndex ind_end = index(i, MeduzzzaScanModel::VirName, QModelIndex());
+			QModelIndex ind_end = index(i, MeduzzzaScanModel::Data, QModelIndex());
 			Q_EMIT dataChanged(ind_begin, ind_end);
 		}
 		
@@ -205,11 +210,11 @@ namespace Meduzzza
 			qint32 i = findItem(_file);
 			if(i == -1)
 				return;
-			m_items[i].virname = _virname;
+			m_items[i].data = _virname;
 			m_items[i].status = MeduzzzaScanModel::Infected;
 			m_items[i].end_time = _time_end;
 			QModelIndex ind_begin = index(i, MeduzzzaScanModel::Status, QModelIndex());
-			QModelIndex ind_end = index(i, MeduzzzaScanModel::VirName, QModelIndex());
+			QModelIndex ind_end = index(i, MeduzzzaScanModel::Data, QModelIndex());
 			Q_EMIT dataChanged(ind_begin, ind_end);
 		}
 		
@@ -227,11 +232,11 @@ namespace Meduzzza
 			qint32 i = findItem(_name, _pid);
 			if(i == -1)
 				return;
-			m_items[i].virname = "";
+			m_items[i].data = "";
 			m_items[i].status = MeduzzzaScanModel::Clean;
 			m_items[i].end_time = _time_end;
 			QModelIndex ind_begin = index(i, MeduzzzaScanModel::Status, QModelIndex());
-			QModelIndex ind_end = index(i, MeduzzzaScanModel::VirName, QModelIndex());
+			QModelIndex ind_end = index(i, MeduzzzaScanModel::Data, QModelIndex());
 			Q_EMIT dataChanged(ind_begin, ind_end);
 		}
 		
@@ -241,11 +246,23 @@ namespace Meduzzza
 			qint32 i = findItem(_name, _pid);
 			if(i == -1)
 				return;
-			m_items[i].virname = _virname;
+			m_items[i].data = _virname;
 			m_items[i].status = MeduzzzaScanModel::Infected;
 			m_items[i].end_time = _time_end;
 			QModelIndex ind_begin = index(i, MeduzzzaScanModel::Status, QModelIndex());
-			QModelIndex ind_end = index(i, MeduzzzaScanModel::VirName, QModelIndex());
+			QModelIndex ind_end = index(i, MeduzzzaScanModel::Data, QModelIndex());
+			Q_EMIT dataChanged(ind_begin, ind_end);
+		}
+		
+		void MeduzzzaScanModel::procScanErrorSlot(const QString &_name, Q_PID _pid, const QString &_error)
+		{
+			qint32 i = findItem(_name, _pid);
+			if(i == -1)
+				return;
+			m_items[i].data = _error;
+			m_items[i].status = MeduzzzaScanModel::Error;
+			QModelIndex ind_begin = index(i, MeduzzzaScanModel::Status, QModelIndex());
+			QModelIndex ind_end = index(i, MeduzzzaScanModel::Data, QModelIndex());
 			Q_EMIT dataChanged(ind_begin, ind_end);
 		}
 		

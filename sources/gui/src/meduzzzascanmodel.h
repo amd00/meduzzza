@@ -20,7 +20,8 @@ namespace Meduzzza
 			Scanning,
 			Clean,
 			Infected,
-			Stopped
+			Stopped,
+			Error
 		};
 		
 		enum Columns
@@ -28,7 +29,7 @@ namespace Meduzzza
 			Name = 0,
 			Pid,
 			Status,
-			VirName,
+			Data,
 			StartTime,
 			EndTime
 		};
@@ -36,13 +37,12 @@ namespace Meduzzza
 	private:
 		struct ScanItem
 		{
-			ScanItem(QString _file) : name(_file), pid(0), 
-				virname(QString::null), status(MeduzzzaScanModel::Scanning) {}
+			ScanItem(QString _file) : name(_file), pid(0), status(MeduzzzaScanModel::Scanning) {}
 			ScanItem(QString _name, Q_PID _pid) : name(_name), pid(_pid), 
-				virname(QString::null), status(MeduzzzaScanModel::Scanning) {}
+				status(MeduzzzaScanModel::Scanning) {}
 			QString name;
 			Q_PID pid;
-			QString virname;
+			QString data;
 			qint32 status;
 			QDateTime start_time;
 			QDateTime end_time;
@@ -77,6 +77,7 @@ namespace Meduzzza
 		void procScanStartedSlot(const QString &_name, Q_PID _pid, const QDateTime &_time_start);
 		void procScanCompletedSlot(const QString &_name, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end);
 		void procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virname);
+		void procScanErrorSlot(const QString &_name, Q_PID _pid, const QString &_error);
 		
 		void dirScanStartedSlot(const QString &_dir, const QDateTime &_time_start) {}
 		void dirScanCompletedSlot(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end) {}

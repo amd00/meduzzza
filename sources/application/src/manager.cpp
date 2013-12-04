@@ -80,6 +80,8 @@ namespace Meduzzza
 				this, SIGNAL(procScanCompletedSignal(const QString&, Q_PID, const QDateTime&, const QDateTime&)));
 		connect(m_engine, SIGNAL(procVirusDetectedSignal(const QString&, Q_PID, const QDateTime&, const QDateTime&, const QString&)), 
 				this, SIGNAL(procVirusDetectedSignal(const QString&, Q_PID, const QDateTime&, const QDateTime&, const QString&)));
+		connect(m_engine, SIGNAL(procScanErrorSignal(const QString&, Q_PID, const QString&)), 
+				this, SIGNAL(procScanErrorSignal(const QString&, Q_PID, const QString&)));
 		
 		connect(m_engine, SIGNAL(stoppedSignal()), this, SIGNAL(stoppedSignal()));
 		connect(m_engine, SIGNAL(pausedSignal()), this, SIGNAL(pausedSignal()));
@@ -116,6 +118,8 @@ namespace Meduzzza
 				m_statist, SLOT(procScanCompletedSlot(const QString&, Q_PID, const QDateTime&, const QDateTime&)));
 		connect(this, SIGNAL(procVirusDetectedSignal(const QString&, Q_PID, const QDateTime&, const QDateTime&, const QString&)), 
 				m_statist, SLOT(procVirusDetectedSlot(const QString&, Q_PID, const QDateTime&, const QDateTime&, const QString&)));
+		connect(m_engine, SIGNAL(procScanErrorSignal(const QString&, Q_PID, const QString&)), 
+				m_statist, SLOT(procScanErrorSlot(const QString&, Q_PID, const QString&)));
 		connect(this, SIGNAL(fileMovedToQuarantineSignal(const QString&, const QString&, const QString&)), 
 				m_statist, SLOT(fileMovedToQuarantineSlot(const QString&, const QString&, const QString&)));
 

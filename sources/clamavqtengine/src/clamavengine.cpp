@@ -42,15 +42,11 @@ namespace Meduzzza
 		QString m_db_path;
 		cl_engine *m_engine;
 		QThreadPool *m_pool;
-		quint64 m_files_count;
-		quint64 m_procs_count;
 		
 	public:
-		ClamavEnginePrivate() : m_db_path(), m_engine(NULL), m_pool(QThreadPool::globalInstance()), 
-			m_files_count(0), m_procs_count(0) {}
+		ClamavEnginePrivate() : m_db_path(), m_engine(NULL), m_pool(QThreadPool::globalInstance()) {}
 		~ClamavEnginePrivate()
 		{
-// 			delete m_pool;
 			if(m_engine)
 				cl_engine_free(m_engine);
 		}
@@ -58,13 +54,9 @@ namespace Meduzzza
 		QString dbPath() const { return m_db_path; }
 		cl_engine *engine() const { return m_engine; }
 		QThreadPool *pool() const { return m_pool; }
-		quint64 filesCount() const { return m_files_count; }
-		quint64 procsCount() const { return m_procs_count; }
 		
 		void setDbPath(const QString _db_path) { m_db_path = _db_path; }
 		void setEngine(cl_engine *_engine) { m_engine = _engine; }
-		void setFilesCount(quint64 _files_count) { m_files_count = _files_count; }
-		void setProcsCount(quint64 _procs_count) { m_procs_count = _procs_count; }
 	};
 
 	
@@ -165,7 +157,6 @@ namespace Meduzzza
 	bool ClamavEngine::scanDirThread(const QString &_dir, const QStringList &_excl_dirs)
 	{
 		DirScanner *scanner = new DirScanner(this, _dir, _excl_dirs);
-		connect(scanner, SIGNAL(filesFindedSignal(const QStringList&)), this, SLOT(filesFindedSlot(const QStringList&)));
 		m_p -> pool() -> start(scanner);
 		return true;
 	}
@@ -173,8 +164,6 @@ namespace Meduzzza
 	bool ClamavEngine::scanMemThread()
 	{
 		MemScanner *scanner = new MemScanner(this);
-		connect(scanner, SIGNAL(procsFindedSignal(const PidList&)), this, SLOT(procsFindedSlot(const PidList&)));
-		connect(scanner, SIGNAL(errorSignal(const QString&, Q_PID, const QString&)), this, SLOT(procScanErrorSlot(const QString&, Q_PID, const QString&)));
 		m_p -> pool() -> start(scanner);
 		return true;
 	}
@@ -190,7 +179,6 @@ namespace Meduzzza
 	{
 		if(m_p -> pool() -> activeThreadCount())
 			return false;
-		m_p -> setFilesCount(0);
 		return scanDirThread(_dir, _excl_dirs);
 	}
 
@@ -198,7 +186,6 @@ namespace Meduzzza
 	{
 		if(m_p -> pool() -> activeThreadCount())
 			return false;
-		m_p -> setProcsCount(0);
 		return scanMemThread();
 	}
 
@@ -226,7 +213,7 @@ namespace Meduzzza
 	bool ClamavEngine::event(QEvent *_event)
 	{
 		bool res = false;
-		switch(_event -> type())
+		switch((ScanEvent::ScanEventType)_event -> type())
 		{
 			case ScanEvent::DirScanStarted:
 				Q_EMIT dirScanStartedSignal(((DirScanStartedEvent*)_event) -> dir(), 
@@ -276,6 +263,20 @@ namespace Meduzzza
 									((ProcScanCompletedEvent*)_event) -> virname());
 				res = true;
 				break;
+			case ScanEvent::ProcScanError:
+				Q_EMIT procScanErrorSignal(((ProcScanErrorEvent*)_event) -> name(),
+											((ProcScanErrorEvent*)_event) -> pid(),
+											((ProcScanErrorEvent*)_event) -> error());
+				res = true;
+				break;
+			case ScanEvent::FilesFound:
+				Q_EMIT filesFoundSignal(((FilesFoundEvent*)_event) -> filesCount());
+				res = true;
+				break;
+			case ScanEvent::ProcsFound:
+				Q_EMIT procsFoundSignal(((ProcsFoundEvent*)_event) -> procsCount());
+				res = true;
+				break;
 			default:
 				res = QObject::event(_event);
 		}
@@ -323,24 +324,6 @@ namespace Meduzzza
 			default:
 				qDebug("INFO: Error - %s", cl_strerror(_result));
 		}
-	}
-	
-	void ClamavEngine::procScanErrorSlot(const QString &_name, Q_PID _pid, const QString &_error)
-	{
-		m_p -> setProcsCount(m_p -> procsCount() - 1);
-		Q_EMIT procsFoundSignal(m_p -> procsCount());
-	}
-
-	void ClamavEngine::filesFindedSlot(const QStringList &_file_list)
-	{
-		m_p -> setFilesCount(m_p -> filesCount() + _file_list.size());
-		Q_EMIT filesFoundSignal(m_p -> filesCount());
-	}
-	
-	void ClamavEngine::procsFindedSlot(const PidList &_proc_list)
-	{
-		m_p -> setProcsCount(m_p -> procsCount() + _proc_list.size());
-		Q_EMIT procsFoundSignal(m_p -> procsCount());
 	}
 	
 }
