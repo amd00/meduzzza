@@ -6,7 +6,8 @@
 #include "mainwindow.h"
 #include "memscanwidget.h"
 #include "meduzzzascanmodel.h"
-#include <QDebug>
+#include "scanresdialog.h"
+
 namespace Meduzzza
 {
 	
@@ -44,22 +45,16 @@ namespace Meduzzza
 	void MemScanWidget::procScanCompleted(const QString &_name, Q_PID _pid)
 	{
 		m_ui -> m_progress -> setValue(m_ui -> m_progress -> value() + 1);
-		qDebug() << "MAX: " << m_ui -> m_progress -> maximum();
-		qDebug() << "VAL: " << m_ui -> m_progress -> value();
 	}
 
 	void MemScanWidget::procVirusDetected(const QString &_name, Q_PID _pid, const QString &_virus)
 	{
 		m_ui -> m_progress -> setValue(m_ui -> m_progress -> value() + 1);
-		qDebug() << "MAX: " << m_ui -> m_progress -> maximum();
-		qDebug() << "VAL: " << m_ui -> m_progress -> value();
 	}
 	
 	void MemScanWidget::procScanError(const QString &_name, Q_PID _pid, const QString &_error)
 	{
 		m_ui -> m_progress -> setValue(m_ui -> m_progress -> value() + 1);
-		qDebug() << "MAX: " << m_ui -> m_progress -> maximum();
-		qDebug() << "VAL: " << m_ui -> m_progress -> value();
 	}
 	
 	void MemScanWidget::dirScanStarted(const QString &_dir)
@@ -84,6 +79,8 @@ namespace Meduzzza
 	void MemScanWidget::memScanCompleted()
 	{
 		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/play.png"));
+		ScanResDialog res(true);
+		res.exec();
 	}
 	
 	void MemScanWidget::fullScanStarted(const QDateTime &_time)

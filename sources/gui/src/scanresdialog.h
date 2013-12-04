@@ -19,7 +19,7 @@ namespace Meduzzza
 		Ui::ScanResDialog *m_ui;
 		
 	public:
-		ScanResDialog();
+		ScanResDialog(bool _is_mem);
 		~ScanResDialog();
 	};
 }

@@ -46,7 +46,7 @@ namespace Meduzzza
 		~Statist() {}
 		
 		quint64 filesCount() const { return m_files_count; }
-		quint64 procCount() const { return m_proc_count; }
+		quint64 procsCount() const { return m_proc_count; }
 		quint64 fileVirusesCount() const { return m_file_viruses_count; }
 		quint64 procVirusesCount() const { return m_proc_viruses_count; }
 		quint64 procErrorsCount() const { return m_proc_errors_count; }

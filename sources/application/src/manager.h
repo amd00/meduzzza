@@ -64,7 +64,7 @@ namespace Meduzzza
 		bool init();
 		
 		quint64 filesCount() const { return m_statist -> filesCount(); }
-		quint64 procCount() const { return m_statist -> procCount(); }
+		quint64 procsCount() const { return m_statist -> procsCount(); }
 		quint64 fileVirusesCount() const { return m_statist -> fileVirusesCount(); }
 		quint64 procVirusesCount() const { return m_statist -> procVirusesCount(); }
 		quint64 quarantined() const { return m_statist -> quarantined(); }

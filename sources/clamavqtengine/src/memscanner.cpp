@@ -28,7 +28,7 @@
 #include "memscanner.h"
 #include "procscanner.h"
 #include "scanevent.h"
-#include <QDebug>
+
 namespace Meduzzza
 {
 	
