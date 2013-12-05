@@ -52,7 +52,7 @@ namespace Meduzzza
 		if(!m_app_dir.mkpath(m_infected_db_dir.dirName()))
 			qCritical("ERROR: Unable create directory: %s", m_infected_db_dir.absolutePath().toLocal8Bit().data());
 		m_engine = new Meduzzza::ClamavEngine(m_settings.threadCount(), m_db_dir.absolutePath());
-		m_updater = new DbUpdater(m_settings.dbUpdateMirror(), m_db_dir.absolutePath(), 
+		m_updater = new DbUpdater(this, m_settings.dbUpdateMirror(), m_db_dir.absolutePath(), 
 			m_settings.hasProxy(), m_settings.proxyHost(), m_settings.proxyPort(), m_settings.proxyUser(), m_settings.proxyPassword());
 		
 		connect(m_engine, SIGNAL(dirScanStartedSignal(const QString&, const QDateTime&)), 
@@ -123,13 +123,13 @@ namespace Meduzzza
 		connect(this, SIGNAL(fileMovedToQuarantineSignal(const QString&, const QString&, const QString&)), 
 				m_statist, SLOT(fileMovedToQuarantineSlot(const QString&, const QString&, const QString&)));
 
-		connect(m_updater, SIGNAL(downloadStartedSignal(const QString&)), this, SIGNAL(downloadStartedSignal(const QString&)));
-		connect(m_updater, SIGNAL(downloadFinishedSignal(const QString&)), this, SIGNAL(downloadFinishedSignal(const QString&)));
-		connect(m_updater, SIGNAL(downloadProgressSignal(const QString&, qint64, qint64)), 
-				this, SIGNAL(downloadProgressSignal(const QString&, qint64, qint64)));
-		connect(m_updater, SIGNAL(updateCompletedSignal()), this, SLOT(updateCompletedSlot()));
-		connect(m_updater, SIGNAL(updateCompletedSignal()), this, SIGNAL(updateCompletedSignal()));
-		connect(m_updater, SIGNAL(errorSignal(const QString&, const QString&)), this, SLOT(updateErrorSlot(const QString&, const QString&)));
+// 		connect(m_updater, SIGNAL(downloadStartedSignal(const QString&)), this, SIGNAL(downloadStartedSignal(const QString&)));
+// 		connect(m_updater, SIGNAL(downloadFinishedSignal(const QString&)), this, SIGNAL(downloadFinishedSignal(const QString&)));
+// 		connect(m_updater, SIGNAL(downloadProgressSignal(const QString&, qint64, qint64)), 
+// 				this, SIGNAL(downloadProgressSignal(const QString&, qint64, qint64)));
+// 		connect(m_updater, SIGNAL(updateCompletedSignal()), this, SLOT(updateCompletedSlot()));
+// 		connect(m_updater, SIGNAL(updateCompletedSignal()), this, SIGNAL(updateCompletedSignal()));
+// 		connect(m_updater, SIGNAL(errorSignal(const QString&, const QString&)), this, SLOT(updateErrorSlot(const QString&, const QString&)));
 		
 		
 		connect(this, SIGNAL(fileVirusDetectedSignal(const QString&, const QDateTime&, const QDateTime&, const QString&)), 

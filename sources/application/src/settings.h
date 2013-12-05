@@ -40,7 +40,7 @@ public:
 	qint32 maxDbAge() const { return value("database/max_age", 7).toInt(); }
 	void setMaxDbAge(qint32 _val) { setValue("database/max_age", _val); Q_EMIT maxDbAgeChangedSignal(_val); }
 	
-	QString dbUpdateMirror() { return value("database/mirror", "database.clamav.net").toString(); }
+	QString dbUpdateMirror() { return value("database/mirror", "http://database.clamav.net").toString(); }
 	void setDbUpdateMirror(const QString _val) { setValue("database/mirror", _val); Q_EMIT dbUpdateMirrorChangedSignal(_val); }
 	
 	bool hasProxy() const { return value("database/proxy", false).toBool(); }

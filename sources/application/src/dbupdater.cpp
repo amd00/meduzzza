@@ -23,135 +23,153 @@
 #include <QStringList>
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QCoreApplication>
 
 #include "dbupdater.h"
-
-DbUpdater::DbUpdater(const QString &_mirror, const QString &_db_path, bool _proxy, const QString &_proxy_host, qint16 _proxy_port,
-				const QString &_proxy_user, const QString &_proxy_password) : QObject(), m_mirror(_mirror), m_db_path(_db_path), 
-				m_db_tmp_dir(), m_pool(), m_man(), 
-				m_proxy(_proxy ? QNetworkProxy::HttpProxy : QNetworkProxy::NoProxy, _proxy_host, _proxy_port, _proxy_user, _proxy_password)
+#include "manager.h"
+#include "meduzzzaevent.h"
+#include <QDebug>
+namespace Meduzzza
 {
-	m_man.setProxy(m_proxy);
-	m_db_tmp_dir.setPath(QDir(m_db_path).absoluteFilePath("db_update"));
-	m_db_tmp_dir.mkpath(m_db_tmp_dir.absolutePath());
-}
 
-void DbUpdater::update()
-{
-	downloadFiles(QStringList() << "main.cvd" << "daily.cvd" << "bytecode.cvd" << "safebrowsing.cvd");
-}
-
-void DbUpdater::dailyUpdate()
-{
-	downloadFiles(QStringList() << "daily.cvd");
-}
-
-void DbUpdater::downloadFiles(const QStringList &_files)
-{
-	foreach(QString file, _files)
+	DbUpdater::DbUpdater(Manager *_man, const QString &_mirror, const QString &_db_path, bool _proxy, const QString &_proxy_host, qint16 _proxy_port,
+					const QString &_proxy_user, const QString &_proxy_password) : QObject(), m_man(_man), m_mirror(_mirror), m_db_path(_db_path), 
+					m_db_tmp_dir(), m_pool(), m_nam(), 
+					m_proxy(_proxy ? QNetworkProxy::HttpProxy : QNetworkProxy::NoProxy, _proxy_host, _proxy_port, _proxy_user, _proxy_password)
 	{
-		QUrl url;
-		url.setScheme("http");
-		url.setHost(m_mirror);
-		url.setPath("/" + file);
-		QFile *f = new QFile(m_db_tmp_dir.absoluteFilePath(file));
-		f -> open(QIODevice::WriteOnly | QIODevice::Truncate);
-		QNetworkReply *reply = m_man.get(QNetworkRequest(url));
-		m_pool[reply] = f;
-		connect(reply, SIGNAL(finished()), this, SLOT(downloadFinishedSlot()));
-		connect(reply, SIGNAL(readyRead()), this, SLOT(readyReadSlot()));
-		connect(reply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(updateProgressSlot(qint64,qint64)));
-		connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(errorSlot(QNetworkReply::NetworkError)));
-		Q_EMIT downloadStartedSignal(file);
+		m_nam.setProxy(m_proxy);
+		m_db_tmp_dir.setPath(QDir(m_db_path).absoluteFilePath("db_update"));
+		m_db_tmp_dir.mkpath(m_db_tmp_dir.absolutePath());
 	}
-}
 
-void DbUpdater::dbUpdateMirrorChangedSlot(const QString &_val)
-{
-	m_mirror = _val;
-}
-
-void DbUpdater::hasProxyChangedSlot(bool _val)
-{
-	m_proxy.setType(_val ? QNetworkProxy::HttpProxy : QNetworkProxy::NoProxy);
-	m_man.setProxy(m_proxy);
-}
-
-void DbUpdater::proxyHostChangedSlot(const QString &_val)
-{
-	m_proxy.setHostName(_val);
-	m_man.setProxy(m_proxy);
-}
-
-void DbUpdater::proxyPortChangedSlot(qint16 _val)
-{
-	m_proxy.setPort(_val);
-	m_man.setProxy(m_proxy);
-}
-
-void DbUpdater::proxyUserChangedSlot(const QString &_val)
-{
-	m_proxy.setUser(_val);
-	m_man.setProxy(m_proxy);
-}
-
-void DbUpdater::proxyPasswordChangedSlot(const QString &_val)
-{
-	m_proxy.setPassword(_val);
-	m_man.setProxy(m_proxy);
-}
-
-void DbUpdater::downloadFinishedSlot()
-{
-	QNetworkReply *reply = (QNetworkReply*)sender();
-	QFile *f = m_pool[reply];
-	f -> close();
-	QString file_name = QFileInfo(*f).fileName();
-	QDir db_dir(m_db_path);
-	QFile::remove(db_dir.absoluteFilePath(file_name));
-	f -> rename(db_dir.absoluteFilePath(file_name));
-	m_pool.remove(reply);
-	reply -> deleteLater();
-	delete f;
-	Q_EMIT downloadFinishedSignal(file_name);
-	if(m_pool.isEmpty())
-		Q_EMIT updateCompletedSignal();
-}
-
-void DbUpdater::readyReadSlot()
-{
-	QNetworkReply *reply = (QNetworkReply*)sender();
-	m_pool[reply] -> write(reply -> readAll());
-}
-
-void DbUpdater::updateProgressSlot(qint64 _read, qint64 _total)
-{
-	QNetworkReply *reply = (QNetworkReply*)sender();
-	QFile *f = m_pool[reply];
-	QString file_name = QFileInfo(*f).fileName();
-// 	qDebug("Download %s: %i : %i", file_name.toLocal8Bit().data(), _read, _total);
-	Q_EMIT downloadProgressSignal(file_name, _read, _total);
-}
-
-void DbUpdater::errorSlot(QNetworkReply::NetworkError _error)
-{
-	QNetworkReply *reply = (QNetworkReply*)sender();
-	QFile *f = m_pool[reply];
-	QString file_name = QFileInfo(*f).fileName();
-	switch(_error)
+	void DbUpdater::update()
 	{
-		case QNetworkReply::NoError:
-			break;
-		default:
-			disconnect(reply, SIGNAL(finished()), this, SLOT(downloadFinishedSlot()));
-			disconnect(reply, SIGNAL(readyRead()), this, SLOT(readyReadSlot()));
-			disconnect(reply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(updateProgressSlot(qint64,qint64)));
-			QDir db_dir(m_db_path);
-			QFile::remove(db_dir.absoluteFilePath(file_name));
-			f -> rename(db_dir.absoluteFilePath(file_name));
-			m_pool.remove(reply);
-			reply -> deleteLater();
-			Q_EMIT errorSignal(file_name, reply -> errorString());
-			break;
-	};
+		downloadFiles(QStringList() << "main.cvd" << "daily.cvd" << "bytecode.cvd" << "safebrowsing.cvd");
+	}
+
+	void DbUpdater::dailyUpdate()
+	{
+		downloadFiles(QStringList() << "daily.cvd");
+	}
+
+	void DbUpdater::downloadFiles(const QStringList &_files)
+	{
+		m_start_time = QDateTime::currentDateTime();
+		UpdateStartedEvent *start_event(new UpdateStartedEvent(_files.size() > 1, m_start_time));
+		QCoreApplication::postEvent(m_man, start_event);
+		foreach(QString file, _files)
+		{
+			QUrl url(m_mirror + "/" + file);
+			QFile *f = new QFile(m_db_tmp_dir.absoluteFilePath(file));
+			f -> open(QIODevice::WriteOnly | QIODevice::Truncate);
+			QNetworkReply *reply = m_nam.get(QNetworkRequest(url));
+			m_pool[reply] = DownloadItem(f, QDateTime::currentDateTime());
+			connect(reply, SIGNAL(finished()), this, SLOT(downloadFinishedSlot()));
+			connect(reply, SIGNAL(readyRead()), this, SLOT(readyReadSlot()));
+			connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateProgressSlot(qint64, qint64)));
+			connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(errorSlot(QNetworkReply::NetworkError)));
+			FileDownloadStartedEvent *file_event(new FileDownloadStartedEvent(file, QDateTime::currentDateTime()));
+			QCoreApplication::postEvent(m_man, file_event);
+		}
+	}
+
+	void DbUpdater::dbUpdateMirrorChangedSlot(const QString &_val)
+	{
+		m_mirror = _val;
+	}
+
+	void DbUpdater::hasProxyChangedSlot(bool _val)
+	{
+		m_proxy.setType(_val ? QNetworkProxy::HttpProxy : QNetworkProxy::NoProxy);
+		m_nam.setProxy(m_proxy);
+	}
+
+	void DbUpdater::proxyHostChangedSlot(const QString &_val)
+	{
+		m_proxy.setHostName(_val);
+		m_nam.setProxy(m_proxy);
+	}
+
+	void DbUpdater::proxyPortChangedSlot(qint16 _val)
+	{
+		m_proxy.setPort(_val);
+		m_nam.setProxy(m_proxy);
+	}
+
+	void DbUpdater::proxyUserChangedSlot(const QString &_val)
+	{
+		m_proxy.setUser(_val);
+		m_nam.setProxy(m_proxy);
+	}
+
+	void DbUpdater::proxyPasswordChangedSlot(const QString &_val)
+	{
+		m_proxy.setPassword(_val);
+		m_nam.setProxy(m_proxy);
+	}
+
+	void DbUpdater::downloadFinishedSlot()
+	{
+		QNetworkReply *reply = (QNetworkReply*)sender();
+		QFile *f = m_pool[reply].file;
+		f -> close();
+		QString file_name = QFileInfo(*f).fileName();
+		QDir db_dir(m_db_path);
+		QFile::remove(db_dir.absoluteFilePath(file_name));
+		f -> rename(db_dir.absoluteFilePath(file_name));
+		
+		FileDownloadCompletedEvent *file_event(new FileDownloadCompletedEvent(file_name, m_pool[reply].start_time, QDateTime::currentDateTime()));
+		QCoreApplication::postEvent(m_man, file_event);
+		
+		m_pool.remove(reply);
+		reply -> deleteLater();
+		delete f;
+		
+		if(m_pool.isEmpty())
+		{
+			UpdateCompletedEvent *end_event(new UpdateCompletedEvent(m_start_time, QDateTime::currentDateTime()));
+			QCoreApplication::postEvent(m_man, end_event);
+		}
+	}
+
+	void DbUpdater::readyReadSlot()
+	{
+		QNetworkReply *reply = (QNetworkReply*)sender();
+		m_pool[reply].file -> write(reply -> readAll());
+	}
+
+	void DbUpdater::updateProgressSlot(qint64 _read, qint64 _total)
+	{
+		QNetworkReply *reply = (QNetworkReply*)sender();
+		QFile *f = m_pool[reply].file;
+		QString file_name = QFileInfo(*f).fileName();
+	// 	qDebug("Download %s: %i : %i", file_name.toLocal8Bit().data(), _read, _total);
+		FileDownloadProgressEvent *file_event(new FileDownloadProgressEvent(file_name, _read, _total));
+		QCoreApplication::postEvent(m_man, file_event);
+// 		Q_EMIT downloadProgressSignal(file_name, _read, _total);
+	}
+
+	void DbUpdater::errorSlot(QNetworkReply::NetworkError _error)
+	{
+		QNetworkReply *reply = (QNetworkReply*)sender();
+		QFile *f = m_pool[reply].file;
+		QString file_name = QFileInfo(*f).fileName();
+		switch(_error)
+		{
+			case QNetworkReply::NoError:
+				break;
+			default:
+				disconnect(reply, SIGNAL(finished()), this, SLOT(downloadFinishedSlot()));
+				disconnect(reply, SIGNAL(readyRead()), this, SLOT(readyReadSlot()));
+				disconnect(reply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(updateProgressSlot(qint64,qint64)));
+				QDir db_dir(m_db_path);
+				QFile::remove(db_dir.absoluteFilePath(file_name));
+				f -> rename(db_dir.absoluteFilePath(file_name));
+				m_pool.remove(reply);
+				reply -> deleteLater();
+// 				Q_EMIT errorSignal(file_name, reply -> errorString());
+				break;
+		};
+	}
+
 }

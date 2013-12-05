@@ -28,50 +28,68 @@
 #include <QNetworkProxy>
 #include <QNetworkReply>
 #include <QDir>
-#include <QHash>
+#include <QMap>
+#include <QDateTime>
 
-class DbUpdater : public QObject
+namespace Meduzzza
 {
-	Q_OBJECT
+	class Manager;
 	
-private:
-	QString m_mirror;
-	QString m_db_path;
-	QDir m_db_tmp_dir;
-	QHash<QNetworkReply*, QFile*> m_pool;
-	QNetworkAccessManager m_man;
-	QNetworkProxy m_proxy;
+	class DbUpdater : public QObject
+	{
+		Q_OBJECT
+		
+	private:
+		struct DownloadItem
+		{
+			DownloadItem() {}
+			DownloadItem(QFile*_file, const QDateTime &_time) :
+				file(_file), start_time(_time) {}
+			QFile *file;
+			QDateTime start_time;
+		};
+		
+	private:
+		Manager *m_man;
+		QString m_mirror;
+		QString m_db_path;
+		QDir m_db_tmp_dir;
+		QMap<QNetworkReply*, DownloadItem> m_pool;
+		QNetworkAccessManager m_nam;
+		QNetworkProxy m_proxy;
+		QDateTime m_start_time;
+		bool m_is_full;
 
-public:
-	DbUpdater(const QString &_mirror, const QString &_db_path, bool _proxy, const QString &_proxy_host, qint16 _proxy_port,
-				const QString &_proxy_user, const QString &_proxy_password);
-	~DbUpdater() {}
-	void update();
-	void dailyUpdate();
-	
-private:
-	void downloadFiles(const QStringList &_files);
-	
-public Q_SLOTS:
-	void dbUpdateMirrorChangedSlot(const QString &_val);
-	void hasProxyChangedSlot(bool _val);
-	void proxyHostChangedSlot(const QString &_val);
-	void proxyPortChangedSlot(qint16 _val);
-	void proxyUserChangedSlot(const QString &_val);
-	void proxyPasswordChangedSlot(const QString &_val);
+	public:
+		DbUpdater(Manager *_man, const QString &_mirror, const QString &_db_path, bool _proxy, const QString &_proxy_host, qint16 _proxy_port,
+					const QString &_proxy_user, const QString &_proxy_password);
+		~DbUpdater() {}
+		void update();
+		void dailyUpdate();
+		
+	private:
+		void downloadFiles(const QStringList &_files);
+		
+	public Q_SLOTS:
+		void dbUpdateMirrorChangedSlot(const QString &_val);
+		void hasProxyChangedSlot(bool _val);
+		void proxyHostChangedSlot(const QString &_val);
+		void proxyPortChangedSlot(qint16 _val);
+		void proxyUserChangedSlot(const QString &_val);
+		void proxyPasswordChangedSlot(const QString &_val);
 
-private Q_SLOTS:
-	void downloadFinishedSlot();
-	void readyReadSlot();
-	void updateProgressSlot(qint64 _read, qint64 _total);
-	void errorSlot(QNetworkReply::NetworkError _error);
-	
-Q_SIGNALS:
-	void downloadStartedSignal(const QString &_file);
-	void downloadFinishedSignal(const QString &_file);
-	void downloadProgressSignal(const QString &_file, qint64 _read, qint64 _total);
-	void updateCompletedSignal();
-	void errorSignal(const QString &_file_name, const QString &_error_string);
-};
-
+	private Q_SLOTS:
+		void downloadFinishedSlot();
+		void readyReadSlot();
+		void updateProgressSlot(qint64 _read, qint64 _total);
+		void errorSlot(QNetworkReply::NetworkError _error);
+		
+// 	Q_SIGNALS:
+// 		void downloadStartedSignal(const QString &_file);
+// 		void downloadFinishedSignal(const QString &_file);
+// 		void downloadProgressSignal(const QString &_file, qint64 _read, qint64 _total);
+// 		void updateCompletedSignal();
+// 		void errorSignal(const QString &_file_name, const QString &_error_string);
+	};
+}
 #endif

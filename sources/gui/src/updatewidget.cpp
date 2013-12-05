@@ -50,7 +50,7 @@ namespace Meduzzza
 	void UpdateWidget::startUpdateSlot()
 	{
 		m_items.clear();
-		m_man -> downloadDb();
+		m_man -> updateDb();
 	}
 
 	void UpdateWidget::updateCompletedSlot()

@@ -64,14 +64,17 @@ namespace Meduzzza
 	class UpdateCompletedEvent : public MeduzzzaEvent
 	{
 	private:
-		QDateTime m_time;
+		QDateTime m_start_time;
+		QDateTime m_end_time;
 		
 	public:
-		UpdateCompletedEvent(const QDateTime &_time) : 
-				MeduzzzaEvent(MeduzzzaEvent::UpdateCompleted), m_time(_time) {}
+		UpdateCompletedEvent(const QDateTime &_start_time, const QDateTime &_end_time) : 
+				MeduzzzaEvent(MeduzzzaEvent::UpdateCompleted), m_start_time(_start_time),
+				m_end_time(_end_time) {}
 		~UpdateCompletedEvent() {}
 		
-		QDateTime time() const { return m_time; }
+		QDateTime startTime() const { return m_start_time; }
+		QDateTime endTime() const { return m_end_time; }
 	};
 	
 	class FileDownloadStartedEvent : public MeduzzzaEvent
@@ -94,16 +97,18 @@ namespace Meduzzza
 	{
 	private:
 		QString m_name;
-		QDateTime m_time;
+		QDateTime m_start_time;
+		QDateTime m_end_time;
 		
 	public:
-		FileDownloadCompletedEvent(const QString &_name, const QDateTime &_time) :
+		FileDownloadCompletedEvent(const QString &_name, const QDateTime &_start_time, const QDateTime &_end_time) :
 				MeduzzzaEvent(MeduzzzaEvent::FileDownloadCompleted),
-				m_name(_name), m_time(_time) {}
+				m_name(_name), m_start_time(_start_time), m_end_time(_end_time) {}
 		~FileDownloadCompletedEvent() {}
 		
 		QString name() const { return m_name; }
-		QDateTime time() const { return m_time; }
+		QDateTime startTime() const { return m_start_time; }
+		QDateTime endTime() const { return m_end_time; }
 	};
 	
 	class FileDownloadProgressEvent : public MeduzzzaEvent
