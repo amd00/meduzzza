@@ -27,6 +27,7 @@
 #include <string.h>
 
 #include "manager.h"
+#include "meduzzzaevent.h"
 
 namespace Meduzzza
 {
@@ -250,6 +251,42 @@ namespace Meduzzza
 		m_full_scan_in_progress = false;
 		m_engine -> stop();
 	}
+	
+	bool Manager::event(QEvent *_event)
+	{
+		bool res = true;
+		switch((MeduzzzaEvent::MeduzzzaEventType)_event -> type())
+		{
+		case MeduzzzaEvent::UpdateStarted:
+			Q_EMIT updateStartedSignal(((UpdateStartedEvent*)_event) -> isFull(), 
+									   ((UpdateStartedEvent*)_event) -> startTime());
+			break;
+		case MeduzzzaEvent::UpdateCompleted:
+			Q_EMIT updateCompletedSignal(((UpdateCompletedEvent*)_event) -> startTime(), 
+									   ((UpdateCompletedEvent*)_event) -> endTime());
+			break;
+		case MeduzzzaEvent::FileDownloadStarted:
+			Q_EMIT fileDownloadStartedSignal(((FileDownloadStartedEvent*)_event) -> file(), 
+									   ((FileDownloadStartedEvent*)_event) -> startTime());
+			break;
+		case MeduzzzaEvent::FileDownloadCompleted:
+			Q_EMIT fileDownloadCompletedSignal(((FileDownloadCompletedEvent*)_event) -> file(), 
+									   ((FileDownloadCompletedEvent*)_event) -> startTime(),
+									   ((FileDownloadCompletedEvent*)_event) -> endTime());
+			break;
+		case MeduzzzaEvent::FileDownloadProgress:
+			Q_EMIT fileDownloadProgressSignal(((FileDownloadProgressEvent*)_event) -> file(), 
+									   ((FileDownloadProgressEvent*)_event) -> read(),
+									   ((FileDownloadProgressEvent*)_event) -> total()
+ 											);
+			break;
+		default:
+			res = QObject::event(_event);
+			break;
+		}
+		return res;
+	}
+	
 
 	void Manager::fileVirusDetectedSlot(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus)
 	{
@@ -274,14 +311,14 @@ namespace Meduzzza
 		}
 	}
 
-	void Manager::updateCompletedSlot()
-	{
-		qDebug("Virus databases updated!!!");
-	}
-
-	void Manager::updateErrorSlot(const QString &_file_name, const QString &_error_string)
-	{
-		qCritical("ERROR: Database update error: %s - %s", _file_name.toLocal8Bit().data(), _error_string.toLocal8Bit().data());
-	}
+// 	void Manager::updateCompletedSlot()
+// 	{
+// 		qDebug("Virus databases updated!!!");
+// 	}
+// 
+// 	void Manager::updateErrorSlot(const QString &_file_name, const QString &_error_string)
+// 	{
+// 		qCritical("ERROR: Database update error: %s - %s", _file_name.toLocal8Bit().data(), _error_string.toLocal8Bit().data());
+// 	}
 
 }

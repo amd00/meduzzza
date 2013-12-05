@@ -49,6 +49,12 @@ namespace Meduzzza
 		void fullScanStarted(const QDateTime &_time);
 		void fullScanCompleted(const QDateTime &_time);
 		
+		void updateStarted(bool _is_full, const QDateTime &_start_time) {}
+		void updateCompleted(const QDateTime &_start_time, const QDateTime &_end_time) {}
+		void fileDownloadStarted(const QString &_file, const QDateTime &_start_time) {}
+		void fileDownloadCompleted(const QString &_file, const QDateTime &_start_time, const QDateTime &_end_time) {}
+		void fileDownloadProgress(const QString &_file, quint64 _read, quint64 _total) {}
+		
 	private Q_SLOTS:
 		void startClickedSlot();
 		void stopClickedSlot();

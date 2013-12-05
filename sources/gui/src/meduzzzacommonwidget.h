@@ -50,6 +50,12 @@ namespace Meduzzza
 		virtual void filesFound(quint64 _count) = 0;
 		virtual void procsFound(quint64 _count) = 0;
 		
+		virtual void updateStarted(bool _is_full, const QDateTime &_start_time) = 0;
+		virtual void updateCompleted(const QDateTime &_start_time, const QDateTime &_end_time) = 0;
+		virtual void fileDownloadStarted(const QString &_file, const QDateTime &_start_time) = 0;
+		virtual void fileDownloadCompleted(const QString &_file, const QDateTime &_start_time, const QDateTime &_end_time) = 0;
+		virtual void fileDownloadProgress(const QString &_file, quint64 _read, quint64 _total) = 0;
+		
 	private Q_SLOTS:
 		void fileScanStartedSlot(const QString &_file, const QDateTime &_time_start) { fileScanStarted(_file); }
 		void fileScanCompletedSlot(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end) { fileScanCompleted(_file); }
@@ -77,6 +83,13 @@ namespace Meduzzza
 		
 		void filesFoundSlot(quint64 _count) { filesFound(_count); }
 		void procsFoundSlot(quint64 _count) { procsFound(_count); }
+		
+		void updateStartedSlot(bool _is_full, const QDateTime &_start_time) { updateStarted(_is_full, _start_time); }
+		void updateCompletedSlot(const QDateTime &_start_time, const QDateTime &_end_time) { updateCompleted(_start_time, _end_time); }
+		void fileDownloadStartedSlot(const QString &_file, const QDateTime &_start_time) { fileDownloadStarted(_file, _start_time); }
+		void fileDownloadCompletedSlot(const QString &_file, const QDateTime &_start_time, 
+									   const QDateTime &_end_time) { fileDownloadCompleted(_file, _start_time, _end_time); }
+		void fileDownloadProgressSlot(const QString &_file, quint64 _read, quint64 _total) { fileDownloadProgress(_file, _read, _total); }
 	};
 }
 #endif

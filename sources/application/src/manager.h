@@ -76,6 +76,9 @@ namespace Meduzzza
 		
 		Statist *statist() const { return m_statist; }
 		
+	protected:
+		bool event(QEvent *_event);
+		
 	private:
 		Manager();
 		
@@ -94,8 +97,8 @@ namespace Meduzzza
 // 		void procVirusDetectedSlot(const QString &_name, Q_PID _pid, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus);
 		void dirScanCompletedSlot(const QString &_dir, const QDateTime &_time_start, const QDateTime &_time_end);
 		void memScanCompletedSlot(const QDateTime &_time_start, const QDateTime &_time_end);
-		void updateCompletedSlot();
-		void updateErrorSlot(const QString &_file_name, const QString &_error_string);
+// 		void updateCompletedSlot();
+// 		void updateErrorSlot(const QString &_file_name, const QString &_error_string);
 		
 	Q_SIGNALS:
 		void fileScanStartedSignal(const QString &_file, const QDateTime &_time_start);
@@ -123,14 +126,20 @@ namespace Meduzzza
 		void filesFoundSignal(quint64 _count);
 		void procsFoundSignal(quint64 _count);
 		
+		void updateStartedSignal(bool _is_full, const QDateTime &_start_time);
+		void updateCompletedSignal(const QDateTime &_start_time, const QDateTime &_end_time);
+		void fileDownloadStartedSignal(const QString &_file, const QDateTime &_start_time);
+		void fileDownloadCompletedSignal(const QString &_file, const QDateTime &_start_time, const QDateTime &_end_time);
+		void fileDownloadProgressSignal(const QString &_file, quint64 _read, quint64 _total);
+		
 		void errorSignal(const QString &_file, const QString &_err);
 		void fileMovedToQuarantineSignal(const QString &_source, const QString &_quarantined, const QString &_virus);
 		void dbOutdatedSignal();
 		void sigsLoadedSignal(quint32 _count);
-		void downloadStartedSignal(const QString &_file);
-		void downloadFinishedSignal(const QString &_file);
-		void downloadProgressSignal(const QString &_file, qint64 _read, qint64 _total);
-		void updateCompletedSignal();
+// 		void downloadStartedSignal(const QString &_file);
+// 		void downloadFinishedSignal(const QString &_file);
+// 		void downloadProgressSignal(const QString &_file, qint64 _read, qint64 _total);
+// 		void updateCompletedSignal();
 	};
 }
 

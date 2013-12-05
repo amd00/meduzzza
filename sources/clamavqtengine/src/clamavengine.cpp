@@ -212,24 +212,21 @@ namespace Meduzzza
 	
 	bool ClamavEngine::event(QEvent *_event)
 	{
-		bool res = false;
+		bool res = true;
 		switch((ScanEvent::ScanEventType)_event -> type())
 		{
 			case ScanEvent::DirScanStarted:
 				Q_EMIT dirScanStartedSignal(((DirScanStartedEvent*)_event) -> dir(), 
 											((DirScanStartedEvent*)_event) -> startTime());
-				res = true;
 				break;
 			case ScanEvent::DirScanCompleted:
 				Q_EMIT dirScanCompletedSignal(((DirScanCompletedEvent*)_event) -> dir(), 
 											  ((DirScanCompletedEvent*)_event) -> startTime(), 
 											  QDateTime::currentDateTime());
-				res = true;
 				break;
 			case ScanEvent::FileScanStarted:
 				Q_EMIT fileScanStartedSignal(((FileScanStartedEvent*)_event) -> file(),
 									   ((FileScanStartedEvent*)_event) -> startTime());
-				res = true;
 				break;
 			case ScanEvent::FileScanCompleted:
 				fileScanCompleted(((FileScanCompletedEvent*)_event) -> file(),
@@ -237,22 +234,18 @@ namespace Meduzzza
 									  ((FileScanCompletedEvent*)_event) -> startTime(),
 									  ((FileScanCompletedEvent*)_event) -> endTime(),
 									  ((FileScanCompletedEvent*)_event) -> virname());
-				res = true;
 				break;
 			case ScanEvent::MemScanStarted:
 				Q_EMIT memScanStartedSignal(((MemScanStartedEvent*)_event) -> startTime());
-				res = true;
 				break;
 			case ScanEvent::MemScanCompleted:
 				Q_EMIT memScanCompletedSignal(((MemScanCompletedEvent*)_event) -> startTime(), 
 											  QDateTime::currentDateTime());
-				res = true;
 				break;
 			case ScanEvent::ProcScanStarted:
 				Q_EMIT procScanStartedSignal(((ProcScanStartedEvent*)_event) -> name(),
 											((ProcScanStartedEvent*)_event) -> pid(),
 											((ProcScanStartedEvent*)_event) -> startTime());
-				res = true;
 				break;
 			case ScanEvent::ProcScanCompleted:
 				procScanCompleted(((ProcScanCompletedEvent*)_event) -> name(),
@@ -261,21 +254,17 @@ namespace Meduzzza
 									((ProcScanCompletedEvent*)_event) -> startTime(),
 									((ProcScanCompletedEvent*)_event) -> endTime(),
 									((ProcScanCompletedEvent*)_event) -> virname());
-				res = true;
 				break;
 			case ScanEvent::ProcScanError:
 				Q_EMIT procScanErrorSignal(((ProcScanErrorEvent*)_event) -> name(),
 											((ProcScanErrorEvent*)_event) -> pid(),
 											((ProcScanErrorEvent*)_event) -> error());
-				res = true;
 				break;
 			case ScanEvent::FilesFound:
 				Q_EMIT filesFoundSignal(((FilesFoundEvent*)_event) -> filesCount());
-				res = true;
 				break;
 			case ScanEvent::ProcsFound:
 				Q_EMIT procsFoundSignal(((ProcsFoundEvent*)_event) -> procsCount());
-				res = true;
 				break;
 			default:
 				res = QObject::event(_event);

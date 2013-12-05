@@ -54,6 +54,12 @@ namespace Meduzzza
 		void filesFound(quint64 _count);
 		void procsFound(quint64 _count) {}
 		
+		void updateStarted(bool _is_full, const QDateTime &_start_time) {}
+		void updateCompleted(const QDateTime &_start_time, const QDateTime &_end_time) {}
+		void fileDownloadStarted(const QString &_file, const QDateTime &_start_time) {}
+		void fileDownloadCompleted(const QString &_file, const QDateTime &_start_time, const QDateTime &_end_time) {}
+		void fileDownloadProgress(const QString &_file, quint64 _read, quint64 _total) {}
+		
 	protected Q_SLOTS:
 		void dirClickedSlot();
 		void startClickedSlot();

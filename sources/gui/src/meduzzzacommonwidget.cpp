@@ -45,6 +45,16 @@ namespace Meduzzza
 			
 			connect(m_man, SIGNAL(filesFoundSignal(quint64)), this, SLOT(filesFoundSlot(quint64)));
 			connect(m_man, SIGNAL(procsFoundSignal(quint64)), this, SLOT(procsFoundSlot(quint64)));
+			
+			connect(m_man, SIGNAL(updateStartedSignal(bool, const QDateTime&)), this, SLOT(updateStartedSlot(bool, const QDateTime&)));
+			connect(m_man, SIGNAL(updateCompletedSignal(const QDateTime&, const QDateTime&)), 
+					this, SLOT(updateCompletedSlot(const QDateTime&, const QDateTime&)));
+			connect(m_man, SIGNAL(fileDownloadStartedSignal(const QString&, const QDateTime&)),
+					this, SLOT(fileDownloadStartedSlot(const QString&, const QDateTime&)));
+			connect(m_man, SIGNAL(fileDownloadCompletedSignal(const QString&, const QDateTime&, const QDateTime&)),
+					this, SLOT(fileDownloadCompletedSlot(const QString&, const QDateTime&, const QDateTime&)));
+			connect(m_man, SIGNAL(fileDownloadProgressSignal(const QString&, quint64, quint64)),
+					this, SLOT(fileDownloadProgressSlot(const QString&, quint64, quint64)));
 	}
 	
 	void MeduzzzaCommonWidget::dirScanStartedSlot(const QString &_dir, const QDateTime &_time_start) 

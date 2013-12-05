@@ -114,7 +114,14 @@
     </layout>
    </item>
    <item>
-    <layout class="QGridLayout" name="m_items_layout"/>
+    <widget class="QTreeView" name="m_update_view">
+     <property name="rootIsDecorated">
+      <bool>false</bool>
+     </property>
+     <property name="itemsExpandable">
+      <bool>false</bool>
+     </property>
+    </widget>
    </item>
    <item>
     <spacer name="verticalSpacer">
@@ -132,8 +139,7 @@
   </layout>
   <zorder>label</zorder>
   <zorder>verticalSpacer</zorder>
-  <zorder>label_2</zorder>
-  <zorder>m_age_label</zorder>
+  <zorder>m_update_view</zorder>
  </widget>
  <resources>
   <include location="../qrc/meduzzza.qrc"/>
