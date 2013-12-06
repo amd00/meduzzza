@@ -29,6 +29,7 @@
 #include "dirscanwidget.h"
 #include "memscanwidget.h"
 #include "updatewidget.h"
+#include "setupwidget.h"
 #include "mainmenumodel.h"
 
 namespace Meduzzza
@@ -43,10 +44,12 @@ namespace Meduzzza
 		DirScanWidget *dsw = new DirScanWidget(this);
 		MemScanWidget *msw = new MemScanWidget(this);
 		UpdateWidget *uw = new UpdateWidget(this);
+		SetupWidget *stw = new SetupWidget();
 		m_menu -> addMenuItem(sw -> text(), ":/images/menuitem", sw);
 		m_menu -> addMenuItem(dsw -> text(), ":/images/menuitem", dsw);
 		m_menu -> addMenuItem(msw -> text(), ":/images/menuitem", msw);
 		m_menu -> addMenuItem(uw -> text(), ":/images/menuitem", uw);
+		m_menu -> addMenuItem(stw -> text(), ":/images/menuitem", stw);
 		
 		connect(m_ui -> m_menu_view -> selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
 			this, SLOT(menuSelectedSlot(const QModelIndex&, const QModelIndex&)));
