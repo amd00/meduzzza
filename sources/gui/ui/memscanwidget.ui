@@ -41,7 +41,7 @@
        </property>
        <property name="icon">
         <iconset resource="../qrc/meduzzza.qrc">
-         <normaloff>:/images/images/play.png</normaloff>:/images/images/play.png</iconset>
+         <normaloff>:/images/play</normaloff>:/images/play</iconset>
        </property>
        <property name="checkable">
         <bool>false</bool>
@@ -55,7 +55,7 @@
        </property>
        <property name="icon">
         <iconset resource="../qrc/meduzzza.qrc">
-         <normaloff>:/images/images/stop.png</normaloff>:/images/images/stop.png</iconset>
+         <normaloff>:/images/stop</normaloff>:/images/stop</iconset>
        </property>
       </widget>
      </item>

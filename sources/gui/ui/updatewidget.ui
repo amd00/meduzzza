@@ -91,7 +91,7 @@
        </property>
        <property name="icon">
         <iconset resource="../qrc/meduzzza.qrc">
-         <normaloff>:/images/images/play.png</normaloff>:/images/images/play.png</iconset>
+         <normaloff>:/images/update</normaloff>:/images/update</iconset>
        </property>
        <property name="checkable">
         <bool>false</bool>

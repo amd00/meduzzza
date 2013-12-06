@@ -43,17 +43,15 @@ namespace Meduzzza
 		DirScanWidget *dsw = new DirScanWidget(this);
 		MemScanWidget *msw = new MemScanWidget(this);
 		UpdateWidget *uw = new UpdateWidget(this);
-		m_menu -> addMenuItem(sw -> text(), ":/images/images/item.png", sw);
-		m_menu -> addMenuItem(dsw -> text(), ":/images/images/item.png", dsw);
-		m_menu -> addMenuItem(msw -> text(), ":/images/images/item.png", msw);
-		m_menu -> addMenuItem(uw -> text(), ":/images/images/item.png", uw);
+		m_menu -> addMenuItem(sw -> text(), ":/images/menuitem", sw);
+		m_menu -> addMenuItem(dsw -> text(), ":/images/menuitem", dsw);
+		m_menu -> addMenuItem(msw -> text(), ":/images/menuitem", msw);
+		m_menu -> addMenuItem(uw -> text(), ":/images/menuitem", uw);
 		
 		connect(m_ui -> m_menu_view -> selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
 			this, SLOT(menuSelectedSlot(const QModelIndex&, const QModelIndex&)));
 		
 		m_man -> init();
-		m_ui -> m_splitter -> setStretchFactor(0, 10);
-		m_ui -> m_splitter -> setStretchFactor(1, 90);
 	}
 	
 	MainWindow::~MainWindow()
@@ -67,6 +65,8 @@ namespace Meduzzza
 		if(m_ui -> m_main_widget_layout -> itemAt(0))
 			m_ui -> m_main_widget_layout -> itemAt(0) -> widget() -> hide();
 		m_ui -> m_main_widget_layout -> insertWidget(0, _w);
+		m_ui -> m_splitter -> setStretchFactor(0, 10);
+		m_ui -> m_splitter -> setStretchFactor(1, 90);
 		_w -> show();
 	}
 	

@@ -83,18 +83,18 @@ namespace Meduzzza
 	
 	void ScanWidget::stopped()
 	{
-		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/play.png"));
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/play"));
 		QApplication::restoreOverrideCursor();
 	}
 	
 	void ScanWidget::paused()
 	{
-		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/play.png"));
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/play"));
 	}
 	
 	void ScanWidget::resumed()
 	{
-		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/pause"));
 	}
 	
 	void ScanWidget::filesFound(quint64 _count) 
@@ -109,12 +109,12 @@ namespace Meduzzza
 	
 	void ScanWidget::fullScanStarted(const QDateTime &_time)
 	{
-		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/pause"));
 	}
 	
 	void ScanWidget::fullScanCompleted(const QDateTime &_time)
 	{
-		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/play.png"));
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/play"));
 	}
 	
 	void ScanWidget::startClickedSlot()

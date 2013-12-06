@@ -1,10 +1,11 @@
 <RCC>
   <qresource prefix="images">
-    <file>../images/stop.png</file>
-    <file>../images/item.png</file>
-    <file>../images/pause.png</file>
-    <file>../images/disk.png</file>
-    <file>../images/meduzzza.png</file>
-    <file>../images/play.png</file>
+    <file alias="stop">../images/stop.png</file>
+    <file alias="menuitem">../images/item.png</file>
+    <file alias="pause">../images/pause.png</file>
+    <file alias="disk">../images/disk.png</file>
+    <file alias="meduzzza">../images/meduzzza.png</file>
+    <file alias="play">../images/play.png</file>
+	<file alias="update">../images/update.png</file>
   </qresource>
 </RCC>

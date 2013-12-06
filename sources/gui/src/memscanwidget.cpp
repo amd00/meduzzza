@@ -94,12 +94,12 @@ namespace Meduzzza
 	{
 		m_ui -> m_progress -> setValue(0);
 		m_mod -> clear();
-		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/pause"));
 	}
 
 	void MemScanWidget::memScanCompleted()
 	{
-		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/play.png"));
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/play"));
 		ScanResDialog res(true);
 		res.exec();
 	}
@@ -120,18 +120,18 @@ namespace Meduzzza
 	{
 		m_ui -> m_start_button -> setDisabled(false);
 		m_ui -> m_stop_button -> setDisabled(false);
-		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/play.png"));
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/play"));
 		QApplication::restoreOverrideCursor();
 	}
 
 	void MemScanWidget::paused()
 	{
-		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/play.png"));
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/play"));
 	}
 
 	void MemScanWidget::resumed()
 	{
-		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/pause"));
 	}
 	
 	void MemScanWidget::procsFound(quint64 _count)

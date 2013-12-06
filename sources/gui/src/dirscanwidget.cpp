@@ -62,12 +62,12 @@ namespace Meduzzza
 	{
 		m_ui -> m_progress -> setValue(0);
 		m_mod -> clear();
-		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/pause"));
 	}
 
 	void DirScanWidget::dirScanCompleted(const QString &_dir)
 	{
-		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/play.png"));
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/play"));
 		ScanResDialog res(false);
 		res.exec();
 	}
@@ -100,18 +100,18 @@ namespace Meduzzza
 	{
 		m_ui -> m_start_button -> setDisabled(false);
 		m_ui -> m_stop_button -> setDisabled(false);
-		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/play.png"));
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/play"));
 		QApplication::restoreOverrideCursor();
 	}
 
 	void DirScanWidget::paused()
 	{
-		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/play.png"));
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/play"));
 	}
 
 	void DirScanWidget::resumed()
 	{
-		m_ui -> m_start_button -> setIcon(QIcon(":/images/images/pause.png"));
+		m_ui -> m_start_button -> setIcon(QIcon(":/images/pause"));
 	}
 	
 	void DirScanWidget::filesFound(quint64 _count)
