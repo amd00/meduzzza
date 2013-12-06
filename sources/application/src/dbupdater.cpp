@@ -28,7 +28,7 @@
 #include "dbupdater.h"
 #include "manager.h"
 #include "meduzzzaevent.h"
-#include <QDebug>
+
 namespace Meduzzza
 {
 
@@ -159,14 +159,17 @@ namespace Meduzzza
 			default:
 				disconnect(reply, SIGNAL(finished()), this, SLOT(downloadFinishedSlot()));
 				disconnect(reply, SIGNAL(readyRead()), this, SLOT(readyReadSlot()));
-				disconnect(reply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(updateProgressSlot(qint64,qint64)));
-				QDir db_dir(m_db_path);
-				QFile::remove(db_dir.absoluteFilePath(file_name));
-				f -> rename(db_dir.absoluteFilePath(file_name));
+				disconnect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateProgressSlot(qint64, qint64)));
+				f -> remove();
 				m_pool.remove(reply);
 				reply -> deleteLater();
 				FileDownloadErrorEvent *error_event(new FileDownloadErrorEvent(file_name, reply -> errorString()));
 				QCoreApplication::postEvent(m_man, error_event);
+				if(m_pool.isEmpty())
+				{
+					UpdateCompletedEvent *end_event(new UpdateCompletedEvent(m_start_time, QDateTime::currentDateTime()));
+					QCoreApplication::postEvent(m_man, end_event);
+				}
 				break;
 		};
 	}

@@ -126,6 +126,7 @@ namespace Meduzzza
 			qCritical("ERROR: Load error: %s", cl_strerror(load_res));
 			return -1;
 		}
+		qDebug("INFO: Signatures loaded: %i", signo);
 		Q_EMIT sigLoadCompletedSignal(signo);
 		return signo;
 	}

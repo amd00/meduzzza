@@ -91,7 +91,7 @@ namespace Meduzzza
 		connect(m_engine, SIGNAL(filesFoundSignal(quint64)), this, SIGNAL(filesFoundSignal(quint64)));
 		connect(m_engine, SIGNAL(procsFoundSignal(quint64)), this, SIGNAL(procsFoundSignal(quint64)));
 		
-		connect(m_updater, SIGNAL(updateCompletedSignal(const QDateTime&, const QDateTime&)), this, SLOT(reset()));
+		connect(this, SIGNAL(updateCompletedSignal(const QDateTime&, const QDateTime&)), this, SLOT(reset()));
 
 		connect(this, SIGNAL(fileScanCompletedSignal(const QString&, const QDateTime&, const QDateTime&)), 
 				m_db, SLOT(fileScanCompletedSlot(const QString&, const QDateTime&, const QDateTime&)));
@@ -159,7 +159,6 @@ namespace Meduzzza
 		qint32 signo = -1;
 		if(!m_engine -> init() || (signo = m_engine -> loadDb()) == -1 || !m_engine -> compile())
 			qCritical("ERROR: Unable to init clamav engine");
-		qDebug("INFO: Signatures loaded: %i", signo);
 
 		return true;
 	}
