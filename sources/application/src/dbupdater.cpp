@@ -143,10 +143,8 @@ namespace Meduzzza
 		QNetworkReply *reply = (QNetworkReply*)sender();
 		QFile *f = m_pool[reply].file;
 		QString file_name = QFileInfo(*f).fileName();
-	// 	qDebug("Download %s: %i : %i", file_name.toLocal8Bit().data(), _read, _total);
 		FileDownloadProgressEvent *file_event(new FileDownloadProgressEvent(file_name, _read, _total));
 		QCoreApplication::postEvent(m_man, file_event);
-// 		Q_EMIT downloadProgressSignal(file_name, _read, _total);
 	}
 
 	void DbUpdater::errorSlot(QNetworkReply::NetworkError _error)
@@ -167,7 +165,8 @@ namespace Meduzzza
 				f -> rename(db_dir.absoluteFilePath(file_name));
 				m_pool.remove(reply);
 				reply -> deleteLater();
-// 				Q_EMIT errorSignal(file_name, reply -> errorString());
+				FileDownloadErrorEvent *error_event(new FileDownloadErrorEvent(file_name, reply -> errorString()));
+				QCoreApplication::postEvent(m_man, error_event);
 				break;
 		};
 	}

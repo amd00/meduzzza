@@ -56,7 +56,8 @@ namespace Meduzzza
 		QThreadPool *pool() const { return m_pool; }
 		
 		void setDbPath(const QString _db_path) { m_db_path = _db_path; }
-		void setEngine(cl_engine *_engine) { m_engine = _engine; }
+		void setEngine(cl_engine *_engine) { if(m_engine) cl_engine_free(m_engine); m_engine = _engine; }
+		void freeEngine() { if(m_engine) cl_engine_free(m_engine); m_engine = NULL; }
 	};
 
 	
@@ -76,6 +77,9 @@ namespace Meduzzza
 		m_p -> pool() -> setMaxThreadCount(thread_count);
 		qRegisterMetaType<PidList>("PidList");
 		qRegisterMetaType<Q_PID>("Q_PID");
+		qint32 init_res = cl_init(CL_INIT_DEFAULT);
+		if(init_res)
+			qCritical("ERROR: Init error: %s", cl_strerror(init_res));
 	}
 
 	ClamavEngine::~ClamavEngine() 
@@ -86,12 +90,6 @@ namespace Meduzzza
 
 	bool ClamavEngine::init()
 	{
-		qint32 init_res = cl_init(CL_INIT_DEFAULT);
-		if(init_res)
-		{
-			qCritical("ERROR: Init error: %s", cl_strerror(init_res));
-			return false;
-		}
 		m_p -> setEngine(cl_engine_new());
 		return true;
 	}
@@ -118,14 +116,17 @@ namespace Meduzzza
 
 	qint32 ClamavEngine::loadDb()
 	{
+		Q_EMIT sigLoadStartedSignal();
 		cl_engine_set_clcb_sigload(m_p -> engine(), ClamavEngine::sigload_cb, (void*)this);
 		quint32 signo;
 		int load_res = cl_load(m_p -> dbPath().toLocal8Bit().data(), m_p -> engine(), &signo, CL_DB_STDOPT);
 		if(load_res)
 		{
+			Q_EMIT sigLoadErrorSignal();
 			qCritical("ERROR: Load error: %s", cl_strerror(load_res));
 			return -1;
 		}
+		Q_EMIT sigLoadCompletedSignal(signo);
 		return signo;
 	}
 
@@ -138,6 +139,14 @@ namespace Meduzzza
 			return false;
 		}
 		return true;
+	}
+	
+	void ClamavEngine::reset()
+	{
+		m_p -> freeEngine();
+		init();
+		loadDb();
+		compile();
 	}
 
 	bool ClamavEngine::scanFileThread(const QString &_file)

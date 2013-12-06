@@ -80,7 +80,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0">
      <item>
       <widget class="QToolButton" name="m_start_button">
        <property name="focusPolicy">
@@ -95,6 +95,13 @@
        </property>
        <property name="checkable">
         <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="m_full_check">
+       <property name="text">
+        <string>Full update</string>
        </property>
       </widget>
      </item>

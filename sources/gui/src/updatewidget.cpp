@@ -28,6 +28,7 @@
 
 #include "updatewidget.h"
 #include "updatemodel.h"
+
 namespace Meduzzza
 {
 	
@@ -65,10 +66,12 @@ namespace Meduzzza
 
 	void UpdateWidget::updateStarted(bool _is_full, const QDateTime &_start_time)
 	{
+		m_ui -> m_start_button -> setDisabled(true);
 	}
 	
 	void UpdateWidget::updateCompleted(const QDateTime &_start_time, const QDateTime &_end_time)
 	{
+		m_ui -> m_start_button -> setDisabled(false);
 	}
 	
 	void UpdateWidget::fileDownloadStarted(const QString &_file, const QDateTime &_start_time)
@@ -83,36 +86,12 @@ namespace Meduzzza
 	{
 	}
 
-// 	void UpdateWidget::downloadStartedSlot(const QString &_file)
-// 	{
-// 		QLabel *label(new QLabel(_file));
-// 		QProgressBar *bar(new QProgressBar());
-// 		bar -> setMinimum(0);
-// 		bar -> setMaximum(100);
-// 		m_items[_file] = qMakePair(label, bar);
-// 		qint32 row = m_ui -> m_items_layout -> rowCount();
-// 		m_ui -> m_items_layout -> addWidget(label, row, 0);
-// 		m_ui -> m_items_layout -> addWidget(bar, row, 1);
-// 	}
-// 
-// 	void UpdateWidget::downloadFinishedSlot(const QString &_file)
-// 	{
-// 		m_items[_file].second -> setValue(100);
-// 	}
-// 
-// 	void UpdateWidget::downloadProgressSlot(const QString &_file, qint64 _read, qint64 _total)
-// 	{
-// 		m_items[_file].second -> setValue((qreal)_read / _total * 100);
-// 	}
-// 
 	void UpdateWidget::startUpdateSlot()
 	{
-		m_man -> updateDb();
+		if(m_ui -> m_full_check -> checkState() == Qt::Checked)
+			m_man -> downloadDb();
+		else
+			m_man -> updateDb();
 	}
-// 
-// 	void UpdateWidget::updateCompletedSlot()
-// 	{
-// 		m_ui -> m_age_label -> setText(QString::number(m_man -> virusDbAge()));
-// 	}
 
 }

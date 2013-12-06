@@ -53,6 +53,7 @@ namespace Meduzzza
 		qint32 dbAge() const;
 		qint32 loadDb();
 		bool compile();
+		void reset();
 		
 		bool scanFile(const QString &_file);
 		bool scanDir(const QString &_dir, const QStringList &_excl_dirs = QStringList());
@@ -102,6 +103,10 @@ namespace Meduzzza
 		
 		void filesFoundSignal(quint64 _count);
 		void procsFoundSignal(quint64 _count);
+		
+		void sigLoadStartedSignal();
+		void sigLoadCompletedSignal(qint32 _count);
+		void sigLoadErrorSignal();
 	};
 }
 #endif

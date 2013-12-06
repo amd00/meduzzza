@@ -77,6 +77,10 @@ namespace Meduzzza
 		virtual void fileDownloadCompleted(const QString &_file, const QDateTime &_start_time, const QDateTime &_end_time) = 0;
 		virtual void fileDownloadProgress(const QString &_file, quint64 _read, quint64 _total) = 0;
 		
+		virtual void sigLoadStarted() = 0;
+		virtual void sigLoadCompleted(qint32 _count) = 0;
+		virtual void sigLoadError() = 0;
+		
 	private Q_SLOTS:
 		void fileScanStartedSlot(const QString &_file, const QDateTime &_time_start) { fileScanStarted(_file); }
 		void fileScanCompletedSlot(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end) { fileScanCompleted(_file); }
@@ -111,6 +115,10 @@ namespace Meduzzza
 		void fileDownloadCompletedSlot(const QString &_file, const QDateTime &_start_time, 
 									   const QDateTime &_end_time) { fileDownloadCompleted(_file, _start_time, _end_time); }
 		void fileDownloadProgressSlot(const QString &_file, quint64 _read, quint64 _total) { fileDownloadProgress(_file, _read, _total); }
+		
+		void sigLoadStartedSlot() { sigLoadStarted(); }
+		void sigLoadCompletedSlot(qint32 _count) { sigLoadCompleted(_count); }
+		void sigLoadErrorSlot() { sigLoadError(); }
 	};
 }
 #endif

@@ -67,6 +67,8 @@ namespace Meduzzza
 		UpdateModel();
 		~UpdateModel() {}
 		
+		void clear();
+		
 		QVariant data(const QModelIndex &_ind, int _role) const;
 		qint32 rowCount(const QModelIndex &_par = QModelIndex()) const { return m_items.size(); }
 		qint32 columnCount(const QModelIndex &_ind) const { return 5; }
@@ -83,6 +85,7 @@ namespace Meduzzza
 		void fileDownloadStartedSlot(const QString &_file, const QDateTime &_start_time);
 		void fileDownloadCompletedSlot(const QString &_file, const QDateTime &_start_time, const QDateTime &_end_time);
 		void fileDownloadProgressSlot(const QString &_file, quint64 _read, quint64 _total);
+		void fileDownloadErrorSlot(const QString &_file, const QString &_error);
 	};
 }
 

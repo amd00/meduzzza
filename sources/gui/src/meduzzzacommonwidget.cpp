@@ -76,6 +76,10 @@ namespace Meduzzza
 					this, SLOT(fileDownloadCompletedSlot(const QString&, const QDateTime&, const QDateTime&)));
 			connect(m_man, SIGNAL(fileDownloadProgressSignal(const QString&, quint64, quint64)),
 					this, SLOT(fileDownloadProgressSlot(const QString&, quint64, quint64)));
+			
+			connect(m_man, SIGNAL(sigLoadStartedSignal()), this, SLOT(sigLoadStartedSlot()));
+			connect(m_man, SIGNAL(sigLoadCompletedSignal(qint32)), this, SLOT(sigLoadCompletedSlot(qint32)));
+			connect(m_man, SIGNAL(sigLoadErrorSignal()), this, SLOT(sigLoadErrorSlot()));
 	}
 	
 	void MeduzzzaCommonWidget::dirScanStartedSlot(const QString &_dir, const QDateTime &_time_start) 

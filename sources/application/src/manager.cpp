@@ -91,6 +91,7 @@ namespace Meduzzza
 		connect(m_engine, SIGNAL(filesFoundSignal(quint64)), this, SIGNAL(filesFoundSignal(quint64)));
 		connect(m_engine, SIGNAL(procsFoundSignal(quint64)), this, SIGNAL(procsFoundSignal(quint64)));
 		
+		connect(m_updater, SIGNAL(updateCompletedSignal(const QDateTime&, const QDateTime&)), this, SLOT(reset()));
 
 		connect(this, SIGNAL(fileScanCompletedSignal(const QString&, const QDateTime&, const QDateTime&)), 
 				m_db, SLOT(fileScanCompletedSlot(const QString&, const QDateTime&, const QDateTime&)));
@@ -123,18 +124,13 @@ namespace Meduzzza
 				m_statist, SLOT(procScanErrorSlot(const QString&, Q_PID, const QString&)));
 		connect(this, SIGNAL(fileMovedToQuarantineSignal(const QString&, const QString&, const QString&)), 
 				m_statist, SLOT(fileMovedToQuarantineSlot(const QString&, const QString&, const QString&)));
-
-// 		connect(m_updater, SIGNAL(downloadStartedSignal(const QString&)), this, SIGNAL(downloadStartedSignal(const QString&)));
-// 		connect(m_updater, SIGNAL(downloadFinishedSignal(const QString&)), this, SIGNAL(downloadFinishedSignal(const QString&)));
-// 		connect(m_updater, SIGNAL(downloadProgressSignal(const QString&, qint64, qint64)), 
-// 				this, SIGNAL(downloadProgressSignal(const QString&, qint64, qint64)));
-// 		connect(m_updater, SIGNAL(updateCompletedSignal()), this, SLOT(updateCompletedSlot()));
-// 		connect(m_updater, SIGNAL(updateCompletedSignal()), this, SIGNAL(updateCompletedSignal()));
-// 		connect(m_updater, SIGNAL(errorSignal(const QString&, const QString&)), this, SLOT(updateErrorSlot(const QString&, const QString&)));
-		
 		
 		connect(this, SIGNAL(fileVirusDetectedSignal(const QString&, const QDateTime&, const QDateTime&, const QString&)), 
 				this, SLOT(fileVirusDetectedSlot(const QString&, const QDateTime&, const QDateTime&, const QString&)));
+		
+		connect(m_engine, SIGNAL(sigLoadStartedSignal()), this, SIGNAL(sigLoadStartedSignal()));
+		connect(m_engine, SIGNAL(sigLoadCompletedSignal(qint32)), this, SIGNAL(sigLoadCompletedSignal(qint32)));
+		connect(m_engine, SIGNAL(sigLoadErrorSignal()), this, SIGNAL(sigLoadErrorSignal()));
 		
 		connect(&m_settings, SIGNAL(dbUpdateMirrorChangedSignal(const QString&)), m_updater, SLOT(dbUpdateMirrorChangedSlot(const QString&)));
 		connect(&m_settings, SIGNAL(hasProxyChangedSignal(bool)), m_updater, SLOT(hasProxyChangedSlot(bool)));
@@ -163,7 +159,6 @@ namespace Meduzzza
 		qint32 signo = -1;
 		if(!m_engine -> init() || (signo = m_engine -> loadDb()) == -1 || !m_engine -> compile())
 			qCritical("ERROR: Unable to init clamav engine");
-		Q_EMIT sigsLoadedSignal(signo);
 		qDebug("INFO: Signatures loaded: %i", signo);
 
 		return true;
@@ -245,6 +240,11 @@ namespace Meduzzza
 		Q_EMIT fileMovedToQuarantineSignal(_file, tmp_file, _virus);
 		free(tmp_file);
 	}
+	
+	void Manager::reset()
+	{
+		m_engine -> reset();
+	}
 
 	void Manager::stop()
 	{
@@ -277,8 +277,11 @@ namespace Meduzzza
 		case MeduzzzaEvent::FileDownloadProgress:
 			Q_EMIT fileDownloadProgressSignal(((FileDownloadProgressEvent*)_event) -> file(), 
 									   ((FileDownloadProgressEvent*)_event) -> read(),
-									   ((FileDownloadProgressEvent*)_event) -> total()
- 											);
+									   ((FileDownloadProgressEvent*)_event) -> total());
+			break;
+		case MeduzzzaEvent::FileDownloadError:
+			Q_EMIT fileDownloadErrorSignal(((FileDownloadErrorEvent*)_event) -> file(), 
+									   ((FileDownloadErrorEvent*)_event) -> error());
 			break;
 		default:
 			res = QObject::event(_event);

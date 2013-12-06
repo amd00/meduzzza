@@ -83,6 +83,10 @@ namespace Meduzzza
 		void paused();
 		void resumed();
 		
+		void sigLoadStarted() {}
+		void sigLoadCompleted(qint32 _count) {}
+		void sigLoadError() {}
+		
 	protected Q_SLOTS:
 		void startClickedSlot();
 		void stopClickedSlot();

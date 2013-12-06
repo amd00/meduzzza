@@ -81,6 +81,10 @@ namespace Meduzzza
 		void fileDownloadCompleted(const QString &_file, const QDateTime &_start_time, const QDateTime &_end_time) {}
 		void fileDownloadProgress(const QString &_file, quint64 _read, quint64 _total) {}
 		
+		void sigLoadStarted() {}
+		void sigLoadCompleted(qint32 _count) {}
+		void sigLoadError() {}
+		
 	protected Q_SLOTS:
 		void dirClickedSlot();
 		void startClickedSlot();

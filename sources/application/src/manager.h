@@ -91,6 +91,7 @@ namespace Meduzzza
 		void downloadDb(bool _non_block = true);
 		void moveToQuarantine(const QString &_file, const QDateTime &_time_start, 
 				const QDateTime &_time_end, const QString &_virus);
+		void reset();
 
 	private Q_SLOTS:
 		void fileVirusDetectedSlot(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus);
@@ -131,15 +132,15 @@ namespace Meduzzza
 		void fileDownloadStartedSignal(const QString &_file, const QDateTime &_start_time);
 		void fileDownloadCompletedSignal(const QString &_file, const QDateTime &_start_time, const QDateTime &_end_time);
 		void fileDownloadProgressSignal(const QString &_file, quint64 _read, quint64 _total);
+		void fileDownloadErrorSignal(const QString &_file, const QString &_error);
+		
+		void sigLoadStartedSignal();
+		void sigLoadCompletedSignal(qint32 _count);
+		void sigLoadErrorSignal();
 		
 		void errorSignal(const QString &_file, const QString &_err);
 		void fileMovedToQuarantineSignal(const QString &_source, const QString &_quarantined, const QString &_virus);
 		void dbOutdatedSignal();
-		void sigsLoadedSignal(quint32 _count);
-// 		void downloadStartedSignal(const QString &_file);
-// 		void downloadFinishedSignal(const QString &_file);
-// 		void downloadProgressSignal(const QString &_file, qint64 _read, qint64 _total);
-// 		void updateCompletedSignal();
 	};
 }
 

@@ -38,7 +38,8 @@ namespace Meduzzza
 			UpdateError,
 			FileDownloadStarted,
 			FileDownloadCompleted,
-			FileDownloadProgress
+			FileDownloadProgress,
+			FileDownloadError
 		};
 		
 	public:
@@ -127,6 +128,21 @@ namespace Meduzzza
 		QString file() const { return m_file; }
 		quint64 read() const { return m_read; }
 		quint64 total() const { return m_total; }
+	};
+	
+	class FileDownloadErrorEvent : public MeduzzzaEvent
+	{
+	private:
+		QString m_file;
+		QString m_error;
+		
+	public:
+		FileDownloadErrorEvent(const QString &_file, const QString &_error) :
+			MeduzzzaEvent(MeduzzzaEvent::FileDownloadError), m_file(_file), m_error(_error) {}
+		~FileDownloadErrorEvent() {}
+		
+		QString file() const { return m_file; }
+		QString error() const { return m_error; }
 	};
 }
 #endif

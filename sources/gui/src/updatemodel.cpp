@@ -38,6 +38,8 @@ namespace Meduzzza
 				this, SLOT(fileDownloadCompletedSlot(const QString&, const QDateTime&, const QDateTime&)));
 		connect(man, SIGNAL(fileDownloadProgressSignal(const QString&, quint64, quint64)),
 				this, SLOT(fileDownloadProgressSlot(const QString&, quint64, quint64)));
+		connect(man, SIGNAL(fileDownloadErrorSignal(const QString&, const QString&)),
+				this, SLOT(fileDownloadErrorSlot(const QString&, const QString&)));
 	}
 	
 	QVariant UpdateModel::data(const QModelIndex &_ind, int _role) const
@@ -88,10 +90,10 @@ namespace Meduzzza
 		case Qt::UserRole + Progress:
 			res = item.total == 0 ? 0 : (qreal)item.read / (qreal)item.total * 100;
 			break;
-		case StartTime:
+		case Qt::UserRole + StartTime:
 			res = item.start_time;
 			break;
-		case EndTime:
+		case Qt::UserRole + EndTime:
 			res = item.end_time;
 			break;
 		}
@@ -139,6 +141,13 @@ namespace Meduzzza
 		return res;
 	}
 	
+	void UpdateModel::clear()
+	{
+		beginRemoveRows(QModelIndex(), 0, rowCount(QModelIndex()));
+		m_items.clear();
+		endRemoveRows();
+	}
+	
 	qint32 UpdateModel::findItem(const QString &_file)
 	{
 		for(qint32 i = 0; i < m_items.size(); i++)
@@ -149,6 +158,7 @@ namespace Meduzzza
 	
 	void UpdateModel::updateStartedSlot(bool _is_full, const QDateTime &_start_time)
 	{
+		clear();
 	}
 	
 	void UpdateModel::updateCompletedSlot(const QDateTime &_start_time, const QDateTime &_end_time)
@@ -184,6 +194,16 @@ namespace Meduzzza
 		m_items[i].read = _read;
 		m_items[i].total = _total;
 		QModelIndex ind_begin = index(i, UpdateModel::Progress, QModelIndex());
+		Q_EMIT dataChanged(ind_begin, ind_begin);
+	}
+	
+	void UpdateModel::fileDownloadErrorSlot(const QString &_file, const QString &_error)
+	{
+		qint32 i = findItem(_file);
+		if(i == -1)
+			return;
+		m_items[i].status = UpdateModel::Error;
+		QModelIndex ind_begin = index(i, UpdateModel::Status, QModelIndex());
 		Q_EMIT dataChanged(ind_begin, ind_begin);
 	}
 }
