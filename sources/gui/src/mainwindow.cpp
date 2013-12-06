@@ -65,9 +65,9 @@ namespace Meduzzza
 		if(m_ui -> m_main_widget_layout -> itemAt(0))
 			m_ui -> m_main_widget_layout -> itemAt(0) -> widget() -> hide();
 		m_ui -> m_main_widget_layout -> insertWidget(0, _w);
-		m_ui -> m_splitter -> setStretchFactor(0, 10);
-		m_ui -> m_splitter -> setStretchFactor(1, 90);
 		_w -> show();
+		m_ui -> m_splitter -> setStretchFactor(0, 0);
+		m_ui -> m_splitter -> setStretchFactor(1, 1);
 	}
 	
 	void MainWindow::closeEvent(QCloseEvent *_event)
