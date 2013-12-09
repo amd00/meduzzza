@@ -23,6 +23,7 @@
 #include <manager.h>
 
 #include <ui_memscanwidget.h>
+#include <ui_meduzzzacommonwidget.h>
 
 #include "mainwindow.h"
 #include "memscanwidget.h"
@@ -35,27 +36,29 @@ namespace Meduzzza
 	MemScanWidget::MemScanWidget(MainWindow *_med) : 
 			MeduzzzaCommonWidget(_med), m_ui(new Ui::MemScanWidget), m_mod(new MeduzzzaScanModel(true))
 	{
-		m_ui -> setupUi(this);
+		m_ui -> setupUi(m_base_ui -> m_widget);
 		m_ui -> m_scan_view -> setModel(m_mod);
+		connect(m_ui -> m_start_button, SIGNAL(clicked()), this, SLOT(startClickedSlot()));
+		connect(m_ui -> m_stop_button, SIGNAL(clicked()), this, SLOT(stopClickedSlot()));
 	}
 
 	MemScanWidget::~MemScanWidget() { delete m_ui; }
 
 	void MemScanWidget::startClickedSlot()
 	{
-		if(!m_started)
-			m_man -> scanMemory();
-		else if(!m_paused)
-			m_man -> pause();
+		if(!isStarted())
+			man() -> scanMemory();
+		else if(!isPaused())
+			man() -> pause();
 		else
-			m_man -> resume();
+			man() -> resume();
 	}
 	
 	void MemScanWidget::stopClickedSlot()
 	{
 		QApplication::setOverrideCursor(Qt::WaitCursor);
 		m_ui -> m_stop_button -> setDisabled(true);
-		m_man -> stop();
+		man() -> stop();
 	}
 	
 	void MemScanWidget::procScanStarted(const QString &_name, Q_PID _pid)

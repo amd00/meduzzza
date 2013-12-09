@@ -44,7 +44,7 @@ namespace Meduzzza
 		DirScanWidget *dsw = new DirScanWidget(this);
 		MemScanWidget *msw = new MemScanWidget(this);
 		UpdateWidget *uw = new UpdateWidget(this);
-		SetupWidget *stw = new SetupWidget();
+		SetupWidget *stw = new SetupWidget(this);
 		m_menu -> addMenuItem(sw -> text(), ":/images/menuitem", sw);
 		m_menu -> addMenuItem(dsw -> text(), ":/images/menuitem", dsw);
 		m_menu -> addMenuItem(msw -> text(), ":/images/menuitem", msw);

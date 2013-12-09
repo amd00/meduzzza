@@ -25,6 +25,7 @@
 #include <manager.h>
 
 #include <ui_dirscanwidget.h>
+#include <ui_meduzzzacommonwidget.h>
 
 #include "mainwindow.h"
 #include "dirscanwidget.h"
@@ -37,9 +38,13 @@ namespace Meduzzza
 	DirScanWidget::DirScanWidget(MainWindow *_med) : 
 			MeduzzzaCommonWidget(_med), m_ui(new Ui::DirScanWidget), m_mod(new MeduzzzaScanModel(false))
 	{
-		m_ui -> setupUi(this);
+		m_ui -> setupUi(m_base_ui -> m_widget);
 		m_ui -> m_scan_view -> setModel(m_mod);
 		m_ui -> m_scan_view -> setColumnHidden(MeduzzzaScanModel::Pid, true);
+		
+		connect(m_ui -> m_start_button, SIGNAL(clicked()), this, SLOT(startClickedSlot()));
+		connect(m_ui -> m_stop_button, SIGNAL(clicked()), this, SLOT(stopClickedSlot()));
+		connect(m_ui -> m_dir_button, SIGNAL(clicked()), this, SLOT(dirClickedSlot()));
 	}
 
 	DirScanWidget::~DirScanWidget() { delete m_ui; }
@@ -129,19 +134,19 @@ namespace Meduzzza
 
 	void DirScanWidget::startClickedSlot()
 	{
-		if(!m_started)
-			m_man -> scanDir(m_ui -> m_dir_edit -> text());
-		else if(!m_paused)
-			m_man -> pause();
+		if(!isStarted())
+			man() -> scanDir(m_ui -> m_dir_edit -> text());
+		else if(!isPaused())
+			man() -> pause();
 		else
-			m_man -> resume();
+			man() -> resume();
 	}
 	
 	void DirScanWidget::stopClickedSlot()
 	{
 		QApplication::setOverrideCursor(Qt::WaitCursor);
 		m_ui -> m_stop_button -> setDisabled(true);
-		m_man -> stop();
+		man() -> stop();
 	}
 
 	

@@ -43,8 +43,8 @@ namespace Meduzzza
 
 	Manager::Manager() : QObject(), m_app_dir(QDir::home().absoluteFilePath(".meduzzza")), m_db_dir(m_app_dir.absoluteFilePath("database")), 
 						m_quarantine_dir(m_app_dir.absoluteFilePath("quarantine")),
-						m_infected_db_dir(m_app_dir.absoluteFilePath("infdb")), m_engine(NULL), m_settings(m_app_dir), m_db(new DbEngine(m_infected_db_dir)), 
-						m_updater(NULL), m_full_scan_in_progress(false), m_statist(new Statist())
+						m_infected_db_dir(m_app_dir.absoluteFilePath("infdb")), m_engine(NULL), m_settings(new Settings(m_app_dir)), 
+						m_db(new DbEngine(m_infected_db_dir)), m_updater(NULL), m_full_scan_in_progress(false), m_statist(new Statist())
 	{
 		if(!m_app_dir.mkpath(m_db_dir.dirName()))
 			qCritical("ERROR: Unable create directory: %s", m_db_dir.absolutePath().toLocal8Bit().data());
@@ -52,9 +52,9 @@ namespace Meduzzza
 			qCritical("ERROR: Unable create directory: %s", m_quarantine_dir.absolutePath().toLocal8Bit().data());
 		if(!m_app_dir.mkpath(m_infected_db_dir.dirName()))
 			qCritical("ERROR: Unable create directory: %s", m_infected_db_dir.absolutePath().toLocal8Bit().data());
-		m_engine = new Meduzzza::ClamavEngine(m_settings.threadCount(), m_db_dir.absolutePath());
-		m_updater = new DbUpdater(this, m_settings.dbUpdateMirror(), m_db_dir.absolutePath(), 
-			m_settings.hasProxy(), m_settings.proxyHost(), m_settings.proxyPort(), m_settings.proxyUser(), m_settings.proxyPassword());
+		m_engine = new Meduzzza::ClamavEngine(m_settings -> threadCount(), m_db_dir.absolutePath());
+		m_updater = new DbUpdater(this, m_settings -> dbUpdateMirror(), m_db_dir.absolutePath(), 
+			m_settings -> proxyType(), m_settings -> proxyHost(), m_settings -> proxyPort(), m_settings -> proxyUser(), m_settings -> proxyPassword());
 		
 		connect(m_engine, SIGNAL(dirScanStartedSignal(const QString&, const QDateTime&)), 
 				this, SIGNAL(dirScanStartedSignal(const QString&, const QDateTime&)));
@@ -132,12 +132,13 @@ namespace Meduzzza
 		connect(m_engine, SIGNAL(sigLoadCompletedSignal(qint32)), this, SIGNAL(sigLoadCompletedSignal(qint32)));
 		connect(m_engine, SIGNAL(sigLoadErrorSignal()), this, SIGNAL(sigLoadErrorSignal()));
 		
-		connect(&m_settings, SIGNAL(dbUpdateMirrorChangedSignal(const QString&)), m_updater, SLOT(dbUpdateMirrorChangedSlot(const QString&)));
-		connect(&m_settings, SIGNAL(hasProxyChangedSignal(bool)), m_updater, SLOT(hasProxyChangedSlot(bool)));
-		connect(&m_settings, SIGNAL(proxyHostChangedSignal(const QString&)), m_updater, SLOT(proxyHostChangedSlot(const QString&)));
-		connect(&m_settings, SIGNAL(proxyPortChangedSignal(qint16)), m_updater, SLOT(proxyPortChangedSlot(qint16)));
-		connect(&m_settings, SIGNAL(proxyUserChangedSignal(const QString&)), m_updater, SLOT(proxyUserChangedSlot(const QString&)));
-		connect(&m_settings, SIGNAL(proxyPasswordChangedSignal(const QString&)), m_updater, SLOT(proxyPasswordChangedSlot(const QString&)));
+		connect(m_settings, SIGNAL(dbUpdateMirrorChangedSignal(const QString&)), m_updater, SLOT(dbUpdateMirrorChangedSlot(const QString&)));
+		connect(m_settings, SIGNAL(proxyTypeChangedSignal(QNetworkProxy::ProxyType)), 
+				m_updater, SLOT(proxyTypeChangedSlot(QNetworkProxy::ProxyType)));
+		connect(m_settings, SIGNAL(proxyHostChangedSignal(const QString&)), m_updater, SLOT(proxyHostChangedSlot(const QString&)));
+		connect(m_settings, SIGNAL(proxyPortChangedSignal(qint16)), m_updater, SLOT(proxyPortChangedSlot(qint16)));
+		connect(m_settings, SIGNAL(proxyUserChangedSignal(const QString&)), m_updater, SLOT(proxyUserChangedSlot(const QString&)));
+		connect(m_settings, SIGNAL(proxyPasswordChangedSignal(const QString&)), m_updater, SLOT(proxyPasswordChangedSlot(const QString&)));
 	}
 
 	Manager::~Manager()
@@ -146,14 +147,15 @@ namespace Meduzzza
 		delete m_db;
 		delete m_updater;
 		delete m_statist;
+		delete m_settings;
 	}
 
 	bool Manager::init()
 	{
 		qint32 db_age = m_engine -> dbAge();
-		if(db_age > m_settings.maxDbAge())
+		if(db_age > m_settings -> maxDbAge())
 		{
-			qWarning("WARNING: The virus database older than %i days.", m_settings.maxDbAge());
+			qWarning("WARNING: The virus database older than %i days.", m_settings -> maxDbAge());
 			Q_EMIT void dbOutdatedSignal();
 		}
 		qint32 signo = -1;
@@ -235,7 +237,7 @@ namespace Meduzzza
 		char *tmp_file = tempnam(m_quarantine_dir.absolutePath().toLocal8Bit().data(), "amdq_");
 		if(!tmp_file)
 			return;
-
+		QFile::rename(_file, tmp_file);
 		Q_EMIT fileMovedToQuarantineSignal(_file, tmp_file, _virus);
 		free(tmp_file);
 	}
@@ -292,7 +294,7 @@ namespace Meduzzza
 
 	void Manager::fileVirusDetectedSlot(const QString &_file, const QDateTime &_time_start, const QDateTime &_time_end, const QString &_virus)
 	{
-		if(m_settings.autoQuarantine())
+		if(m_settings -> autoQuarantine())
 			moveToQuarantine(_file, _time_start, _time_end, _virus);
 	}
 	

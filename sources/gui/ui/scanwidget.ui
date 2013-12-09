@@ -13,20 +13,10 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1">
+  <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1">
    <property name="margin">
     <number>0</number>
    </property>
-   <item>
-    <widget class="QLabel" name="m_logo_label">
-     <property name="text">
-      <string/>
-     </property>
-     <property name="pixmap">
-      <pixmap resource="../qrc/meduzzza.qrc">:/images/meduzzza</pixmap>
-     </property>
-    </widget>
-   </item>
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
@@ -163,42 +153,5 @@
   <include location="../qrc/meduzzza.qrc"/>
   <include location="../qrc/meduzzza.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>m_start_button</sender>
-   <signal>clicked()</signal>
-   <receiver>ScanWidget</receiver>
-   <slot>startClickedSlot()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>312</x>
-     <y>227</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>340</x>
-     <y>175</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>m_stop_button</sender>
-   <signal>clicked()</signal>
-   <receiver>ScanWidget</receiver>
-   <slot>stopClickedSlot()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>344</x>
-     <y>227</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>340</x>
-     <y>175</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
- <slots>
-  <slot>startClickedSlot()</slot>
-  <slot>stopClickedSlot()</slot>
- </slots>
+ <connections/>
 </ui>

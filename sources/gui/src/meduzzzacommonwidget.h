@@ -26,6 +26,11 @@
 #include <QWidget>
 #include <QProcess>
 
+namespace Ui
+{
+	class MeduzzzaCommonWidget;
+}
+
 namespace Meduzzza
 {
 	class Manager;
@@ -36,6 +41,9 @@ namespace Meduzzza
 		Q_OBJECT
 		
 	protected:
+		Ui::MeduzzzaCommonWidget *m_base_ui;
+		
+	private:
 		Manager *m_man;
 		MainWindow *m_mw;
 		bool m_started;
@@ -43,7 +51,14 @@ namespace Meduzzza
 		
 	public:
 		MeduzzzaCommonWidget(MainWindow *_mw);
-		virtual ~MeduzzzaCommonWidget() {}
+		virtual ~MeduzzzaCommonWidget();
+		
+		Manager *man() const { return m_man; }
+		bool isStarted() const { return m_started; }
+		bool isPaused() const { return m_paused; }
+		
+		void setStarted(bool _started) { m_started = _started; }
+		void setPaused(bool _paused) { m_paused = _paused; }
 		
 	protected:
 		virtual void fileScanStarted(const QString &_file) = 0;

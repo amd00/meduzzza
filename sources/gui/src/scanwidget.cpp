@@ -23,6 +23,7 @@
 #include <manager.h>
 
 #include <ui_scanwidget.h>
+#include <ui_meduzzzacommonwidget.h>
 
 #include "scanwidget.h"
 #include "scanresdialog.h"
@@ -34,7 +35,9 @@ namespace Meduzzza
 	ScanWidget::ScanWidget(MainWindow *_med) : MeduzzzaCommonWidget(_med), 
 		m_ui(new Ui::ScanWidget)
 	{
-		m_ui -> setupUi(this);
+		m_ui -> setupUi(m_base_ui -> m_widget);
+		connect(m_ui -> m_start_button, SIGNAL(clicked()), this, SLOT(startClickedSlot()));
+		connect(m_ui -> m_stop_button, SIGNAL(clicked()), this, SLOT(stopClickedSlot()));
 	}
 
 	ScanWidget::~ScanWidget() { delete m_ui; }
@@ -119,18 +122,18 @@ namespace Meduzzza
 	
 	void ScanWidget::startClickedSlot()
 	{
-		if(!m_started)
-			m_man -> fullScan();
-		else if(!m_paused)
-			m_man -> pause();
+		if(!isStarted())
+			man() -> fullScan();
+		else if(!isPaused())
+			man() -> pause();
 		else
-			m_man -> resume();
+			man() -> resume();
 	}
 
 	void ScanWidget::stopClickedSlot()
 	{
 		QApplication::setOverrideCursor(Qt::WaitCursor);
-		m_man -> stop();
+		man() -> stop();
 	}
 
 }

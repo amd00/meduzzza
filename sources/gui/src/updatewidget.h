@@ -103,7 +103,7 @@ namespace Meduzzza
 		void sigLoadError() {}
 		
 	private Q_SLOTS:
-		void startUpdateSlot();
+		void startClickedSlot();
 	};
 }
 #endif

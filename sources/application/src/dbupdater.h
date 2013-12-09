@@ -61,7 +61,7 @@ namespace Meduzzza
 		bool m_is_full;
 
 	public:
-		DbUpdater(Manager *_man, const QString &_mirror, const QString &_db_path, bool _proxy, const QString &_proxy_host, qint16 _proxy_port,
+		DbUpdater(Manager *_man, const QString &_mirror, const QString &_db_path, QNetworkProxy::ProxyType _proxy_type, const QString &_proxy_host, qint16 _proxy_port,
 					const QString &_proxy_user, const QString &_proxy_password);
 		~DbUpdater() {}
 		void update();
@@ -72,7 +72,7 @@ namespace Meduzzza
 		
 	public Q_SLOTS:
 		void dbUpdateMirrorChangedSlot(const QString &_val);
-		void hasProxyChangedSlot(bool _val);
+		void proxyTypeChangedSlot(QNetworkProxy::ProxyType _val);
 		void proxyHostChangedSlot(const QString &_val);
 		void proxyPortChangedSlot(qint16 _val);
 		void proxyUserChangedSlot(const QString &_val);

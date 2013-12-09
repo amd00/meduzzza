@@ -47,8 +47,8 @@ namespace Meduzzza
 		QDir m_db_dir;
 		QDir m_quarantine_dir;
 		QDir m_infected_db_dir;
-		Meduzzza::ClamavEngine *m_engine;
-		Settings m_settings;
+		ClamavEngine *m_engine;
+		Settings *m_settings;
 		DbEngine *m_db;
 		DbUpdater *m_updater;
 		bool m_full_scan_in_progress;
@@ -75,6 +75,7 @@ namespace Meduzzza
 		void resume() { m_engine -> resume(); }
 		
 		Statist *statist() const { return m_statist; }
+		Settings *settings() const { return m_settings; }
 		
 	protected:
 		bool event(QEvent *_event);

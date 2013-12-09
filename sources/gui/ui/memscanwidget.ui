@@ -105,42 +105,5 @@
  <resources>
   <include location="../qrc/meduzzza.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>m_start_button</sender>
-   <signal>clicked()</signal>
-   <receiver>MemScanWidget</receiver>
-   <slot>startClickedSlot()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>22</x>
-     <y>52</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>316</x>
-     <y>196</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>m_stop_button</sender>
-   <signal>clicked()</signal>
-   <receiver>MemScanWidget</receiver>
-   <slot>stopClickedSlot()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>54</x>
-     <y>52</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>316</x>
-     <y>196</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
- <slots>
-  <slot>startClickedSlot()</slot>
-  <slot>stopClickedSlot()</slot>
- </slots>
+ <connections/>
 </ui>

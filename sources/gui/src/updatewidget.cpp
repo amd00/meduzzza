@@ -25,6 +25,7 @@
 #include <manager.h>
 
 #include <ui_updatewidget.h>
+#include <ui_meduzzzacommonwidget.h>
 
 #include "updatewidget.h"
 #include "updatemodel.h"
@@ -52,10 +53,12 @@ namespace Meduzzza
 	UpdateWidget:: UpdateWidget(MainWindow *_med) : MeduzzzaCommonWidget(_med),
 		m_ui(new Ui::UpdateWidget), m_model(new UpdateModel), m_delegate(new ProgressDelegate)
 	{
-		m_ui -> setupUi(this);
-		m_ui -> m_age_label -> setText(QString::number(m_man -> virusDbAge()));
+		m_ui -> setupUi(m_base_ui -> m_widget);
+		m_ui -> m_age_label -> setText(QString::number(man() -> virusDbAge()));
 		m_ui -> m_update_view -> setModel(m_model);
 		m_ui -> m_update_view -> setItemDelegate(m_delegate);
+		
+		connect(m_ui -> m_start_button, SIGNAL(clicked()), this, SLOT(startClickedSlot()));
 	}
 
 	UpdateWidget::~UpdateWidget() 
@@ -86,12 +89,12 @@ namespace Meduzzza
 	{
 	}
 
-	void UpdateWidget::startUpdateSlot()
+	void UpdateWidget::startClickedSlot()
 	{
 		if(m_ui -> m_full_check -> checkState() == Qt::Checked)
-			m_man -> downloadDb();
+			man() -> downloadDb();
 		else
-			m_man -> updateDb();
+			man() -> updateDb();
 	}
 
 }

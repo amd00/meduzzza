@@ -154,25 +154,5 @@
  <resources>
   <include location="../qrc/meduzzza.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>m_start_button</sender>
-   <signal>clicked()</signal>
-   <receiver>UpdateWidget</receiver>
-   <slot>startUpdateSlot()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>17</x>
-     <y>46</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>344</x>
-     <y>223</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
- <slots>
-  <slot>startUpdateSlot()</slot>
- </slots>
+ <connections/>
 </ui>

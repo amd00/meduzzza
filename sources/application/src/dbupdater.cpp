@@ -32,10 +32,10 @@
 namespace Meduzzza
 {
 
-	DbUpdater::DbUpdater(Manager *_man, const QString &_mirror, const QString &_db_path, bool _proxy, const QString &_proxy_host, qint16 _proxy_port,
-					const QString &_proxy_user, const QString &_proxy_password) : QObject(), m_man(_man), m_mirror(_mirror), m_db_path(_db_path), 
-					m_db_tmp_dir(), m_pool(), m_nam(), 
-					m_proxy(_proxy ? QNetworkProxy::HttpProxy : QNetworkProxy::NoProxy, _proxy_host, _proxy_port, _proxy_user, _proxy_password)
+	DbUpdater::DbUpdater(Manager *_man, const QString &_mirror, const QString &_db_path, QNetworkProxy::ProxyType _proxy_type, 
+						const QString &_proxy_host, qint16 _proxy_port, const QString &_proxy_user, const QString &_proxy_password) : 
+						QObject(), m_man(_man), m_mirror(_mirror), m_db_path(_db_path), m_db_tmp_dir(), m_pool(), m_nam(), 
+						m_proxy(_proxy_type, _proxy_host, _proxy_port, _proxy_user, _proxy_password)
 	{
 		m_nam.setProxy(m_proxy);
 		m_db_tmp_dir.setPath(QDir(m_db_path).absoluteFilePath("db_update"));
@@ -78,9 +78,9 @@ namespace Meduzzza
 		m_mirror = _val;
 	}
 
-	void DbUpdater::hasProxyChangedSlot(bool _val)
+	void DbUpdater::proxyTypeChangedSlot(QNetworkProxy::ProxyType _val)
 	{
-		m_proxy.setType(_val ? QNetworkProxy::HttpProxy : QNetworkProxy::NoProxy);
+		m_proxy.setType(_val);
 		m_nam.setProxy(m_proxy);
 	}
 
