@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MeduzzzaCommonWidget</class>
+ <widget class="QWidget" name="MeduzzzaCommonWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>352</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1">
+   <property name="margin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="m_logo_label">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="../qrc/meduzzza.qrc">:/images/meduzzza</pixmap>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="m_widget" native="true"/>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../qrc/meduzzza.qrc"/>
+ </resources>
+ <connections/>
+</ui>
