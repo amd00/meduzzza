@@ -55,17 +55,17 @@ namespace Meduzzza
 
 	void DirScanWidget::fileScanCompleted(const QString &_file)
 	{
-		m_ui -> m_progress -> setValue(m_ui -> m_progress -> value() + 1);
+		m_ui -> m_slider -> setValue(m_ui -> m_slider -> value() + 1);
 	}
 
 	void DirScanWidget::fileVirusDetected(const QString &_file, const QString &_virus)
 	{
-		m_ui -> m_progress -> setValue(m_ui -> m_progress -> value() + 1);
+		m_ui -> m_slider -> setValue(m_ui -> m_slider -> value() + 1);
 	}
 
 	void DirScanWidget::dirScanStarted(const QString &_dir)
 	{
-		m_ui -> m_progress -> setValue(0);
+		m_ui -> m_slider -> setValue(0);
 		m_mod -> clear();
 		m_ui -> m_start_button -> setIcon(QIcon(":/images/pause"));
 	}
@@ -121,7 +121,7 @@ namespace Meduzzza
 	
 	void DirScanWidget::filesFound(quint64 _count)
 	{
-		m_ui -> m_progress -> setMaximum(_count);
+		m_ui -> m_slider -> setMaximum(_count);
 	}
 	
 	void DirScanWidget::dirClickedSlot()

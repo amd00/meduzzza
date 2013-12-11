@@ -68,17 +68,17 @@ namespace Meduzzza
 
 	void MemScanWidget::procScanCompleted(const QString &_name, Q_PID _pid)
 	{
-		m_ui -> m_progress -> setValue(m_ui -> m_progress -> value() + 1);
+		m_ui -> m_slider -> setValue(m_ui -> m_slider -> value() + 1);
 	}
 
 	void MemScanWidget::procVirusDetected(const QString &_name, Q_PID _pid, const QString &_virus)
 	{
-		m_ui -> m_progress -> setValue(m_ui -> m_progress -> value() + 1);
+		m_ui -> m_slider -> setValue(m_ui -> m_slider -> value() + 1);
 	}
 	
 	void MemScanWidget::procScanError(const QString &_name, Q_PID _pid, const QString &_error)
 	{
-		m_ui -> m_progress -> setValue(m_ui -> m_progress -> value() + 1);
+		m_ui -> m_slider -> setValue(m_ui -> m_slider -> value() + 1);
 	}
 	
 	void MemScanWidget::dirScanStarted(const QString &_dir)
@@ -95,7 +95,7 @@ namespace Meduzzza
 
 	void MemScanWidget::memScanStarted()
 	{
-		m_ui -> m_progress -> setValue(0);
+		m_ui -> m_slider -> setValue(0);
 		m_mod -> clear();
 		m_ui -> m_start_button -> setIcon(QIcon(":/images/pause"));
 	}
@@ -139,7 +139,7 @@ namespace Meduzzza
 	
 	void MemScanWidget::procsFound(quint64 _count)
 	{
-		m_ui -> m_progress -> setMaximum(_count);
+		m_ui -> m_slider -> setMaximum(_count);
 	}
 	
 }

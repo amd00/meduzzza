@@ -1,8 +1,65 @@
 *{
-	color: rgb(0, 0, 0);
-	background-color: rgb(255, 255, 255);
+	color: #ffffff;
+	background-color: #373d47;
+}
+*::disabled
+{
+	color: #888888;
 }
 
+QListView
+{
+	selection-background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                 stop:0 #50a1e8, stop: 1 #1983e1);
+	background-color: #282d36;
+}
+
+QTreeView
+{
+	border: none;
+}
+
+QListView::item
+{
+	margin-top: 10;
+	margin-bottom: 10;
+}
+
+QSlider
+{
+	background-color: #373d47;
+	max-height: 12px;
+}
+
+QSlider::groove:horizontal
+{
+	max-height: 11px;
+	background-color: #282d36;
+	border-radius: 6px
+}
+
+QSlider::sub-page:horizontal
+{
+	background-image: url(:/images/spring);
+	border-radius: 6px
+}
+
+QSlider::handle:horizontal
+{
+	image: url(:/images/pin);
+}
+
+QLineEdit
+{
+	background-color: #282d36;
+}
+/*
+QCheckBox::indicator
+{
+	background-color: #282d36;
+	color: #ffffff;
+}
+*/
 #m_health_label
 {
 	background-color: #33cccc; 

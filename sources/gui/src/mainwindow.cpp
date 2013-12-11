@@ -35,7 +35,7 @@
 namespace Meduzzza
 {
 
-	MainWindow::MainWindow() : QWidget(), m_ui(new Ui::MainWindow), m_menu(new MainMenuModel), m_man(Meduzzza::Manager::get())
+	MainWindow::MainWindow() : QWidget(), m_ui(new Ui::MainWindow), m_menu(new MainMenuModel), m_man(Manager::get())
 	{
 		m_ui -> setupUi(this);
 		m_ui -> m_menu_view -> setModel(m_menu);

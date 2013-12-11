@@ -28,6 +28,10 @@ int main(qint32 argc, char *argv[])
 {
 	QApplication app(argc, argv);
 	
+	QFont f = QApplication::font();
+	f.setStyleStrategy(QFont::PreferAntialias);
+	QApplication::setFont(f);
+	
 	Meduzzza::MainWindow m;
 	m.show();
 	

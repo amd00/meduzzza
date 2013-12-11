@@ -44,44 +44,44 @@ namespace Meduzzza
 
 	void ScanWidget::fileScanCompleted(const QString &_file) 
 	{ 
-		m_ui -> m_progress -> setValue(m_ui -> m_progress -> value() + 1); 
+		m_ui -> m_slider -> setValue(m_ui -> m_slider -> value() + 1); 
 	}
 	
 	void ScanWidget::fileVirusDetected(const QString &_file, const QString &_virname) 
 	{ 
-		m_ui -> m_progress -> setValue(m_ui -> m_progress -> value() + 1); 
+		m_ui -> m_slider -> setValue(m_ui -> m_slider -> value() + 1); 
 	}
 	
 	void ScanWidget::procScanCompleted(const QString &_name, Q_PID _pid) 
 	{ 
-		m_ui -> m_progress -> setValue(m_ui -> m_progress -> value() + 1); 
+		m_ui -> m_slider -> setValue(m_ui -> m_slider -> value() + 1); 
 	}
 	
 	void ScanWidget::procVirusDetected(const QString &_name, Q_PID _pid, const QString &_virname) 
 	{ 
-		m_ui -> m_progress -> setValue(m_ui -> m_progress -> value() + 1); 
+		m_ui -> m_slider -> setValue(m_ui -> m_slider -> value() + 1); 
 	}
 	
 	void ScanWidget::memScanStarted()
 	{
-		m_ui -> m_progress -> setValue(0);
+		m_ui -> m_slider -> setValue(0);
 		m_ui -> m_scanobj_label -> setText(tr("Memory scanning..."));
 	}
 	
 	void ScanWidget::memScanCompleted()
 	{
-		m_ui -> m_progress -> setValue(0);
+		m_ui -> m_slider -> setValue(0);
 	}
 	
 	void ScanWidget::dirScanStarted(const QString &_dir)
 	{
-		m_ui -> m_progress -> setValue(0);
+		m_ui -> m_slider -> setValue(0);
 		m_ui -> m_scanobj_label -> setText(tr("Filesystem scanning..."));
 	}
 	
 	void ScanWidget::dirScanCompleted(const QString &_dir)
 	{
-		m_ui -> m_progress -> setValue(0);
+		m_ui -> m_slider -> setValue(0);
 	}
 	
 	void ScanWidget::stopped()
@@ -102,12 +102,12 @@ namespace Meduzzza
 	
 	void ScanWidget::filesFound(quint64 _count) 
 	{ 
-		m_ui -> m_progress -> setMaximum(_count); 
+		m_ui -> m_slider -> setMaximum(_count);
 	}
 		
 	void ScanWidget::procsFound(quint64 _count) 
 	{ 
-		m_ui -> m_progress -> setMaximum(_count); 
+		m_ui -> m_slider -> setMaximum(_count);
 	}
 	
 	void ScanWidget::fullScanStarted(const QDateTime &_time)
