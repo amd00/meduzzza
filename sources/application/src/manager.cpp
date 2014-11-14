@@ -23,9 +23,6 @@
 #include <QTemporaryFile>
 #include <QEventLoop>
 
-#include <clamav.h>
-#include <string.h>
-
 #include "manager.h"
 #include "meduzzzaevent.h"
 
