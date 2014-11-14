@@ -10,4 +10,7 @@
 	<file alias="spring">../images/spring.png</file>
 	<file alias="pin">../images/pin.png</file>
   </qresource>
+  <qresource prefix="qss">
+    <file alias="stylesheet">../qss/meduzzza.qss</file>
+  </qresource>
 </RCC>

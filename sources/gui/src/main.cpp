@@ -21,13 +21,18 @@
  */
 
 #include <QApplication>
+#include <QFile>
 
 #include "mainwindow.h"
 
 int main(qint32 argc, char *argv[])
 {
 	QApplication app(argc, argv);
-	
+    QFile qss_file(":qss/stylesheet");
+    qss_file.open(QIODevice::ReadOnly);
+    QByteArray qss = qss_file.readAll();
+    app.setStyleSheet(qss);
+    
 	QFont f = QApplication::font();
 	f.setStyleStrategy(QFont::PreferAntialias);
 	QApplication::setFont(f);
